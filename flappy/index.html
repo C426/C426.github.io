@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282828;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            border: 2px solid #fff;
+            background-color: #70c5ce; /* 经典的天空蓝背景 */
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* UI 覆盖层通用样式 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            z-index: 10;
+        }
+
+        .hidden { display: none !important; }
+
+        h1 { font-size: 48px; margin-bottom: 20px; color: #f4d03f; text-shadow: 2px 2px 0 #000; }
+        h2 { font-size: 36px; margin-bottom: 20px; }
+        p { font-size: 18px; color: #fff; margin-bottom: 40px; text-shadow: 1px 1px 0 #000; }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #e74c3c;
+            color: white;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            transition: 0.2s;
+            margin: 10px;
+            min-width: 180px;
+            font-weight: bold;
+        }
+
+        button:hover { transform: scale(1.05); background-color: #c0392b; }
+
+        button.secondary { background-color: #555; }
+        button.secondary:hover { background-color: #777; }
+
+        /* 语言选择器样式 (和上一个游戏保持一致) */
+        #lang-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 20;
+        }
+
+        #lang-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 8px 15px;
+            font-size: 14px;
+            min-width: auto;
+            margin: 0;
+        }
+
+        #lang-menu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            width: 120px;
+            margin-bottom: 5px;
+            display: none;
+        }
+
+        #lang-menu.show { display: block; }
+
+        .lang-option {
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            font-size: 14px;
+        }
+        .lang-option:hover { background-color: #444; }
+
+        /* 实时分数显示 */
+        #score-display {
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            text-align: center;
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #000;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        /* 回到主页面的左上角按钮 */
+        #back-btn {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 60;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(6px);
+        }
+        #back-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+        }
+        /* 居中游戏结束屏幕的操作按钮 */
+        #game-over-screen > div {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    
+</head>
+<body>
+    <a id="back-btn" href="../index.html">◀ホームページ</a>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        
+        <div id="score-display" class="hidden">0</div>
+
+        <div id="title-screen" class="overlay">
+            <h1 id="ui-title">Flappy Bird</h1>
+            <p id="ui-instructions">空格键 / 点击 跳跃</p>
+            <button id="start-btn">开始游戏</button>
+            
+            <div id="lang-container">
+                <button id="lang-btn">🌐 Language</button>
+                <div id="lang-menu">
+                    <div class="lang-option" data-lang="zh">✓ 中文</div>
+                    <div class="lang-option" data-lang="ja">　日本語</div>
+                    <div class="lang-option" data-lang="en">　English</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-over-screen" class="overlay hidden">
+            <h2 id="end-title">游戏结束</h2>
+            <p id="end-score">得分: 0</p>
+            <div>
+                <button id="restart-btn">再试一次</button>
+                <button id="home-btn" class="secondary">返回主页</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
