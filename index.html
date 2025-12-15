@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>玩家行为监测Demo</title>
+    <title>Game Demo</title>
     <style>
         body {
             margin: 0;
@@ -14,6 +14,7 @@
             background-color: #282828;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
+            user-select: none; /* 防止双击选中文本 */
         }
         
         #game-container {
@@ -39,7 +40,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.85); /* 半透明黑色背景 */
+            background-color: rgba(0, 0, 0, 0.85);
             color: white;
             z-index: 10;
         }
@@ -76,6 +77,65 @@
         button.secondary:hover {
             background-color: #777;
         }
+
+        /* --- 语言选择器样式 --- */
+        #lang-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 20; /* 确保在最上层 */
+            font-family: sans-serif;
+        }
+
+        #lang-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            font-size: 16px;
+            min-width: auto;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        #lang-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: none;
+        }
+
+        #lang-menu {
+            position: absolute;
+            bottom: 100%; /* 在按钮上方显示 */
+            left: 0;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            width: 150px;
+            margin-bottom: 5px;
+            display: none; /* 默认隐藏 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        #lang-menu.show {
+            display: block;
+        }
+
+        .lang-option {
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            font-size: 14px;
+        }
+
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+
+        .lang-option:hover {
+            background-color: #444;
+        }
     </style>
 </head>
 <body>
@@ -83,9 +143,18 @@
         <canvas id="gameCanvas" width="800" height="600"></canvas>
 
         <div id="title-screen" class="overlay">
-            <h1>躲避与收集</h1>
-            <p>WASD 移动 | 鼠标左键 冲刺</p>
+            <h1 id="ui-title">躲避与收集</h1>
+            <p id="ui-instructions">WASD 移动 | 鼠标左键 冲刺</p>
             <button id="start-btn">开始游戏</button>
+            
+            <div id="lang-container">
+                <button id="lang-btn">🌐 Language</button>
+                <div id="lang-menu">
+                    <div class="lang-option" data-lang="zh">✓ 中文</div>
+                    <div class="lang-option" data-lang="ja">　日本語</div>
+                    <div class="lang-option" data-lang="en">　English</div>
+                </div>
+            </div>
         </div>
 
         <div id="game-over-screen" class="overlay hidden">

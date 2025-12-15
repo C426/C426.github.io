@@ -9,7 +9,129 @@ const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
 const homeBtn = document.getElementById('home-btn');
 
-// --- 2. 游戏全局配置 (常量) ---
+// UI 文本元素
+const uiTitle = document.getElementById('ui-title');
+const uiInstructions = document.getElementById('ui-instructions');
+
+// 语言相关元素
+const langBtn = document.getElementById('lang-btn');
+const langMenu = document.getElementById('lang-menu');
+const langOptions = document.querySelectorAll('.lang-option');
+
+// --- 2. 多语言配置 ---
+const translations = {
+    zh: {
+        title: "躲避与收集",
+        instructions: "WASD 移动 | 鼠标左键 冲刺",
+        start: "开始游戏",
+        restart: "重新开始游戏",
+        home: "返回主界面",
+        victory: "胜利！",
+        gameOver: "游戏结束",
+        winReason: "恭喜！你收集了所有金币！",
+        loseReason: "很遗憾，被敌人抓住了。",
+        coinsCollected: "收集金币",
+        time: "时间",
+        coins: "金币",
+        dashReady: "冲刺准备就绪 [鼠标左键]",
+        dashCool: "冲刺冷却",
+        dashActive: "冲刺中! 连按!",
+        danger: "危"
+    },
+    ja: {
+        title: "回避と収集",
+        instructions: "WASD 移動 | 左クリック ダッシュ",
+        start: "ゲーム開始",
+        restart: "リスタート",
+        home: "ホームに戻る",
+        victory: "勝利！",
+        gameOver: "ゲームオーバー",
+        winReason: "おめでとう！全コイン収集完了！",
+        loseReason: "残念、敵に捕まりました。",
+        coinsCollected: "獲得コイン",
+        time: "タイム",
+        coins: "コイン",
+        dashReady: "ダッシュ可能 [左クリック]",
+        dashCool: "クールダウン",
+        dashActive: "連打せよ!",
+        danger: "危"
+    },
+    en: {
+        title: "Dodge & Collect",
+        instructions: "WASD to Move | Left Click to Dash",
+        start: "Start Game",
+        restart: "Try Again",
+        home: "Main Menu",
+        victory: "Victory!",
+        gameOver: "Game Over",
+        winReason: "Congrats! All coins collected!",
+        loseReason: "You were caught by the enemy.",
+        coinsCollected: "Coins Collected",
+        time: "Time",
+        coins: "Coins",
+        dashReady: "Dash Ready [L-Click]",
+        dashCool: "Cooldown",
+        dashActive: "MASH CLICK!",
+        danger: "RUN"
+    }
+};
+
+let currentLang = 'zh'; // 默认语言
+
+// --- 3. 语言切换逻辑 ---
+
+// 切换菜单显示/隐藏
+langBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // 防止冒泡
+    langMenu.classList.toggle('show');
+});
+
+// 点击其他地方关闭菜单
+document.addEventListener('click', (e) => {
+    if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+        langMenu.classList.remove('show');
+    }
+});
+
+// 选择语言
+langOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        const selectedLang = option.getAttribute('data-lang');
+        setLanguage(selectedLang);
+        langMenu.classList.remove('show');
+    });
+});
+
+function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    // 更新 DOM 文本
+    uiTitle.textContent = t.title;
+    uiInstructions.textContent = t.instructions;
+    startBtn.textContent = t.start;
+    restartBtn.textContent = t.restart;
+    homeBtn.textContent = t.home;
+
+    // 更新菜单勾选状态
+    langOptions.forEach(opt => {
+        if (opt.getAttribute('data-lang') === lang) {
+            opt.textContent = '✓ ' + getLangName(opt.getAttribute('data-lang'));
+        } else {
+            opt.textContent = '　 ' + getLangName(opt.getAttribute('data-lang')); // 全角空格占位
+        }
+    });
+}
+
+function getLangName(code) {
+    if (code === 'zh') return '中文';
+    if (code === 'ja') return '日本語';
+    if (code === 'en') return 'English';
+    return code;
+}
+
+
+// --- 4. 游戏全局配置 (常量) ---
 const MAX_COINS_ON_SCREEN = 3;
 const COIN_SPAWN_INTERVAL = 7;
 const COINS_TO_WIN = 20;
@@ -19,27 +141,23 @@ const DASH_COOLDOWN = 5;
 const MASH_THRESHOLD = 0.2;
 const DANGER_DISTANCE = 50;
 
-// --- 3. 游戏状态变量 (需要在重置时初始化的变量) ---
+// --- 5. 游戏状态变量 ---
 let player, enemy, coins, collectedCoins, coinSpawnTimer;
 let isChasePhase, isGameOver, isVictory, isGameRunning;
-let startTime, currentTime;
+let startTime;
 let isWhiteout, whiteoutTimer, whiteoutDuration, whiteoutCooldownTimer, nextWhiteoutTime;
 let isDashWindowActive, dashWindowTimer, isDashOnCooldown, dashCooldownTimer;
 let lastDashKeyPressTime, dashMashCounter;
 let isPlayerInDanger;
 let keys = { w: false, a: false, s: false, d: false };
-let lastInputVector = { x: 0, y: 0 };
-let animationFrameId; // 用于控制游戏循环
+let animationFrameId;
 
-// --- 4. 初始化与游戏流程控制 ---
-
-// 绑定按钮事件
+// --- 6. 初始化与游戏流程控制 ---
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
 homeBtn.addEventListener('click', returnToTitle);
 
 function initGameVars() {
-    // 重置所有游戏逻辑变量
     player = {
         x: canvas.width / 2, y: canvas.height / 2,
         radius: 15, color: 'cyan',
@@ -65,20 +183,15 @@ function initGameVars() {
     dashMashCounter = 0;
     isPlayerInDanger = false;
     keys = { w: false, a: false, s: false, d: false };
-    lastInputVector = { x: 0, y: 0 };
     
-    startTime = Date.now(); // 重置时间
+    startTime = Date.now();
 }
 
 function startGame() {
     initGameVars();
     isGameRunning = true;
-    
-    // UI 切换
     titleScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
-    
-    // 启动循环
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
     gameLoop();
 }
@@ -86,13 +199,9 @@ function startGame() {
 function returnToTitle() {
     isGameRunning = false;
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    
-    // 清空画布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // UI 切换
     gameOverScreen.classList.add('hidden');
     titleScreen.classList.remove('hidden');
 }
@@ -101,16 +210,21 @@ function showGameOver(victory) {
     isGameRunning = false;
     isVictory = victory;
     
-    endTitle.textContent = victory ? '胜利！' : '游戏结束';
+    const t = translations[currentLang]; // 获取当前语言文本
+
+    endTitle.textContent = victory ? t.victory : t.gameOver;
     endTitle.style.color = victory ? 'gold' : 'red';
-    endReason.textContent = victory 
-        ? `恭喜！你收集了所有 ${COINS_TO_WIN} 枚金币！` 
-        : `很遗憾，被敌人抓住了。收集金币: ${collectedCoins}`;
+    
+    if (victory) {
+        endReason.textContent = t.winReason;
+    } else {
+        endReason.textContent = `${t.loseReason} ${t.coinsCollected}: ${collectedCoins}`;
+    }
         
     gameOverScreen.classList.remove('hidden');
 }
 
-// --- 5. 输入处理 ---
+// --- 7. 输入处理 ---
 window.addEventListener('keydown', (e) => {
     if (!isGameRunning) return;
     const keyCode = e.code;
@@ -143,15 +257,10 @@ canvas.addEventListener('mousedown', (e) => {
     }
 });
 
-// --- 6. 游戏循环 ---
+// --- 8. 游戏循环 ---
 function gameLoop() {
     if (!isGameRunning) return;
-
-    if (isGameOver || isVictory) {
-        showGameOver(isVictory);
-        return; 
-    }
-
+    if (isGameOver || isVictory) { showGameOver(isVictory); return; }
     update();
     draw();
     animationFrameId = requestAnimationFrame(gameLoop);
@@ -162,7 +271,6 @@ function update() {
     const elapsedTime = (Date.now() - startTime) / 1000;
     let currentSpeed = player.speed;
 
-    // 冲刺逻辑
     if (isDashWindowActive) {
         dashWindowTimer += deltaTime;
         if (elapsedTime - lastDashKeyPressTime < MASH_THRESHOLD) {
@@ -181,7 +289,6 @@ function update() {
         }
     }
 
-    // 玩家移动
     const inputVector = { x: (keys.d ? 1 : 0) - (keys.a ? 1 : 0), y: (keys.s ? 1 : 0) - (keys.w ? 1 : 0) };
     if (inputVector.x !== 0 || inputVector.y !== 0) {
         const magnitude = Math.sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y);
@@ -191,12 +298,9 @@ function update() {
     player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
     player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
 
-    // 敌人生成
-    const COIN_SPAWN_START_TIME = Math.random() * 2 + 3; // 移到这里或作为常量
     if (!isChasePhase && elapsedTime > SAFE_TIME) { isChasePhase = true; spawnEnemy(elapsedTime); }
 
-    // 金币逻辑
-    if (elapsedTime > 3) { // 简化判断，3秒后开始生成
+    if (elapsedTime > 3) {
         coinSpawnTimer += deltaTime;
         if (coinSpawnTimer >= COIN_SPAWN_INTERVAL) {
             if (coins.length < MAX_COINS_ON_SCREEN) { spawnCoin(elapsedTime); }
@@ -216,7 +320,6 @@ function update() {
         }
     }
 
-    // 敌人逻辑
     if (isChasePhase && enemy) {
         const dx = player.x - enemy.x;
         const dy = player.y - enemy.y;
@@ -227,7 +330,6 @@ function update() {
             whiteoutTimer += deltaTime;
             if (whiteoutTimer > whiteoutDuration) {
                 isWhiteout = false;
-                // 瞬移逻辑
                 const teleportAngle = Math.random() * Math.PI * 2;
                 let minDistance = 50;
                 if (inputVector.x !== 0 || inputVector.y !== 0) {
@@ -292,17 +394,15 @@ function update() {
                 enemy.y += moveY;
             }
         }
-
         const finalDistance = Math.sqrt(Math.pow(player.x - enemy.x, 2) + Math.pow(player.y - enemy.y, 2));
-        if (!isWhiteout && finalDistance < player.radius + enemy.radius) {
-            isGameOver = true;
-        }
+        if (!isWhiteout && finalDistance < player.radius + enemy.radius) { isGameOver = true; }
     }
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+    const t = translations[currentLang]; // 获取当前语言配置
+
     // 背景
     if (isWhiteout) { ctx.fillStyle = 'white'; ctx.fillRect(0, 0, canvas.width, canvas.height); } 
     else { ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
@@ -316,7 +416,7 @@ function draw() {
         ctx.font = 'bold 20px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('危', player.x, player.y);
+        ctx.fillText(t.danger, player.x, player.y); // 使用翻译文本
     }
     
     // 敌人
@@ -327,7 +427,7 @@ function draw() {
     // 金币
     coins.forEach(coin => { drawSquare(coin.x, coin.y, coin.size, coin.color); });
     
-    // UI 信息
+    // UI 信息 (全部使用翻译文本)
     const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
     const uiColor = isWhiteout ? 'black' : 'white';
     ctx.fillStyle = uiColor;
@@ -335,30 +435,30 @@ function draw() {
     ctx.textBaseline = 'bottom'; 
     
     ctx.textAlign = 'left';
-    ctx.fillText(`Time: ${elapsedTime}`, 10, 30);
+    ctx.fillText(`${t.time}: ${elapsedTime}`, 10, 30);
     
     ctx.textAlign = 'right';
-    ctx.fillText(`Coins: ${collectedCoins} / ${COINS_TO_WIN}`, canvas.width - 10, 30);
+    ctx.fillText(`${t.coins}: ${collectedCoins} / ${COINS_TO_WIN}`, canvas.width - 10, 30);
     
     ctx.textAlign = 'center';
     let dashText = '';
     if (isDashOnCooldown) {
         const remainingCooldown = Math.max(0, DASH_COOLDOWN - dashCooldownTimer).toFixed(1);
         ctx.fillStyle = 'red';
-        dashText = `冲刺冷却: ${remainingCooldown}s`;
+        dashText = `${t.dashCool}: ${remainingCooldown}s`;
     } else {
         ctx.fillStyle = 'lime';
-        dashText = '冲刺准备就绪 [鼠标左键]';
+        dashText = t.dashReady;
     }
     if (isDashWindowActive) {
         ctx.fillStyle = 'yellow';
         const remainingWindow = Math.max(0, DASH_WINDOW_DURATION - dashWindowTimer).toFixed(1);
-        dashText = `冲刺中! 连按! ${remainingWindow}s`;
+        dashText = `${t.dashActive} ${remainingWindow}s`;
     }
     ctx.fillText(dashText, canvas.width / 2, 30);
 }
 
-// --- 7. 辅助函数 ---
+// --- 9. 辅助函数 ---
 function drawSquare(x, y, size, color) { ctx.fillStyle = color; ctx.fillRect(x - size / 2, y - size / 2, size, size); }
 function drawCircle(x, y, radius, color) { ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); ctx.closePath(); }
 function endDashAndStun(enemyRef) { if (!enemyRef) return; enemyRef.isDashing = false; enemyRef.speed = enemyRef.normalSpeed; enemyRef.isStunned = true; enemyRef.stunTimer = 0; }
