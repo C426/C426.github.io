@@ -3,170 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Demo</title>
+    <title>C426のPortfolio</title>
     <style>
-        body {
+        /* --- 1. 全局与基础设定 --- */
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #ffffff;
+            --accent-color: #00ffd5; /* 霓虹青色 */
+            --hover-color: rgba(0, 255, 213, 0.1);
+        }
+
+        * {
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #282828;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            user-select: none; /* 防止双击选中文本 */
-        }
-        
-        #game-container {
-            position: relative;
-            width: 800px;
-            height: 600px;
         }
 
-        canvas {
-            border: 2px solid #fff;
-            background-color: #000;
-            display: block;
-        }
-
-        /* UI 覆盖层通用样式 */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
-            z-index: 10;
         }
 
-        .hidden {
-            display: none !important;
+        /* 背景装饰圆 (营造氛围) */
+        .bg-circle {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0,255,213,0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            z-index: -1;
+            animation: float 10s infinite ease-in-out;
+        }
+        .bg-circle-2 {
+            top: auto;
+            bottom: -150px;
+            left: auto;
+            right: -150px;
+            background: radial-gradient(circle, rgba(157, 0, 255, 0.15) 0%, rgba(0,0,0,0) 70%);
+            animation: float 12s infinite ease-in-out reverse;
         }
 
-        h1 { font-size: 48px; margin-bottom: 20px; color: cyan; text-shadow: 0 0 10px cyan; }
-        h2 { font-size: 36px; margin-bottom: 20px; }
-        p { font-size: 18px; color: #ccc; margin-bottom: 40px; }
+        /* --- 2. 头部介绍 (Hero Section) --- */
+        header {
+            text-align: center;
+            padding: 100px 20px 60px;
+            opacity: 0;
+            animation: fadeUp 1s ease-out forwards;
+        }
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        h1 span {
+            color: var(--accent-color);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* --- 3. 作品展示卡片区 --- */
+        .projects-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 40px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px); /* 毛玻璃效果 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            width: 350px;
+            padding: 30px;
             cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: 0.3s;
-            margin: 10px;
-            min-width: 200px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 丝滑的贝塞尔曲线 */
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.3s forwards; /* 延迟出现 */
+            position: relative;
+            overflow: hidden;
         }
 
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
+        /* 鼠标悬停时的丝滑特效 */
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: var(--hover-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 30px rgba(0, 255, 213, 0.2);
         }
 
-        button.secondary {
-            background-color: #555;
-        }
-        button.secondary:hover {
-            background-color: #777;
+        .project-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
         }
 
-        /* --- 语言选择器样式 --- */
-        #lang-container {
+        .project-card p {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+        }
+
+        .arrow-icon {
             position: absolute;
+            right: 20px;
             bottom: 20px;
-            left: 20px;
-            z-index: 20; /* 确保在最上层 */
-            font-family: sans-serif;
+            font-size: 24px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+            color: var(--accent-color);
         }
 
-        #lang-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            font-size: 16px;
-            min-width: auto;
-            margin: 0;
+        .project-card:hover .arrow-icon {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- 4. 动画定义 --- */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(20px); }
+        }
+
+        /* --- 5. 联系/底部 --- */
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            color: #666;
+            font-size: 0.9rem;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+            opacity: 0;
+            align-self: stretch; /* 拉伸到父容器宽度，覆盖 body 的 align-items:center */
+            text-align: left; /* 内容左对齐 */
+        }
+
+        a { color: #666; text-decoration: none; transition: 0.3s; }
+        a:hover { color: var(--accent-color); }
+
+        /* --- 可调整的底部图片变量 ---
+           说明：
+           - 修改 --bottom-img-src 为图片路径（相对 index.html），图片建议放在 images/ 或 assets/ 目录。
+           - 修改 --bottom-img-width 控制图片显示宽度（支持 px, %, vw 等）。
+           - 修改 --bottom-img-bottom 控制距离视口底部的间距。
+           - 修改 --bottom-img-opacity 控制透明度（0 - 1）。
+        */
+        :root {
+            --bottom-img-src: "images/XXCAT.png"; /* <- 把这里改成你的图片文件名 */
+            --bottom-img-width: 420px;
+            --bottom-img-bottom: 12px;
+            --bottom-img-opacity: 1;
+            --bottom-img-z: 5; /* 层级，可根据需要调大 */
+        }
+
+        /* 底部图片容器（固定在视口底部中心） */
+        #bottom-image-wrapper {
+            position: fixed;
+            left: 50%;
+            bottom: var(--bottom-img-bottom);
+            transform: translateX(-50%);
+            z-index: var(--bottom-img-z);
+            pointer-events: none; /* 防止遮挡页面交互，如需点击移除此项 */
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-        
-        #lang-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: none;
+            justify-content: center;
         }
 
-        #lang-menu {
-            position: absolute;
-            bottom: 100%; /* 在按钮上方显示 */
-            left: 0;
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-            width: 150px;
-            margin-bottom: 5px;
-            display: none; /* 默认隐藏 */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        #lang-menu.show {
+        /* 图片本体：通过变量控制宽度与透明度 */
+        #bottom-image {
+            width: var(--bottom-img-width);
+            height: auto;
+            opacity: var(--bottom-img-opacity);
             display: block;
+            -webkit-user-drag: none;
+            user-select: none;
         }
 
-        .lang-option {
-            padding: 10px 15px;
-            color: white;
-            cursor: pointer;
-            border-bottom: 1px solid #444;
-            font-size: 14px;
-        }
-
-        .lang-option:last-child {
-            border-bottom: none;
-        }
-
-        .lang-option:hover {
-            background-color: #444;
-        }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        <div id="title-screen" class="overlay">
-            <h1 id="ui-title">躲避与收集</h1>
-            <p id="ui-instructions">WASD 移动 | 鼠标左键 冲刺</p>
-            <button id="start-btn">开始游戏</button>
-            
-            <div id="lang-container">
-                <button id="lang-btn">🌐 Language</button>
-                <div id="lang-menu">
-                    <div class="lang-option" data-lang="zh">✓ 中文</div>
-                    <div class="lang-option" data-lang="ja">　日本語</div>
-                    <div class="lang-option" data-lang="en">　English</div>
-                </div>
+    <div class="bg-circle"></div>
+    <div class="bg-circle bg-circle-2"></div>
+
+    <header>
+        <h1>こんにちは<span>C426</span>です</h1>
+        <p class="subtitle">
+            ここは私の遊び場です。<br>
+            面白いものを作ったらここに展示します。
+        </p>
+    </header>
+
+    <section class="projects-container">
+        
+        <div class="project-card" onclick="window.location.href='game/index.html'">
+            <h3>🕹️ 回避と収集</h3>
+            <p>
+                敵を回避してコインを収集。<br>
+                20枚集めたら勝利！
+            </p>
+            <div class="tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">Canvas</span>
+                <span class="tag">Game Dev</span>
+            </div>
+            <div class="arrow-icon">➜</div>
+        </div>
+
+        <div class="project-card">
+            <h3>🚧 工事中...</h3>
+            <p>
+                ここはまだ準備中です。<br>
+                お楽しみに！
+            </p>
+            <div class="tags">
+                <span class="tag">Coming Soon</span>
             </div>
         </div>
 
-        <div id="game-over-screen" class="overlay hidden">
-            <h2 id="end-title">游戏结束</h2>
-            <p id="end-reason">...</p>
-            <div>
-                <button id="restart-btn">重新开始游戏</button>
-                <button id="home-btn" class="secondary">返回主界面</button>
-            </div>
-        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Powered by GitHub Pages | <a href="https://github.com/C426">Github Profile</a></p>
+    </footer>
+
+    <!-- 底部透明 PNG 图片（可替换图片路径）
+         调整方法：
+         1) 将图片放到仓库的 images/ 或 assets/ 目录。
+         2) 修改上方 CSS :root 中的 --bottom-img-src 为相对路径，例如 "images/my-footer.png"。
+         3) 通过 --bottom-img-width、--bottom-img-bottom、--bottom-img-opacity 调整大小、底部间距与透明度。
+    -->
+    <div id="bottom-image-wrapper">
+        <img id="bottom-image" src="images/XXCAT.png" alt="底部装饰图" />
     </div>
 
-    <script src="game.js"></script>
 </body>
 </html>
