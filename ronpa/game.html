@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Court: Logic Battle V17 (Final)</title>
+    <title>論破 BATTLE</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -40,6 +40,14 @@
             backdrop-filter: blur(10px);
             border-radius: 4px;
         }
+        /* 全局返回主页按钮（页面左上角，视口外层） */
+        #global-back-btn {
+            position: fixed; left: 12px; top: 12px; z-index: 2000;
+            background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(0,255,213,0.12);
+            padding: 8px 12px; border-radius: 6px; text-decoration: none; font-weight: 800;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+        }
+        #global-back-btn:hover { transform: translateY(-2px); background: rgba(0,255,213,0.04); }
         .screen.active { display: flex; animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
         @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
@@ -272,6 +280,7 @@
     <script type="importmap">{ "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }</script>
 </head>
 <body>
+    <a id="global-back-btn" href="../index.html" title="返回主页面">◀ホームページ</a>
 
     <div id="tooltip" class="evidence-tooltip"></div>
 
@@ -286,7 +295,7 @@
     </div>
 
     <div id="start-screen" class="screen active">
-        <h1>LOGIC / BREAK</h1>
+        <h1>論破 BATTLE</h1>
         <p style="color:#aaa; letter-spacing: 4px; margin-bottom: 40px; font-weight: bold;">TRUTH IS HIDDEN IN THE DATA</p>
         <div style="display:flex; gap:20px;">
             <button class="big-btn" onclick="setLanguage('zh')">中文版</button>
