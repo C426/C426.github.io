@@ -207,10 +207,11 @@
             bottom: var(--bottom-img-bottom);
             transform: translateX(-50%);
             z-index: var(--bottom-img-z);
-            pointer-events: none; /* 防止遮挡页面交互，如需点击移除此项 */
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: auto; /* 允许点击以实现交互 */
+            cursor: pointer;
         }
 
         /* 图片本体：自适应窗口，避免遮挡页面内容
@@ -231,7 +232,51 @@
             -webkit-user-drag: none;
             user-select: none;
             object-fit: contain;
-            pointer-events: none; /* 保持不可交互，防止遮挡点击 */
+            pointer-events: auto; /* 允许点击用于彩蛋交互 */
+            transform-origin: center center;
+            transition: transform 600ms cubic-bezier(0.2, 0.9, 0.2, 1);
+        }
+
+        /* 抖动动画 */
+        @keyframes clickShake {
+            0% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(-6px) scale(1.05); }
+            50% { transform: translateX(6px) scale(1.02); }
+            80% { transform: translateX(-4px) scale(1.03); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        .click-shake {
+            animation: clickShake 300ms ease;
+            transform-origin: center center;
+        }
+        /* 激活期间放大到约 2 倍，平滑过渡，位置不变 */
+        .egg-scale {
+            transform: scale(2);
+            transition: transform 600ms cubic-bezier(0.2, 0.9, 0.2, 1);
+        }
+
+        /* emoji 雨容器与单个表情样式 */
+        #emoji-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0; /* 不影响布局 */
+            pointer-events: none;
+            overflow: visible;
+            z-index: 9999;
+        }
+        .emoji-item {
+            position: fixed;
+            font-size: 28px;
+            will-change: transform, opacity;
+            user-select: none;
+            animation-name: fallAndRotate;
+            animation-timing-function: linear;
+        }
+        @keyframes fallAndRotate {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.95; }
         }
 
         /* 小屏与窄高屏幕的额外收缩，进一步降低遮挡风险 */
@@ -327,6 +372,185 @@
     <div id="bottom-image-wrapper">
         <img id="bottom-image" src="images/XXCAT.png" alt="底部装饰图" />
     </div>
+
+    <!-- emoji 容器（运行时由 JS 填充） -->
+    <div id="emoji-container" aria-hidden="true"></div>
+
+    <script>
+        (function(){
+            const img = document.getElementById('bottom-image');
+            const wrapper = document.getElementById('bottom-image-wrapper');
+            const emojiContainer = document.getElementById('emoji-container');
+            let clicks = 0;
+            let activated = false;
+
+            const EMOJIS = ['🎉','😺','🌟','💥','✨','🍣','🎈','🌈','🔥','🎵'];
+
+            // 如果仓库根目录有 audio/17.mp3，会在激活时播放（循环），按需求停止
+            const eggAudio = new Audio('audio/17.mp3');
+            eggAudio.loop = true;
+            eggAudio.preload = 'auto';
+            eggAudio.volume = 0.8;
+
+            function playToneSequence() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = ctx.currentTime;
+                    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+                    freqs.forEach((f, i) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = f;
+                        g.gain.value = 0.06;
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.start(now + i * 0.15);
+                        o.stop(now + i * 0.15 + 0.18);
+                    });
+                } catch (e) {
+                    console.warn('AudioContext unavailable', e);
+                }
+            }
+
+            function spawnEmoji() {
+                const el = document.createElement('div');
+                el.className = 'emoji-item';
+                el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+                const left = Math.random() * 100; // vw
+                const size = 18 + Math.random() * 36; // px
+                el.style.left = left + 'vw';
+                el.style.fontSize = size + 'px';
+                const dur = 3.5 + Math.random() * 3.5; // seconds
+                el.style.animationDuration = dur + 's';
+                el.style.opacity = '0.95';
+                emojiContainer.appendChild(el);
+                el.addEventListener('animationend', () => el.remove());
+            }
+
+            function startEmojiRain(durationSec = 8) {
+                const interval = setInterval(spawnEmoji, 120);
+                spawnEmoji();
+                setTimeout(() => clearInterval(interval), durationSec * 1000);
+            }
+
+            function activateEasterEgg(durationSec = 17) {
+                if (activated) return;
+                activated = true;
+                // save previous styles
+                const root = document.documentElement;
+                const rootStyle = getComputedStyle(root);
+                const prevVarBg = rootStyle.getPropertyValue('--bg-color') || '';
+                const prevVarText = rootStyle.getPropertyValue('--text-color') || '';
+                const prevBodyBg = document.body.style.backgroundColor || '';
+                const prevBodyColor = document.body.style.color || '';
+
+                // 音乐：优先播放根目录 audio/17.mp3（若可用），否则保留简短合成音序作为后备
+                let audioPlayed = false;
+                try {
+                    eggAudio.currentTime = 0;
+                    const p = eggAudio.play();
+                    if (p && p.catch) p.catch(() => { /* autoplay 被阻止时忽略 */ });
+                    audioPlayed = true;
+                } catch (e) {
+                    console.warn('Failed to play egg audio', e);
+                }
+                let audioInterval = null;
+                if (!audioPlayed) {
+                    // 后备使用合成音序循环
+                    playToneSequence();
+                    audioInterval = setInterval(playToneSequence, 1200);
+                }
+
+                    // 放大图片（位置不变），平滑过渡
+                    try { img.classList.add('egg-scale'); } catch (e) { /* ignore */ }
+
+                // 切换为白色主题
+                document.body.style.transition = 'background-color 0.6s ease, color 0.6s ease';
+                document.body.style.backgroundColor = '#ffffff';
+                document.body.style.color = '#111111';
+                root.style.setProperty('--bg-color', '#ffffff');
+                root.style.setProperty('--text-color', '#111111');
+
+                // emoji 雨（持续 durationSec 秒）
+                startEmojiRain(durationSec);
+
+                // 17 秒后恢复
+                setTimeout(() => {
+                    if (audioInterval) clearInterval(audioInterval);
+                    try { if (audioPlayed) { eggAudio.pause(); eggAudio.currentTime = 0; } } catch (e) { /* ignore */ }
+                    // 恢复图片大小
+                    try { img.classList.remove('egg-scale'); } catch (e) { /* ignore */ }
+                    // restore
+                    if (prevVarBg) root.style.setProperty('--bg-color', prevVarBg);
+                    else root.style.removeProperty('--bg-color');
+                    if (prevVarText) root.style.setProperty('--text-color', prevVarText);
+                    else root.style.removeProperty('--text-color');
+                    document.body.style.backgroundColor = prevBodyBg;
+                    document.body.style.color = prevBodyColor;
+                    activated = false;
+                }, durationSec * 1000);
+            }
+
+            function flashShake() {
+                img.classList.add('click-shake');
+                setTimeout(() => img.classList.remove('click-shake'), 320);
+                // small instantaneous scale (ensure quick visual pop)
+                // handled inside keyframes
+            }
+
+            // 点击计数与时间窗口逻辑：17 秒窗口内 17 次触发；3 秒无操作清零
+            let clicksWindowStart = 0;
+            let lastClickTime = 0;
+            let resetTimer = null;
+            wrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activated) return;
+                const now = Date.now();
+
+                // 超过 3 秒无操作则清零
+                if (lastClickTime && (now - lastClickTime) > 3000) {
+                    clicks = 0;
+                    clicksWindowStart = 0;
+                }
+
+                // 如果窗口尚未开始，启动窗口
+                if (!clicksWindowStart) clicksWindowStart = now;
+
+                // 如果窗口超过 17 秒，从当前点击重新开始计时
+                if ((now - clicksWindowStart) > 17000) {
+                    clicks = 0;
+                    clicksWindowStart = now;
+                }
+
+                clicks += 1;
+                lastClickTime = now;
+
+                // 重置 3 秒计时器
+                if (resetTimer) clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => { clicks = 0; clicksWindowStart = 0; }, 3000);
+
+                flashShake();
+
+                if (clicks >= 17 && (now - clicksWindowStart) <= 17000) {
+                    // 达成 17 次连击（在 17 秒窗口内）
+                    clicks = 0;
+                    clicksWindowStart = 0;
+                    if (resetTimer) { clearTimeout(resetTimer); resetTimer = null; }
+                    activateEasterEgg(17);
+                }
+            });
+
+            // 支持键盘 Enter/Space 激活（无障碍）
+            wrapper.setAttribute('tabindex', '0');
+            wrapper.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    wrapper.click();
+                }
+            });
+        })();
+    </script>
 
 </body>
 </html>
