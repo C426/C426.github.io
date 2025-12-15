@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Court: Logic Battle V17 (Final)</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-bg: rgba(20, 20, 20, 0.95);
+            --text-color: #eee;
+            --neon-cyan: #00ffd5;   
+            --neon-pink: #ff0055;   
+            --neon-yellow: #f4d03f; 
+            --neon-blue: #2979ff;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --gray-disabled: #666;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; overflow: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+        }
+
+        .screen {
+            width: 1100px; height: 95vh;
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 0 60px rgba(0,0,0,0.8);
+            display: none; flex-direction: row; 
+            position: relative; overflow: hidden;
+            backdrop-filter: blur(10px);
+            border-radius: 4px;
+        }
+        .screen.active { display: flex; animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* 左侧主区域 */
+        .main-area {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 20px; border-right: 2px solid #333; position: relative;
+        }
+
+        /* 右侧证物栏 */
+        .sidebar {
+            width: 260px; background: rgba(0, 10, 20, 0.6);
+            padding: 15px; display: flex; flex-direction: column; gap: 15px;
+            border-left: 1px solid var(--neon-cyan);
+            box-shadow: inset 10px 0 20px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+        
+        .sidebar-title {
+            color: var(--neon-cyan); font-size: 1.1em; font-weight: 900;
+            text-transform: uppercase; text-align: center;
+            border-bottom: 2px solid var(--neon-cyan); padding-bottom: 10px;
+            letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        .sidebar-subtitle {
+            font-size: 0.8em; color: #888; text-align: center; margin-top: -10px;
+        }
+
+        #evidence-list {
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+        #evidence-list::-webkit-scrollbar { width: 4px; }
+        #evidence-list::-webkit-scrollbar-thumb { background: var(--neon-cyan); }
+
+        .evidence-item {
+            background: rgba(0, 20, 30, 0.8); border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); padding: 12px; font-size: 0.9em;
+            cursor: pointer; transition: 0.2s; position: relative;
+            animation: flashIn 0.4s ease-out; font-family: monospace;
+            border-left: 4px solid var(--neon-blue);
+            word-break: break-all;
+        }
+        @keyframes flashIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .evidence-item:hover { background: var(--neon-blue); color: #000; transform: translateX(-5px); }
+        .evidence-item:active { transform: scale(0.98); }
+
+        /* Tooltip (通用) */
+        .evidence-tooltip {
+            position: absolute; background: rgba(0, 0, 0, 0.98);
+            border: 1px solid var(--neon-blue); color: #fff; padding: 15px;
+            border-radius: 4px; font-size: 0.9em; max-width: 350px;
+            z-index: 2000; pointer-events: none; display: none;
+            box-shadow: 0 0 25px rgba(41, 121, 255, 0.5);
+            white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6;
+        }
+        .evidence-tooltip strong { display: block; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; font-size: 1.1em; letter-spacing: 1px;}
+        
+        /* 论破解释的特殊样式 */
+        .evidence-tooltip.logic-break {
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 25px rgba(244, 208, 63, 0.5);
+        }
+        .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
+        .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
+
+        /* Developer Button */
+        #dev-trigger {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(255, 0, 0, 0.2); border: 2px solid #fff;
+            color: #fff; font-size: 24px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 9999; transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #dev-trigger:hover { background: rgba(255, 0, 0, 0.8); transform: scale(1.1); }
+
+        #dev-console {
+            position: fixed; top: 0; right: 0; height: 100vh; width: 400px;
+            background: rgba(0,0,0,0.95); border-left: 2px solid #0f0;
+            padding: 20px; box-sizing: border-box;
+            display: none; flex-direction: column;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px; color: #0f0;
+            z-index: 9998; overflow-y: auto;
+        }
+        #dev-console.open { display: flex; }
+        .log-entry { margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; word-wrap: break-word; white-space: pre-wrap; }
+
+        /* Start & Config */
+        #start-screen, #config-screen { 
+            flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; gap: 20px; width: 100%; z-index: 10;
+        }
+
+        h1 { font-size: 5em; color: var(--neon-cyan); text-shadow: 0 0 20px var(--neon-cyan); margin: 0; font-style: italic; letter-spacing: -3px; line-height: 1;}
+        
+        .big-btn { 
+            padding: 15px 50px; font-size: 1.2em; 
+            background: transparent; color: var(--neon-cyan); 
+            border: 2px solid var(--neon-cyan); 
+            cursor: pointer; font-weight: 900; transition: 0.2s; 
+            text-transform: uppercase; letter-spacing: 2px;
+            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+        }
+        .big-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 30px var(--neon-cyan); }
+        
+        .cyber-input { padding: 15px; width: 400px; background: rgba(0,0,0,0.5); border: 1px solid #555; color: #fff; outline: none; text-align: center; font-size: 1.1em; }
+        .cyber-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 255, 213, 0.3); }
+
+        /* Status Bar */
+        #status-bar { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .hp-box { width: 45%; }
+        .role-info { display: flex; align-items: center; font-size: 1.4em; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .role-emoji { font-size: 1.5em; margin: 0 10px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+        
+        .hp-bar-bg { width: 100%; height: 12px; background: #222; overflow: hidden; border: 1px solid #555; transform: skewX(-20deg); }
+        .hp-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #enemy-hp-bar { background: linear-gradient(90deg, var(--neon-pink), #ff8a80); box-shadow: 0 0 10px var(--neon-pink); }
+        #hero-hp-bar { background: linear-gradient(90deg, var(--neon-cyan), #80d8ff); float: right; box-shadow: 0 0 10px var(--neon-cyan); }
+
+        /* Chat Log */
+        #chat-log { 
+            flex-grow: 1; overflow-y: auto; padding-right: 10px; 
+            display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;
+        }
+        #chat-log::-webkit-scrollbar { width: 6px; }
+        #chat-log::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        .narrative-box {
+            background: rgba(0, 20, 40, 0.4); border-left: 4px solid var(--neon-blue);
+            padding: 20px; color: #ccc; font-size: 1em; line-height: 1.7;
+            margin: 10px 0; font-family: monospace;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        .narrative-label { 
+            color: var(--neon-blue); font-weight: bold; font-size: 0.8em; 
+            display: block; margin-bottom: 8px; letter-spacing: 2px;
+            border-bottom: 1px solid rgba(41, 121, 255, 0.3); padding-bottom: 5px;
+        }
+
+        .bubble-row { display: flex; gap: 20px; max-width: 95%; margin-bottom: 10px; animation: popIn 0.3s; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .bubble-avatar { font-size: 2.5em; line-height: 1; min-width: 50px; text-align: center; }
+        .chat-bubble { 
+            padding: 18px 25px; line-height: 1.6; color: #fff; position: relative; font-size: 1.05em;
+            background: #1a1a1a; border: 1px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .bubble-row.enemy { align-self: flex-start; }
+        .bubble-row.enemy .chat-bubble { 
+            border-top: 3px solid var(--neon-pink); border-radius: 0 20px 20px 20px; 
+            background: linear-gradient(135deg, #1a050a 0%, #111 100%);
+        }
+        
+        .bubble-row.hero { align-self: flex-end; flex-direction: row-reverse; }
+        .bubble-row.hero .chat-bubble { 
+            border-top: 3px solid var(--neon-cyan); border-radius: 20px 0 20px 20px; text-align: right; 
+            background: linear-gradient(-135deg, #051a1a 0%, #111 100%); color: #ccfffa;
+        }
+
+        /* 破绽 (Statement) */
+        .highlight-statement {
+            background: linear-gradient(180deg, #ffffff 0%, var(--neon-yellow) 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            font-weight: 900; text-shadow: 0 0 10px rgba(244, 208, 63, 0.4);
+            font-size: 1.15em; border-bottom: 2px dashed rgba(244, 208, 63, 0.5); padding-bottom: 2px;
+            transition: all 0.5s ease; cursor: help;
+        }
+        .highlight-statement.resolved {
+            background: none; -webkit-background-clip: initial; color: var(--gray-disabled);
+            text-shadow: none; border-bottom: none; text-decoration: line-through;
+            font-weight: normal; font-size: 1em; cursor: help;
+        }
+
+        /* 证据 (Evidence) */
+        .highlight-evidence {
+            color: var(--neon-blue); font-weight: bold; cursor: pointer;
+            border: 1px solid var(--neon-blue); padding: 2px 6px; border-radius: 4px;
+            background: rgba(41, 121, 255, 0.1); transition: 0.3s;
+            display: inline-block; margin: 0 2px;
+        }
+        .highlight-evidence:hover { background: var(--neon-blue); color: #fff; box-shadow: 0 0 15px var(--neon-blue); transform: translateY(-2px); }
+        .highlight-evidence::after { content: ' ✚'; font-size: 0.8em; opacity: 0.7; }
+        
+        .highlight-evidence.used {
+            color: var(--gray-disabled); border-color: var(--gray-disabled);
+            background: transparent; text-decoration: line-through;
+            cursor: not-allowed; pointer-events: none;
+        }
+        .highlight-evidence.used:hover { transform: none; box-shadow: none; background: transparent; color: var(--gray-disabled); }
+        .highlight-evidence.used::after { content: ' ✔'; opacity: 0.5; }
+
+        #input-area { display: flex; gap: 15px; margin-top: 20px; }
+        #player-input { 
+            flex: 1; padding: 0 20px; height: 50px; background: rgba(0,0,0,0.5); 
+            border: 2px solid #444; color: #fff; outline: none; font-size: 1.1em; transition: 0.3s;
+        }
+        #player-input:focus { border-color: var(--neon-cyan); background: rgba(0,0,0,0.8); }
+        
+        #send-btn { 
+            background: var(--neon-cyan); border: none; padding: 0 40px; font-weight: 900; 
+            cursor: pointer; color: #000; font-size: 1.2em; font-style: italic;
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); transition: 0.3s;
+        }
+        #send-btn:hover { background: #fff; transform: scale(1.05); }
+
+        #loading-overlay { 
+            position: absolute; top:0;left:0;right:0;bottom:0; background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px); z-index:999; display:none; flex-direction: column; 
+            justify-content:center; align-items:center; 
+        }
+        .loading-text { 
+            font-size: 2.5em; color: var(--neon-cyan); font-weight: 900; letter-spacing: 5px; 
+            animation: blink 0.8s infinite alternate; text-shadow: 0 0 20px var(--neon-cyan);
+        }
+        @keyframes blink { from { opacity: 0.4; transform: scale(0.98); } to { opacity: 1; transform: scale(1.02); } }
+
+        .system-msg { text-align: center; color: #666; font-size: 0.9em; margin: 15px 0; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .fatal-warning {
+            color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);
+            font-weight: 900; font-size: 1.1em; animation: shake 0.5s infinite;
+        }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }
+    </style>
+    
+    <script type="importmap">{ "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }</script>
+</head>
+<body>
+
+    <div id="tooltip" class="evidence-tooltip"></div>
+
+    <div id="dev-trigger" onclick="promptDevMode()">!</div>
+    
+    <div id="dev-console">
+        <div style="border-bottom:1px solid #0f0; margin-bottom:10px; padding-bottom:5px;">
+            <strong>>> SYSTEM LOG <<</strong>
+            <button onclick="clearDevLog()" style="float:right; background:#000; color:#0f0; border:1px solid #0f0; cursor:pointer;">CLR</button>
+        </div>
+        <div id="dev-content"></div>
+    </div>
+
+    <div id="start-screen" class="screen active">
+        <h1>LOGIC / BREAK</h1>
+        <p style="color:#aaa; letter-spacing: 4px; margin-bottom: 40px; font-weight: bold;">TRUTH IS HIDDEN IN THE DATA</p>
+        <div style="display:flex; gap:20px;">
+            <button class="big-btn" onclick="setLanguage('zh')">中文版</button>
+            <button class="big-btn" onclick="setLanguage('ja')">日本語</button>
+            <button class="big-btn" onclick="setLanguage('en')">English</button>
+        </div>
+    </div>
+
+    <div id="config-screen" class="screen">
+        <h2 data-key="apiTitle" style="color:var(--neon-cyan); font-size: 2em; letter-spacing: 3px;">SYSTEM LINK</h2>
+        
+        <select id="provider-select" class="cyber-input" onchange="updatePlaceholder()" style="cursor: pointer;">
+            <option value="gemini">Google Gemini</option>
+            <option value="siliconflow-deepseek">SiliconFlow (DeepSeek V3)</option>
+            <option value="siliconflow-qwen">SiliconFlow (Qwen 2.5)</option>
+        </select>
+
+        <input type="password" id="api-key-input" class="cyber-input" placeholder="Enter API Key">
+        <p id="api-status" style="height:20px; font-weight:bold; letter-spacing: 1px;"></p>
+        <button class="big-btn" onclick="verifyAndStart()" data-key="connectBtn">CONNECT</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="main-area">
+            <div id="loading-overlay"><div class="loading-text">CALCULATING...</div></div>
+
+            <div id="status-bar">
+                <div class="hp-box enemy-theme" style="text-align:left;">
+                    <div class="role-info">
+                        <span class="role-emoji" id="enemy-emoji">😈</span> 
+                        <span id="enemy-name-ui">SUSPECT</span>
+                    </div>
+                    <div class="hp-bar-bg"><div id="enemy-hp-bar" class="hp-bar-fill" style="width:100%"></div></div>
+                    <div style="color:var(--neon-pink); font-size:0.8em; margin-top:5px; font-weight:bold;">MENTAL SHIELD</div>
+                </div>
+                
+                <div class="hp-box hero-theme" style="text-align:right;">
+                    <div class="role-info" style="justify-content:flex-end;">
+                        <span id="hero-name-ui">DETECTIVE</span> 
+                        <span class="role-emoji" id="hero-emoji">🧐</span>
+                    </div>
+                    <div class="hp-bar-bg"><div id="hero-hp-bar" class="hp-bar-fill" style="width:100%"></div></div>
+                    <div style="color:var(--neon-cyan); font-size:0.8em; margin-top:5px; font-weight:bold;">LOGIC DRIVE</div>
+                </div>
+            </div>
+
+            <div id="chat-log"></div>
+
+            <div id="input-area">
+                <input type="text" id="player-input" placeholder="..." autocomplete="off">
+                <button id="send-btn" data-key="actionBtn">OBJECTION!</button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-title">EVIDENCE FILE</div>
+            <div class="sidebar-subtitle">MAX: 5</div>
+            <div id="evidence-list">
+                <div style="text-align:center; color:#666; font-size:0.8em; margin-top:20px;">NO DATA</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // ================= CONFIG & PROMPTS =================
+        const i18n = {
+            zh: {
+                apiTitle: "接入神经网", connectBtn: "连接", actionBtn: "论破！",
+                hero: "调查员", enemy: "嫌疑人",
+                welcome: "正在下载案件档案... 寻找蓝色关键词作为证据...",
+                placeholder: "点击右侧证物，指出对方的矛盾...",
+                retry: "信号丢失，重连",
+                emptyEvidence: "暂无证据",
+                systemPrompt: `
+                你是一个【赛博朋克风格逻辑对战游戏GM】。
+                【语言】请务必使用中文。
+                
+                【游戏背景：最终审判 Final Judgment】
+                - 场景：法庭最终对决。嫌疑人已在被告席。
+                - 任务：玩家必须用确凿的证据，当庭击溃嫌疑人的谎言。
+                - **通俗逻辑**：破绽必须是普通人一眼能看懂的逻辑矛盾（如：时间先后、地点、物理状态），严禁晦涩设定。
+
+                【机制：旁白与证据详情】
+                1. **强制旁白 (Full Dossier)**：在开局 Prologue 中，你必须输出一份完整的【案件档案】。
+                   - 包含：受害者、嫌疑人、两人的人际关系（合伙人/仇敌/情侣等）、案发时间、地点、死因、现场状况等所有公开情报。
+                   - 必须让玩家一眼看懂前因后果。
+                2. **证据格式**：**{{证据名|详细描述内容}}**。
+                   - 描述必须包含用于推理的关键细节。
+                3. **开局爆发**：Prologue 必须一次性生成 **2-3 个** 不同的 {{证据}}。
+                4. **伏笔回收**：检查 [Player Inventory]。优先生成一个谎言，使其能被玩家**已有的旧证据**（或本轮新证据）击破。
+                5. **紧急补给 (EMERGENCY REFILL)**：如果玩家库存 [Inventory] < 2，无论剧情如何，必须在旁白中生成新的 {{证据}}。
+
+                【机制：真假破绽与锁血】
+                - **真破绽**：Boss证词中**只有 1 个**是真正的破绽，能被当前可用证据击破。
+                - **虚假破绽 (Red Herring)**：Boss证词中必须包含 **1-2 个 [[虚假破绽]]**（看起来可疑但其实没问题）。
+                - **格式约束**：所有 [[破绽]] 必须包裹**口语台词**中的具体词汇。
+                - **锁血**：普通破绽只能将HP降至10%。10%时刷新【致命破绽】，击破它才能归零。
+
+                【判定逻辑】
+                1. **STRICT (精准识破)**：正确证据 + 指出【真破绽】。Boss受损 10-20%。**移除证物，破绽变灰**。
+                   - **重要**：返回 "logic_explanation" 字段，简要说明为什么这个证据推翻了这个破绽（20字以内）。
+                2. **FUZZY (模糊识破)**：正确证据但描述模糊。Boss受损 1%。
+                3. **QUERY (单纯询问)**：无证物，仅提问。玩家扣血 5%。Boss补充细节。
+                4. **MISS (失败)**：错误逻辑 / 攻击了【虚假破绽】 / 攻击了已变灰破绽。玩家扣血 10%。
+
+                【JSON输出】
+                {
+                    "attack_type": "strict" | "fuzzy" | "query" | "miss" | "prologue",
+                    "hero_dmg_taken": int (Miss=10, Query=5, Strict=-10),
+                    "enemy_dmg_taken": int,
+                    "narrative": "string (详细的案件档案/局势更新，含 {{证据|详情}})",
+                    "enemy_dialogue": "string (含 1个真[[破绽]] 和 1-2个虚假[[破绽]])",
+                    "suspect_name": "string",
+                    "removed_evidence": "string (仅限strict, 只返回名称)",
+                    "resolved_statement": "string (仅限strict, 被识破的原文)",
+                    "logic_explanation": "string (仅限strict, 论破成功的理由)",
+                    "enemy_surrendered": boolean,
+                    "enemy_emoji": "string",
+                    "identity_enemy_emoji": "string",
+                    "identity_hero_emoji": "string"
+                }
+                `
+            },
+            ja: {
+                apiTitle: "システム接続", connectBtn: "接続", actionBtn: "論破！",
+                hero: "捜査官", enemy: "容疑者",
+                welcome: "事件ファイルをロード中... 青いキーワードをクリックして証拠品へ...",
+                placeholder: "証拠品を使ってムジュンを指摘せよ...",
+                retry: "再試行",
+                emptyEvidence: "証拠品なし",
+                systemPrompt: `
+                あなたは【サイバーパンク論理バトルGM】です。
+                【言語】日本語を使用してください。
+                
+                【背景：最終審判】
+                - 舞台は最終法廷。常識的な論理ムジュンを使用。
+
+                【仕組み：証拠と人間関係】
+                1. **完全なファイル**: Prologueでは、被害者、容疑者、**二人の人間関係**、犯行現場の全貌を詳述してください。
+                2. **証拠形式**: **{{証拠名|詳細な説明文}}**。
+                3. **開幕**: Prologueでは **2-3個** の異なる証拠を一気に生成。
+                4. **緊急補充**: [Player Inventory] < 2 の場合、必ず新規証拠を生成。
+
+                【仕組み：真偽とロック】
+                - **真の綻び**: 論破可能な綻びは1つだけ。
+                - **偽の綻び**: **1-2個** の [[偽の綻び]] を混ぜる。
+                - **HPロック**: 10%でロック。致命的な綻びで0に。
+
+                【判定】
+                1. **STRICT**: 正解。Bossダメージ。証拠消費、ムジュン解決（灰色化）。
+                   - **重要**: "logic_explanation" フィールドに論破の理由を記述。
+                2. **FUZZY**: 曖昧。Boss微小ダメージ。
+                3. **QUERY**: 証拠不使用。プレイヤー5%ダメージ。
+                4. **MISS**: 不正解。プレイヤー10%ダメージ。
+
+                【JSON出力】
+                {
+                    "attack_type": "strict" | "fuzzy" | "query" | "miss" | "prologue",
+                    "hero_dmg_taken": int,
+                    "enemy_dmg_taken": int,
+                    "narrative": "string (詳細な事件ファイル/戦況)",
+                    "enemy_dialogue": "string (含 1真[[綻び]] + 1-2偽[[綻び]])",
+                    "suspect_name": "string",
+                    "removed_evidence": "string (名前のみ)",
+                    "resolved_statement": "string",
+                    "logic_explanation": "string (STRICT時のみ)",
+                    "enemy_surrendered": boolean,
+                    "enemy_emoji": "string",
+                    "identity_enemy_emoji": "string",
+                    "identity_hero_emoji": "string"
+                }
+                `
+            },
+            en: {
+                apiTitle: "SYSTEM LINK", connectBtn: "CONNECT", actionBtn: "OBJECTION!",
+                hero: "Detective", enemy: "Suspect",
+                welcome: "Loading Case File... Click Blue words to collect Evidence...",
+                placeholder: "Use evidence to point out contradictions...",
+                retry: "Retry",
+                emptyEvidence: "NO DATA",
+                systemPrompt: `
+                You are a 【Cyberpunk Logic Battle GM】.
+                【Language】English only.
+                
+                【Setting: Final Judgment】
+                - Scene: Final Courtroom. Common sense logic contradictions only.
+
+                【Mechanic: Narrative & Full Context】
+                1. **Full Dossier**: In Prologue, you MUST detail the Victim, Suspect, their **Relationship**, and Crime Scene fully.
+                2. **Evidence Format**: **{{Name|Detailed Description}}**.
+                3. **Evidence Refill**: If [Player Inventory] < 2, generate new evidence immediately.
+
+                【Mechanic: Real vs Fake】
+                - **Real Weak Point**: Only 1 statement is the true contradiction.
+                - **Red Herrings**: Include **1-2 [[Fake Weak Points]]**.
+                - **HP Lock**: Lock at 10%. Fatal Weak Point to kill.
+
+                【Judgment】
+                1. **STRICT**: Correct. Boss dmg. Evidence removed. Statement resolved (Gray).
+                   - **IMPORTANT**: Return "logic_explanation" explaining the logic.
+                2. **FUZZY**: Vague. Boss 1% dmg.
+                3. **QUERY**: No evidence. Player -5% HP.
+                4. **MISS**: Wrong. Player -10% HP.
+
+                【JSON Output】
+                {
+                    "attack_type": "strict" | "fuzzy" | "query" | "miss" | "prologue",
+                    "hero_dmg_taken": int (Miss=10, Query=5, Strict=-10),
+                    "enemy_dmg_taken": int,
+                    "narrative": "string (Full Dossier/Update, with {{Name|Detail}})",
+                    "enemy_dialogue": "string (with 1 real [[Statement]] + 1-2 fake [[Statement]])",
+                    "suspect_name": "string",
+                    "removed_evidence": "string (name only)",
+                    "resolved_statement": "string",
+                    "logic_explanation": "string (Strict only)",
+                    "enemy_surrendered": boolean,
+                    "enemy_emoji": "string",
+                    "identity_enemy_emoji": "string",
+                    "identity_hero_emoji": "string"
+                }
+                `
+            }
+        };
+
+        // ================= DEV MODE LOGIC =================
+        window.promptDevMode = function() {
+            const code = prompt("ENTER ACCESS CODE:", "");
+            if (code === "dev") {
+                const consoleDiv = document.getElementById('dev-console');
+                consoleDiv.classList.toggle('open');
+                logDev("INFO", "Developer Mode Toggled");
+            }
+        };
+
+        window.clearDevLog = function() {
+            document.getElementById('dev-content').innerHTML = "";
+        };
+
+        function logDev(type, content) {
+            const consoleContent = document.getElementById('dev-content');
+            if (!consoleContent) return;
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            let html = `<span class="log-label">[${type}] ${new Date().toLocaleTimeString()}</span>`;
+            if (typeof content === 'object') {
+                html += `<span class="log-json">${JSON.stringify(content, null, 2)}</span>`;
+            } else {
+                html += `<span>${content}</span>`;
+            }
+            
+            entry.innerHTML = html;
+            consoleContent.insertBefore(entry, consoleContent.firstChild);
+        }
+
+        // ================= ADAPTERS =================
+        class GeminiAdapter {
+            constructor(apiKey, systemPrompt) {
+                this.genAI = new GoogleGenerativeAI(apiKey);
+                this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: systemPrompt, generationConfig: { responseMimeType: "application/json" }});
+                this.chat = this.model.startChat({ history: [] });
+            }
+            async sendMessage(msg) { return JSON.parse((await this.chat.sendMessage(msg)).response.text()); }
+        }
+
+        class OpenAIAdapter {
+            constructor(apiKey, baseUrl, modelName, systemPrompt) {
+                this.apiKey = apiKey; this.baseUrl = baseUrl; this.modelName = modelName;
+                this.messages = [{ role: "system", content: systemPrompt }];
+            }
+            async sendMessage(message) {
+                this.messages.push({ role: "user", content: message });
+                const res = await fetch(this.baseUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${this.apiKey}` },
+                    body: JSON.stringify({ model: this.modelName, messages: this.messages, response_format: { type: "json_object" }, temperature: 1.0 })
+                });
+                if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
+                const aiContent = (await res.json()).choices[0].message.content;
+                this.messages.push({ role: "assistant", content: aiContent });
+                try { return JSON.parse(aiContent); } catch { return JSON.parse(aiContent.replace(/```json/g, '').replace(/```/g, '').trim()); }
+            }
+        }
+
+        // ================= STATE & LOGIC =================
+        let currentLang = 'zh';
+        let aiAdapter = null;
+        let gameState = { 
+            heroHp: 100, 
+            enemyHp: 100, 
+            isOver: false,
+            suspectName: null,
+            fixedHeroEmoji: null, 
+            fixedEnemyEmoji: null 
+        };
+        // 存储结构：Key=证据名, Value=证据详情
+        let evidenceMap = new Map(); 
+        let usedEvidenceSet = new Set(); // 存储已使用的证物名称（不做详情存储，详情直接拿去展示了）
+
+        window.setLanguage = (lang) => { 
+            currentLang = lang; 
+            updateTexts();
+            document.getElementById('start-screen').style.display='none'; 
+            document.getElementById('config-screen').style.display='flex'; 
+        };
+        
+        window.updatePlaceholder = () => {
+            const p = document.getElementById('provider-select').value;
+            const i = document.getElementById('api-key-input');
+            if (p === 'gemini') i.placeholder = "Google Gemini API Key";
+            else if (p.includes('siliconflow')) i.placeholder = "SiliconFlow API Key";
+            else i.placeholder = "DeepSeek Official API Key";
+        };
+
+        function updateTexts() {
+            const t = i18n[currentLang];
+            document.querySelectorAll('[data-key]').forEach(el => el.innerText = t[el.dataset.key]);
+            document.getElementById('hero-name-ui').innerText = t.hero;
+            document.getElementById('enemy-name-ui').innerText = t.enemy;
+            document.getElementById('player-input').placeholder = t.placeholder;
+        }
+
+        window.verifyAndStart = async () => {
+            const provider = document.getElementById('provider-select').value;
+            const key = document.getElementById('api-key-input').value.trim();
+            const status = document.getElementById('api-status');
+            const sysPrompt = i18n[currentLang].systemPrompt;
+            
+            if(!key) return status.innerText = "KEY REQUIRED";
+            
+            status.innerText = "CONNECTING...";
+            status.style.color = "var(--neon-yellow)";
+
+            try {
+                if (provider === 'gemini') {
+                    aiAdapter = new GeminiAdapter(key, sysPrompt);
+                } else if (provider === 'siliconflow-qwen') {
+                    aiAdapter = new OpenAIAdapter(key, "https://api.siliconflow.cn/v1/chat/completions", "Qwen/Qwen2.5-72B-Instruct", sysPrompt);
+                } else if (provider === 'siliconflow-deepseek') {
+                    aiAdapter = new OpenAIAdapter(key, "https://api.siliconflow.cn/v1/chat/completions", "deepseek-ai/DeepSeek-V3", sysPrompt);
+                }
+
+                status.innerText = "LINK ESTABLISHED";
+                status.style.color = "var(--neon-cyan)";
+                setTimeout(startPrologue, 800);
+
+            } catch(e) {
+                status.innerText = "ERROR: " + e.message;
+                status.style.color = "var(--neon-pink)";
+            }
+        };
+
+        async function startPrologue() {
+            document.getElementById('config-screen').style.display='none';
+            document.getElementById('game-screen').style.display='flex';
+            updateEvidenceUI(); 
+            
+            document.getElementById('chat-log').innerHTML = `<div class="system-msg" style="text-align:center; color:#555;">${i18n[currentLang].welcome}</div>`;
+            
+            handlePlayerAction("[SYSTEM: GENERATE_PROLOGUE]");
+        }
+
+        document.getElementById('send-btn').onclick = () => handlePlayerAction();
+        document.getElementById('player-input').onkeypress = (e) => { if(e.key==='Enter') handlePlayerAction(); };
+
+        // --- Tooltip Logic ---
+        const tooltip = document.getElementById('tooltip');
+        function showTooltip(e, text, isLogicBreak = false) {
+            if(!text) return;
+            tooltip.style.display = 'block';
+            tooltip.innerHTML = text;
+            if(isLogicBreak) tooltip.classList.add('logic-break');
+            else tooltip.classList.remove('logic-break');
+            moveTooltip(e);
+        }
+        function hideTooltip() {
+            tooltip.style.display = 'none';
+        }
+        function moveTooltip(e) {
+            const x = e.clientX + 15;
+            const y = e.clientY + 15;
+            if (y + tooltip.offsetHeight > window.innerHeight) {
+                tooltip.style.top = (e.clientY - tooltip.offsetHeight - 10) + 'px';
+            } else {
+                tooltip.style.top = y + 'px';
+            }
+            tooltip.style.left = x + 'px';
+        }
+
+        async function handlePlayerAction(hiddenCommand = null) {
+            if (gameState.isOver) return;
+
+            const inputField = document.getElementById('player-input');
+            let text = hiddenCommand || inputField.value.trim();
+            if (!text) return;
+
+            if (!hiddenCommand) {
+                appendChatBubble(text, 'hero'); 
+                inputField.value = '';
+            }
+
+            const loader = document.getElementById('loading-overlay');
+            loader.style.display = 'flex';
+
+            // 构建Inventory描述发送给AI
+            let inventoryDesc = "";
+            evidenceMap.forEach((detail, name) => {
+                inventoryDesc += `[${name}: ${detail}], `;
+            });
+
+            const isFatalPhase = gameState.enemyHp <= 10;
+
+            const turnInfo = `
+[Turn ID: ${Date.now()}]
+[Status] HeroHP:${gameState.heroHp}, EnemyHP:${gameState.enemyHp}.
+[Suspect] ${gameState.suspectName || "Unknown"}
+[Player Inventory (Count: ${evidenceMap.size})] ${inventoryDesc || "Empty"}
+[Phase] ${isFatalPhase ? "FATAL PHASE (HP=10%) - Generate Fatal Weak Point!" : "NORMAL PHASE"}
+[Input] "${text}"
+
+[SYSTEM INSTRUCTION]: 
+1. Determine Attack Type: STRICT, FUZZY, QUERY, or MISS.
+2. Calculate Damage:
+   - QUERY: Player -5% HP. Boss 0 dmg.
+   - MISS: Player -10% HP. Boss 0 dmg.
+   - STRICT: Player +10% HP. Boss Dmg 10-20% (Watch for HP Lock).
+3. **HP Lock Rule**: If current HP > 10%, damage CANNOT drop HP below 10%.
+4. **Fatal Phase**: If HP=10% and STRICT hit, reduce HP to 0 (Confession).
+5. **Solvability**: Ensure at least one active [[Statement]] contradicts an item in [Player Inventory].
+6. **Refill**: If Inventory count < 2, generate new {{Evidence}}.
+`;
+            logDev("REQUEST", turnInfo);
+
+            try {
+                const data = await aiAdapter.sendMessage(turnInfo);
+                logDev("RESPONSE", data);
+                processTurnResult(data);
+            } catch (error) {
+                console.error(error);
+                logDev("ERROR", error.message);
+                appendSystemMessage(`⚠️ SIGNAL LOST: ${error.message}`);
+            } finally {
+                loader.style.display = 'none';
+                if(!hiddenCommand) inputField.focus();
+            }
+        }
+
+        function processTurnResult(data) {
+            // 1. 身份
+            if (data.identity_enemy_emoji && !gameState.fixedEnemyEmoji) {
+                gameState.fixedEnemyEmoji = filterEmoji(data.identity_enemy_emoji);
+                document.getElementById('enemy-emoji').innerText = gameState.fixedEnemyEmoji;
+            }
+            if (data.identity_hero_emoji && !gameState.fixedHeroEmoji) {
+                gameState.fixedHeroEmoji = filterEmoji(data.identity_hero_emoji);
+                document.getElementById('hero-emoji').innerText = gameState.fixedHeroEmoji;
+            }
+            if (data.suspect_name && !gameState.suspectName) {
+                gameState.suspectName = data.suspect_name;
+                document.getElementById('enemy-name-ui').innerText = gameState.suspectName;
+            }
+
+            // 2. 血量
+            let heroDmg = data.hero_dmg_taken || 0;
+            gameState.heroHp = Math.min(100, Math.max(0, gameState.heroHp - heroDmg));
+
+            let enemyDmg = data.enemy_dmg_taken || 0;
+            let nextEnemyHp = gameState.enemyHp - enemyDmg;
+
+            if (gameState.enemyHp > 10 && nextEnemyHp < 10) {
+                nextEnemyHp = 10; 
+                appendSystemMessage("⚠️ MENTAL SHIELD CRITICAL - LOCKED AT 10%");
+            } else if (gameState.enemyHp <= 10 && nextEnemyHp < 0) {
+                if (data.attack_type === 'strict') nextEnemyHp = 0;
+                else nextEnemyHp = Math.max(1, nextEnemyHp); 
+            }
+            gameState.enemyHp = Math.max(0, nextEnemyHp);
+
+            updateStatusUI();
+            
+            // 3. 移除证物
+            let usedEvDetail = "Details not available.";
+            let usedEvName = data.removed_evidence || "Unknown Evidence";
+
+            if (data.attack_type === 'strict' && data.removed_evidence) {
+                logDev("ACTION", `Removing Evidence: ${data.removed_evidence}`);
+                
+                // 查找并获取详情，然后删除
+                let targetKey = null;
+                for (let [key, val] of evidenceMap.entries()) {
+                    if (key.includes(data.removed_evidence) || data.removed_evidence.includes(key)) {
+                        targetKey = key;
+                        usedEvDetail = val; // 获取详情
+                        break;
+                    }
+                }
+                
+                if (targetKey) {
+                    evidenceMap.delete(targetKey);
+                    usedEvidenceSet.add(targetKey);
+                    usedEvName = targetKey; // 使用更准确的本地名称
+                }
+                
+                updateEvidenceUI();
+                markEvidenceAsUsedInDOM(data.removed_evidence);
+            }
+
+            // 4. 破绽变灰 & 绑定完整逻辑解释
+            if (data.attack_type === 'strict' && data.resolved_statement) {
+                markStatementAsResolvedInDOM(
+                    data.resolved_statement, 
+                    data.logic_explanation, 
+                    usedEvName, 
+                    usedEvDetail
+                );
+            }
+
+            // 5. 渲染
+            if (data.narrative && data.narrative.trim()) {
+                appendNarrative(data.narrative);
+            }
+            if (data.enemy_dialogue && data.enemy_dialogue.trim()) {
+                const emotionEmoji = filterEmoji(data.enemy_emoji || gameState.fixedEnemyEmoji || "😈");
+                appendChatBubble(data.enemy_dialogue, 'enemy', emotionEmoji);
+            }
+
+            // 6. 判定
+            if (gameState.enemyHp <= 10 && nextEnemyHp <= 10 && gameState.enemyHp > 0) {
+                 appendSystemMessage("🔥 FATAL PHASE ACTIVE: FIND THE FINAL WEAK POINT!");
+            }
+
+            if (gameState.enemyHp <= 0 || data.enemy_surrendered) {
+                appendSystemMessage("🏆 GUILTY - CONFESSION SECURED");
+                if (gameState.fixedEnemyEmoji) document.getElementById('enemy-emoji').innerText = "😵";
+                endGame();
+            } else if (gameState.heroHp <= 0) {
+                appendSystemMessage("💀 MENTAL BREAKDOWN - CASE COLD");
+                if (gameState.fixedHeroEmoji) document.getElementById('hero-emoji').innerText = "🤯";
+                endGame();
+            }
+        }
+
+        function filterEmoji(str) {
+            if (!str) return "😐";
+            return str.replace(/[a-zA-Z0-9\u4e00-\u9fa5]/g, '').trim() || str.substring(0, 2);
+        }
+
+        // ================= UI Helpers =================
+
+        function markEvidenceAsUsedInDOM(evText) {
+            const spans = document.querySelectorAll('.highlight-evidence');
+            let count = 0;
+            spans.forEach(span => {
+                const name = span.getAttribute('data-name');
+                if (name && (name.includes(evText) || evText.includes(name))) {
+                    span.classList.add('used');
+                    span.onclick = null;
+                    span.onmousemove = null;
+                    span.onmouseleave = null;
+                    count++;
+                }
+            });
+            logDev("DOM", `Marked ${count} evidences as used for '${evText}'`);
+        }
+
+        function markStatementAsResolvedInDOM(stmtText, explanation, evName, evDetail) {
+            const spans = document.querySelectorAll('.highlight-statement');
+            let count = 0;
+            
+            // 构建丰富的 Tooltip 内容
+            const tooltipContent = `
+<strong style="color:var(--neon-yellow)">LOGIC BREAK</strong>
+${explanation || "Logic crushed successfully."}
+<hr style="border-color:#333; margin:8px 0;">
+<strong style="color:var(--neon-blue)">USED EVIDENCE</strong>
+[${evName}]
+<span style="color:#aaa; font-size:0.9em">${evDetail}</span>
+`;
+
+            spans.forEach(span => {
+                // 只要文字包含关系，就认为是同一个破绽
+                if (span.innerText.includes(stmtText) || stmtText.includes(span.innerText)) {
+                    span.classList.add('resolved');
+                    if (explanation) {
+                        span.onmousemove = (e) => showTooltip(e, tooltipContent, true);
+                        span.onmouseleave = hideTooltip;
+                    }
+                    count++;
+                }
+            });
+            logDev("DOM", `Resolved ${count} statements for '${stmtText}'`);
+        }
+
+        function appendNarrative(text) {
+            const log = document.getElementById('chat-log');
+            const div = document.createElement('div');
+            div.className = 'narrative-box';
+            
+            const label = document.createElement('span');
+            label.className = 'narrative-label';
+            label.innerText = "COURT RECORD";
+            div.appendChild(label);
+
+            const parts = text.split(/(\{\{.*?\}\})/g);
+            
+            parts.forEach(part => {
+                if (part.startsWith('{{') && part.endsWith('}}')) {
+                    const inner = part.slice(2, -2);
+                    const splitIdx = inner.indexOf('|');
+                    
+                    let name, detail;
+                    if (splitIdx > -1) {
+                        name = inner.substring(0, splitIdx);
+                        detail = inner.substring(splitIdx + 1);
+                    } else {
+                        name = inner;
+                        detail = "No details available.";
+                    }
+
+                    const span = document.createElement('span');
+                    span.className = 'highlight-evidence';
+                    span.innerText = name;
+                    span.setAttribute('data-name', name);
+                    
+                    if (usedEvidenceSet.has(name)) {
+                        span.classList.add('used');
+                    } else {
+                        span.onclick = () => collectEvidence(name, detail);
+                        span.onmousemove = (e) => showTooltip(e, `<strong>${name}</strong><br>${detail}`);
+                        span.onmouseleave = hideTooltip;
+                    }
+                    div.appendChild(span);
+                } else {
+                    div.appendChild(document.createTextNode(part));
+                }
+            });
+
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function appendChatBubble(text, role, avatarEmoji = null) {
+            const log = document.getElementById('chat-log');
+            const row = document.createElement('div');
+            row.className = `bubble-row ${role}`;
+            
+            if (role === 'enemy' && avatarEmoji) {
+                const avatar = document.createElement('div');
+                avatar.className = 'bubble-avatar';
+                avatar.innerText = avatarEmoji;
+                row.appendChild(avatar);
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble';
+
+            if (role === 'enemy') {
+                const parts = text.split(/(\[\[.*?\]\])/g);
+                parts.forEach(part => {
+                    if (part.startsWith('[[') && part.endsWith(']]')) {
+                        const content = part.slice(2, -2);
+                        const span = document.createElement('span');
+                        span.className = 'highlight-statement';
+                        span.innerText = content;
+                        bubble.appendChild(span);
+                    } else {
+                        bubble.appendChild(document.createTextNode(part));
+                    }
+                });
+            } else {
+                bubble.innerText = text;
+            }
+
+            row.appendChild(bubble);
+            log.appendChild(row);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function collectEvidence(name, detail) {
+            // 冲突检测 & 自动编号逻辑
+            let finalName = name;
+            let count = 1;
+            
+            // 只要 evidenceMap 或 usedEvidenceSet 里有这个名字，就加数字
+            while (evidenceMap.has(finalName) || usedEvidenceSet.has(finalName)) {
+                count++;
+                // 如果原始名字已经包含数字结尾，去掉它再加新的
+                finalName = name.replace(/ \d+$/, '') + ` ${count.toString().padStart(2, '0')}`;
+            }
+
+            // FIFO: Max 5
+            if (evidenceMap.size >= 5) {
+                const firstKey = evidenceMap.keys().next().value;
+                evidenceMap.delete(firstKey);
+            }
+
+            evidenceMap.set(finalName, detail);
+            updateEvidenceUI();
+        }
+
+        function updateEvidenceUI() {
+            const list = document.getElementById('evidence-list');
+            list.innerHTML = '';
+            
+            if (evidenceMap.size === 0) {
+                list.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8em; margin-top:20px;">${i18n[currentLang].emptyEvidence}</div>`;
+                return;
+            }
+
+            evidenceMap.forEach((detail, name) => {
+                const div = document.createElement('div');
+                div.className = 'evidence-item';
+                div.innerText = name;
+                div.onclick = () => {
+                    const input = document.getElementById('player-input');
+                    input.value = `[使用证据: ${name}] `;
+                    input.focus();
+                };
+                div.onmousemove = (e) => showTooltip(e, `<strong>${name}</strong><br>${detail}`);
+                div.onmouseleave = hideTooltip;
+                
+                list.appendChild(div);
+            });
+        }
+
+        function appendSystemMessage(text) {
+            const log = document.getElementById('chat-log');
+            const div = document.createElement('div');
+            div.className = 'system-msg';
+            div.innerText = text;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateStatusUI() {
+            document.getElementById('hero-hp-bar').style.width = gameState.heroHp + '%';
+            document.getElementById('enemy-hp-bar').style.width = gameState.enemyHp + '%';
+        }
+
+        function endGame() {
+            gameState.isOver = true;
+            document.getElementById('player-input').disabled = true;
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true;
+            btn.innerText = "FIN";
+            btn.style.background = "#333";
+        }
+    </script>
+</body>
+</html>
