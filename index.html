@@ -213,15 +213,48 @@
             justify-content: center;
         }
 
-        /* 图片本体：通过变量控制宽度与透明度 */
+        /* 图片本体：自适应窗口，避免遮挡页面内容
+           可调节项（在上方 :root 中）：
+           - --bottom-img-width: 图片的最大理想宽度（例如 420px）
+           - --bottom-img-bottom: 距视口底部间距
+           - --bottom-img-opacity: 透明度
+        */
         #bottom-image {
-            width: var(--bottom-img-width);
+            /* 基于视口宽度自适应，最小 160px，最大为 --bottom-img-width */
+            width: clamp(160px, 30vw, var(--bottom-img-width));
+            max-width: 95vw;
             height: auto;
+            /* 限制高度，确保不会覆盖中间主区域 */
+            max-height: 30vh;
             opacity: var(--bottom-img-opacity);
             display: block;
             -webkit-user-drag: none;
             user-select: none;
+            object-fit: contain;
+            pointer-events: none; /* 保持不可交互，防止遮挡点击 */
         }
+
+        /* 小屏与窄高屏幕的额外收缩，进一步降低遮挡风险 */
+        @media (max-width: 600px) {
+            #bottom-image {
+                width: clamp(120px, 40vw, calc(var(--bottom-img-width) * 0.8));
+                max-height: 22vh;
+            }
+        }
+
+        @media (max-height: 520px) {
+            #bottom-image {
+                /* 当视口高度较小时，进一步限制高度或隐藏 */
+                max-height: 18vh;
+                width: clamp(100px, 35vw, calc(var(--bottom-img-width) * 0.7));
+            }
+        }
+
+        /* 可选：当窗口非常小以致严重遮挡时可隐藏图片
+        @media (max-height: 380px) {
+            #bottom-image { display: none; }
+        }
+        */
 
     </style>
 </head>
