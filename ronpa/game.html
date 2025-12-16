@@ -731,11 +731,12 @@
 
     <div id="dev-console">
         <div style="border-bottom:1px solid #0f0; margin-bottom:10px; padding-bottom:5px;">
-            <strong>>> SYSTEM LOG <<< /strong>
-                    <div style="float:right;">
-                        <button onclick="clearDevLog()" class="dev-btn">CLR</button>
-                        <button onclick="closeDevConsole()" class="dev-btn">X</button>
-                    </div>
+            <strong>>> SYSTEM LOG <<<</strong>
+            <div style="float:right;">
+                <button onclick="downloadDevLog()" class="dev-btn">DL</button>
+                <button onclick="clearDevLog()" class="dev-btn">CLR</button>
+                <button onclick="closeDevConsole()" class="dev-btn">X</button>
+            </div>
         </div>
         <div id="dev-content"></div>
     </div>
@@ -1003,6 +1004,25 @@
 
         window.clearDevLog = function () {
             document.getElementById('dev-content').innerHTML = "";
+        };
+
+        window.downloadDevLog = function () {
+            const content = document.getElementById('dev-content');
+            if (!content) return;
+
+            const entries = Array.from(content.querySelectorAll('.log-entry'));
+            const text = entries.map(e => e.innerText.trim()).filter(Boolean).reverse().join('\r\n\r\n');
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const ts = new Date().toISOString().replace(/[:.]/g, '-');
+            a.download = `dev-log-${ts}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
         };
 
         function logDev(type, content) {
