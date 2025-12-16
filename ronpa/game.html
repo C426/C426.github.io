@@ -1,726 +1,308 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Court: 論破バトル V22 (Stable)</title>
+    <title>Cyber Court: 論破バトル V30 (Stable Fix)</title>
     <style>
         :root {
             --bg-color: #050505;
             --panel-bg: rgba(20, 20, 20, 0.95);
             --text-color: #eee;
-            --neon-cyan: #00ffd5;
-            --neon-pink: #ff0055;
-            --neon-yellow: #f4d03f;
+            --neon-cyan: #00ffd5;   
+            --neon-pink: #ff0055;   
+            --neon-yellow: #f4d03f; 
             --neon-blue: #2979ff;
             --border-color: rgba(255, 255, 255, 0.15);
             --gray-disabled: #666;
         }
 
-        body {
+        body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            background-image:
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; overflow: hidden;
+            background-image: 
                 linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
-                url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop');
+                url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop'); 
             background-size: cover;
             background-position: center;
         }
 
         /* 返回按钮 */
         #back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 3000;
-            text-decoration: none;
-            color: var(--neon-cyan);
-            font-weight: 800;
-            font-size: 14px;
-            padding: 10px 20px;
-            border: 1px solid var(--neon-cyan);
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            position: fixed; top: 20px; left: 20px; z-index: 3000;
+            text-decoration: none; color: var(--neon-cyan); font-weight: 800; font-size: 14px;
+            padding: 10px 20px; border: 1px solid var(--neon-cyan);
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            border-radius: 4px; display: flex; align-items: center; gap: 8px;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(0, 255, 213, 0.1);
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
-
-        #back-btn:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-cyan);
-            transform: translateX(5px);
-        }
+        #back-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan); transform: translateX(5px); }
 
         .screen {
-            width: 1100px;
-            height: 95vh;
+            width: 1100px; height: 95vh;
             background-color: var(--panel-bg);
             border: 2px solid var(--border-color);
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: row;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0,0,0,0.8);
+            display: none; flex-direction: row; 
+            position: relative; overflow: hidden;
             backdrop-filter: blur(10px);
             border-radius: 4px;
         }
-
-        .screen.active {
-            display: flex;
-            animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
+        .screen.active { display: flex; animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
         /* 左侧主区域 */
         .main-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            border-right: 2px solid #333;
-            position: relative;
+            flex: 1; display: flex; flex-direction: column;
+            padding: 20px; border-right: 2px solid #333; position: relative;
         }
 
         /* 右侧证物栏 */
         .sidebar {
-            width: 260px;
-            background: rgba(0, 10, 20, 0.6);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            width: 260px; background: rgba(0, 10, 20, 0.6);
+            padding: 15px; display: flex; flex-direction: column; gap: 15px;
             border-left: 1px solid var(--neon-cyan);
-            box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 10px 0 20px rgba(0,0,0,0.5);
             z-index: 20;
         }
-
+        
         .sidebar-title {
-            color: var(--neon-cyan);
-            font-size: 1.1em;
-            font-weight: 900;
-            text-transform: uppercase;
-            text-align: center;
-            border-bottom: 2px solid var(--neon-cyan);
-            padding-bottom: 10px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--neon-cyan);
+            color: var(--neon-cyan); font-size: 1.1em; font-weight: 900;
+            text-transform: uppercase; text-align: center;
+            border-bottom: 2px solid var(--neon-cyan); padding-bottom: 10px;
+            letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-cyan);
         }
-
         .sidebar-subtitle {
-            font-size: 0.8em;
-            color: #888;
-            text-align: center;
-            margin-top: -10px;
+            font-size: 0.8em; color: #888; text-align: center; margin-top: -10px;
         }
 
         #evidence-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
         }
-
-        #evidence-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        #evidence-list::-webkit-scrollbar-thumb {
-            background: var(--neon-cyan);
-        }
+        #evidence-list::-webkit-scrollbar { width: 4px; }
+        #evidence-list::-webkit-scrollbar-thumb { background: var(--neon-cyan); }
 
         .evidence-item {
-            background: rgba(0, 20, 30, 0.8);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 12px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
-            animation: flashIn 0.4s ease-out;
-            font-family: monospace;
+            background: rgba(0, 20, 30, 0.8); border: 1px solid var(--neon-blue);
+            color: var(--neon-blue); padding: 12px; font-size: 0.9em;
+            cursor: pointer; transition: 0.2s; position: relative;
+            animation: flashIn 0.4s ease-out; font-family: monospace;
             border-left: 4px solid var(--neon-blue);
             word-break: break-all;
         }
+        @keyframes flashIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        @keyframes flashIn {
-            from {
-                transform: translateX(20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .evidence-item:hover {
-            background: var(--neon-blue);
-            color: #000;
-            transform: translateX(-5px);
-        }
-
-        .evidence-item:active {
-            transform: scale(0.98);
-        }
+        .evidence-item:hover { background: var(--neon-blue); color: #000; transform: translateX(-5px); }
+        .evidence-item:active { transform: scale(0.98); }
 
         /* Tooltip (通用) */
         .evidence-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.98);
-            border: 1px solid var(--neon-blue);
-            color: #fff;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            max-width: 350px;
-            z-index: 9999;
-            pointer-events: none;
-            display: none;
+            position: absolute; background: rgba(0, 0, 0, 0.98);
+            border: 1px solid var(--neon-blue); color: #fff; padding: 15px;
+            border-radius: 4px; font-size: 0.9em; max-width: 350px;
+            z-index: 2000; pointer-events: none; display: none;
             box-shadow: 0 0 25px rgba(41, 121, 255, 0.5);
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
+            white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6;
         }
-
-        .evidence-tooltip strong {
-            display: block;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 3px;
-            font-size: 1.1em;
-            letter-spacing: 1px;
-        }
-
+        .evidence-tooltip strong { display: block; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; font-size: 1.1em; letter-spacing: 1px;}
+        
         /* 论破解释的特殊样式 */
         .evidence-tooltip.logic-break {
             border-color: var(--neon-yellow);
             box-shadow: 0 0 25px rgba(244, 208, 63, 0.5);
         }
-
-        .evidence-tooltip.logic-break strong {
-            color: var(--neon-yellow);
-        }
-
-        .evidence-tooltip hr {
-            border: 0;
-            border-top: 1px dashed #444;
-            margin: 10px 0;
-        }
+        .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
+        .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
 
         /* Developer Button */
         #dev-trigger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 0, 0, 0.2);
-            border: 2px solid #fff;
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 9999;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: fixed; bottom: 20px; right: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(255, 0, 0, 0.2); border: 2px solid #fff;
+            color: #fff; font-size: 24px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 9999; transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-
-        #dev-trigger:hover {
-            background: rgba(255, 0, 0, 0.8);
-            transform: scale(1.1);
-        }
+        #dev-trigger:hover { background: rgba(255, 0, 0, 0.8); transform: scale(1.1); }
 
         #dev-console {
-            position: fixed;
-            top: 0;
-            right: 0;
-            height: 100vh;
-            width: 400px;
-            background: rgba(0, 0, 0, 0.95);
-            border-left: 2px solid #0f0;
-            padding: 20px;
-            box-sizing: border-box;
-            display: none;
-            flex-direction: column;
+            position: fixed; top: 0; right: 0; height: 100vh; width: 450px;
+            background: rgba(0,0,0,0.95); border-left: 2px solid #0f0;
+            padding: 20px; box-sizing: border-box;
+            display: none; flex-direction: column;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            color: #0f0;
-            z-index: 9998;
-            overflow-y: auto;
+            font-size: 12px; color: #0f0;
+            z-index: 9998; overflow-y: auto;
         }
-
-        #dev-console.open {
-            display: flex;
-        }
-
-        .log-entry {
-            margin-bottom: 15px;
-            border-bottom: 1px dashed #333;
-            padding-bottom: 10px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-
-        .dev-btn {
-            background: #000;
-            color: #0f0;
-            border: 1px solid #0f0;
-            cursor: pointer;
-            padding: 2px 8px;
-            margin-left: 5px;
-        }
-
-        .dev-btn:hover {
-            background: #0f0;
-            color: #000;
-        }
+        #dev-console.open { display: flex; }
+        .log-entry { margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; word-wrap: break-word; white-space: pre-wrap; }
+        .dev-btn { background:#000; color:#0f0; border:1px solid #0f0; cursor:pointer; padding: 2px 8px; margin-left: 5px; }
+        .dev-btn:hover { background: #0f0; color: #000; }
 
         /* Start & Config */
-        #start-screen,
-        #config-screen {
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            gap: 20px;
-            width: 100%;
-            z-index: 10;
+        #start-screen, #config-screen { 
+            flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; gap: 20px; width: 100%; z-index: 10;
         }
 
-        h1 {
-            font-size: 5em;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 20px var(--neon-cyan);
-            margin: 0;
-            font-style: italic;
-            letter-spacing: -3px;
-            line-height: 1;
-        }
-
-        .big-btn {
-            padding: 15px 50px;
-            font-size: 1.2em;
-            background: transparent;
-            color: var(--neon-cyan);
-            border: 2px solid var(--neon-cyan);
-            cursor: pointer;
-            font-weight: 900;
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        h1 { font-size: 5em; color: var(--neon-cyan); text-shadow: 0 0 20px var(--neon-cyan); margin: 0; font-style: italic; letter-spacing: -3px; line-height: 1;}
+        
+        .big-btn { 
+            padding: 15px 50px; font-size: 1.2em; 
+            background: transparent; color: var(--neon-cyan); 
+            border: 2px solid var(--neon-cyan); 
+            cursor: pointer; font-weight: 900; transition: 0.2s; 
+            text-transform: uppercase; letter-spacing: 2px;
             clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
         }
-
-        .big-btn:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 30px var(--neon-cyan);
-        }
-
-        .cyber-input {
-            padding: 15px;
-            width: 400px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #555;
-            color: #fff;
-            outline: none;
-            text-align: center;
-            font-size: 1.1em;
-        }
-
-        .cyber-input:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 10px rgba(0, 255, 213, 0.3);
-        }
+        .big-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 30px var(--neon-cyan); }
+        
+        .cyber-input { padding: 15px; width: 400px; background: rgba(0,0,0,0.5); border: 1px solid #555; color: #fff; outline: none; text-align: center; font-size: 1.1em; }
+        .cyber-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 255, 213, 0.3); }
 
         /* Status Bar */
-        #status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .hp-box {
-            width: 45%;
-        }
-
-        .role-info {
-            display: flex;
-            align-items: center;
-            font-size: 1.4em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .role-emoji {
-            font-size: 1.5em;
-            margin: 0 10px;
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
-        }
-
-        .hp-bar-bg {
-            width: 100%;
-            height: 12px;
-            background: #222;
-            overflow: hidden;
-            border: 1px solid #555;
-            transform: skewX(-20deg);
-        }
-
-        .hp-bar-fill {
-            height: 100%;
-            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        #enemy-hp-bar {
-            background: linear-gradient(90deg, var(--neon-pink), #ff8a80);
-            box-shadow: 0 0 10px var(--neon-pink);
-        }
-
-        #hero-hp-bar {
-            background: linear-gradient(90deg, var(--neon-cyan), #80d8ff);
-            float: right;
-            box-shadow: 0 0 10px var(--neon-cyan);
-        }
+        #status-bar { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .hp-box { width: 45%; }
+        .role-info { display: flex; align-items: center; font-size: 1.4em; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .role-emoji { font-size: 1.5em; margin: 0 10px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+        
+        .hp-bar-bg { width: 100%; height: 12px; background: #222; overflow: hidden; border: 1px solid #555; transform: skewX(-20deg); }
+        .hp-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #enemy-hp-bar { background: linear-gradient(90deg, var(--neon-pink), #ff8a80); box-shadow: 0 0 10px var(--neon-pink); }
+        #hero-hp-bar { background: linear-gradient(90deg, var(--neon-cyan), #80d8ff); float: right; box-shadow: 0 0 10px var(--neon-cyan); }
 
         /* Chat Log */
-        #chat-log {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            scroll-behavior: smooth;
+        #chat-log { 
+            flex-grow: 1; overflow-y: auto; padding-right: 10px; 
+            display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;
         }
-
-        #chat-log::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #chat-log::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 3px;
-        }
+        #chat-log::-webkit-scrollbar { width: 6px; }
+        #chat-log::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 
         .narrative-box {
-            background: rgba(0, 20, 40, 0.4);
-            border-left: 4px solid var(--neon-blue);
-            padding: 20px;
-            color: #ccc;
-            font-size: 1em;
-            line-height: 1.7;
-            margin: 10px 0;
-            font-family: monospace;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 20, 40, 0.4); border-left: 4px solid var(--neon-blue);
+            padding: 20px; color: #ccc; font-size: 1em; line-height: 1.7;
+            margin: 10px 0; font-family: monospace;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-
-        .narrative-label {
-            color: var(--neon-blue);
-            font-weight: bold;
-            font-size: 0.8em;
-            display: block;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(41, 121, 255, 0.3);
-            padding-bottom: 5px;
-        }
-
-        .bubble-row {
-            display: flex;
-            gap: 20px;
-            max-width: 95%;
-            margin-bottom: 10px;
-            animation: popIn 0.3s;
-        }
-
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .bubble-avatar {
-            font-size: 2.5em;
-            line-height: 1;
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .chat-bubble {
-            padding: 18px 25px;
-            line-height: 1.6;
+        /* 结局复盘的特殊样式 */
+        .narrative-box.final {
+            border-left: 4px solid var(--neon-yellow);
+            background: rgba(40, 30, 0, 0.7);
             color: #fff;
-            position: relative;
-            font-size: 1.05em;
-            background: #1a1a1a;
-            border: 1px solid #444;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(244, 208, 63, 0.2);
+            white-space: pre-wrap; /* 保留换行 */
+        }
+        .narrative-box.final .narrative-label { color: var(--neon-yellow); }
+
+        .narrative-label { 
+            color: var(--neon-blue); font-weight: bold; font-size: 0.8em; 
+            display: block; margin-bottom: 8px; letter-spacing: 2px;
+            border-bottom: 1px solid rgba(41, 121, 255, 0.3); padding-bottom: 5px;
         }
 
-        .bubble-row.enemy {
-            align-self: flex-start;
+        .bubble-row { display: flex; gap: 20px; max-width: 95%; margin-bottom: 10px; animation: popIn 0.3s; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .bubble-avatar { font-size: 2.5em; line-height: 1; min-width: 50px; text-align: center; }
+        .chat-bubble { 
+            padding: 18px 25px; line-height: 1.6; color: #fff; position: relative; font-size: 1.05em;
+            background: #1a1a1a; border: 1px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-
-        .bubble-row.enemy .chat-bubble {
-            border-top: 3px solid var(--neon-pink);
-            border-radius: 0 20px 20px 20px;
+        
+        .bubble-row.enemy { align-self: flex-start; }
+        .bubble-row.enemy .chat-bubble { 
+            border-top: 3px solid var(--neon-pink); border-radius: 0 20px 20px 20px; 
             background: linear-gradient(135deg, #1a050a 0%, #111 100%);
         }
-
-        .bubble-row.hero {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .bubble-row.hero .chat-bubble {
-            border-top: 3px solid var(--neon-cyan);
-            border-radius: 20px 0 20px 20px;
-            text-align: right;
-            background: linear-gradient(-135deg, #051a1a 0%, #111 100%);
-            color: #ccfffa;
+        
+        .bubble-row.hero { align-self: flex-end; flex-direction: row-reverse; }
+        .bubble-row.hero .chat-bubble { 
+            border-top: 3px solid var(--neon-cyan); border-radius: 20px 0 20px 20px; text-align: right; 
+            background: linear-gradient(-135deg, #051a1a 0%, #111 100%); color: #ccfffa;
         }
 
         /* 破绽 (Statement) */
         .highlight-statement {
             background: linear-gradient(180deg, #ffffff 0%, var(--neon-yellow) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 900;
-            text-shadow: 0 0 10px rgba(244, 208, 63, 0.4);
-            font-size: 1.15em;
-            border-bottom: 2px dashed rgba(244, 208, 63, 0.5);
-            padding-bottom: 2px;
-            transition: all 0.5s ease;
-            cursor: help;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            font-weight: 900; text-shadow: 0 0 10px rgba(244, 208, 63, 0.4);
+            font-size: 1.15em; border-bottom: 2px dashed rgba(244, 208, 63, 0.5); padding-bottom: 2px;
+            transition: all 0.5s ease; cursor: help;
         }
-
         .highlight-statement.resolved {
-            background: none;
-            -webkit-background-clip: initial;
-            color: var(--gray-disabled);
-            text-shadow: none;
-            border-bottom: none;
-            text-decoration: line-through;
-            font-weight: normal;
-            font-size: 1em;
-            cursor: help;
+            background: none; -webkit-background-clip: initial; color: var(--gray-disabled);
+            text-shadow: none; border-bottom: none; text-decoration: line-through;
+            font-weight: normal; font-size: 1em; cursor: help;
         }
 
         /* 证据 (Evidence) */
         .highlight-evidence {
-            color: var(--neon-blue);
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid var(--neon-blue);
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(41, 121, 255, 0.1);
-            transition: 0.3s;
-            display: inline-block;
-            margin: 0 2px;
+            color: var(--neon-blue); font-weight: bold; cursor: pointer;
+            border: 1px solid var(--neon-blue); padding: 2px 6px; border-radius: 4px;
+            background: rgba(41, 121, 255, 0.1); transition: 0.3s;
+            display: inline-block; margin: 0 2px;
         }
-
-        .highlight-evidence:hover {
-            background: var(--neon-blue);
-            color: #fff;
-            box-shadow: 0 0 15px var(--neon-blue);
-            transform: translateY(-2px);
-        }
-
-        .highlight-evidence::after {
-            content: ' ✚';
-            font-size: 0.8em;
-            opacity: 0.7;
-        }
-
-        /* 已收集 */
+        .highlight-evidence:hover { background: var(--neon-blue); color: #fff; box-shadow: 0 0 15px var(--neon-blue); transform: translateY(-2px); }
+        .highlight-evidence::after { content: ' ✚'; font-size: 0.8em; opacity: 0.7; }
+        
+        /* 已收集状态 (背包里有) */
         .highlight-evidence.collected {
-            color: #888;
-            border-color: #555;
-            background: transparent;
-            cursor: not-allowed;
-            pointer-events: none;
-            opacity: 0.6;
+            color: #888; border-color: #555; background: transparent; 
+            cursor: not-allowed; pointer-events: none; opacity: 0.6;
         }
+        .highlight-evidence.collected::after { content: ' (GET)'; opacity: 0.5; color: var(--neon-cyan); }
 
-        .highlight-evidence.collected::after {
-            content: ' (GET)';
-            opacity: 0.5;
-        }
-
-        /* 已使用 */
+        /* 已使用状态 (用掉了) */
         .highlight-evidence.used {
-            color: var(--gray-disabled);
-            border-color: var(--gray-disabled);
-            background: transparent;
-            text-decoration: line-through;
-            cursor: not-allowed;
-            pointer-events: none;
-            opacity: 0.4;
+            color: var(--gray-disabled); border-color: var(--gray-disabled);
+            background: transparent; text-decoration: line-through;
+            cursor: not-allowed; pointer-events: none; opacity: 0.4;
         }
+        .highlight-evidence.used::after { content: ' ✔'; opacity: 0.5; }
 
-        .highlight-evidence.used::after {
-            content: ' ✔';
-            opacity: 0.5;
+        #input-area { display: flex; gap: 15px; margin-top: 20px; }
+        #player-input { 
+            flex: 1; padding: 0 20px; height: 50px; background: rgba(0,0,0,0.5); 
+            border: 2px solid #444; color: #fff; outline: none; font-size: 1.1em; transition: 0.3s;
         }
-
-        #input-area {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
+        #player-input:focus { border-color: var(--neon-cyan); background: rgba(0,0,0,0.8); }
+        
+        #send-btn { 
+            background: var(--neon-cyan); border: none; padding: 0 40px; font-weight: 900; 
+            cursor: pointer; color: #000; font-size: 1.2em; font-style: italic;
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); transition: 0.3s;
         }
+        #send-btn:hover { background: #fff; transform: scale(1.05); }
 
-        #player-input {
-            flex: 1;
-            padding: 0 20px;
-            height: 50px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #444;
-            color: #fff;
-            outline: none;
-            font-size: 1.1em;
-            transition: 0.3s;
+        #loading-overlay { 
+            position: absolute; top:0;left:0;right:0;bottom:0; background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px); z-index:999; display:none; flex-direction: column; 
+            justify-content:center; align-items:center; 
         }
-
-        #player-input:focus {
-            border-color: var(--neon-cyan);
-            background: rgba(0, 0, 0, 0.8);
+        .loading-text { 
+            font-size: 2.5em; color: var(--neon-cyan); font-weight: 900; letter-spacing: 5px; 
+            animation: blink 0.8s infinite alternate; text-shadow: 0 0 20px var(--neon-cyan);
         }
+        @keyframes blink { from { opacity: 0.4; transform: scale(0.98); } to { opacity: 1; transform: scale(1.02); } }
 
-        #send-btn {
-            background: var(--neon-cyan);
-            border: none;
-            padding: 0 40px;
-            font-weight: 900;
-            cursor: pointer;
-            color: #000;
-            font-size: 1.2em;
-            font-style: italic;
-            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
-            transition: 0.3s;
-        }
-
-        #send-btn:hover {
-            background: #fff;
-            transform: scale(1.05);
-        }
-
-        #loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            z-index: 999;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loading-text {
-            font-size: 2.5em;
-            color: var(--neon-cyan);
-            font-weight: 900;
-            letter-spacing: 5px;
-            animation: blink 0.8s infinite alternate;
-            text-shadow: 0 0 20px var(--neon-cyan);
-        }
-
-        @keyframes blink {
-            from {
-                opacity: 0.4;
-                transform: scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1.02);
-            }
-        }
-
-        .system-msg {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin: 15px 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
+        .system-msg { text-align: center; color: #666; font-size: 0.9em; margin: 15px 0; letter-spacing: 2px; text-transform: uppercase; }
+        
         .fatal-warning {
-            color: var(--neon-pink);
-            text-shadow: 0 0 10px var(--neon-pink);
-            font-weight: 900;
-            font-size: 1.1em;
-            animation: shake 0.5s infinite;
+            color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink);
+            font-weight: 900; font-size: 1.1em; animation: shake 0.5s infinite;
         }
-
-        @keyframes shake {
-            0% {
-                transform: translate(1px, 1px);
-            }
-
-            50% {
-                transform: translate(-1px, -1px);
-            }
-
-            100% {
-                transform: translate(1px, 1px);
-            }
-        }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }
     </style>
-
-    <script
-        type="importmap">{ "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }</script>
+    
+    <script type="importmap">{ "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }</script>
 </head>
-
 <body>
 
     <a id="back-btn" href="../index.html">◀ HOME</a>
@@ -728,10 +310,10 @@
     <div id="tooltip" class="evidence-tooltip"></div>
 
     <div id="dev-trigger" onclick="promptDevMode()">!</div>
-
+    
     <div id="dev-console">
         <div style="border-bottom:1px solid #0f0; margin-bottom:10px; padding-bottom:5px;">
-            <strong>>> SYSTEM LOG <<<</strong>
+            <strong>>> SYSTEM LOG <<</strong>
             <div style="float:right;">
                 <button onclick="downloadDevLog()" class="dev-btn">DL</button>
                 <button onclick="clearDevLog()" class="dev-btn">CLR</button>
@@ -743,8 +325,7 @@
 
     <div id="start-screen" class="screen active">
         <h1>論破 BATTLE</h1>
-        <p style="color:#aaa; letter-spacing: 4px; margin-bottom: 40px; font-weight: bold;">TRUTH IS HIDDEN IN THE DATA
-        </p>
+        <p style="color:#aaa; letter-spacing: 4px; margin-bottom: 40px; font-weight: bold;">TRUTH IS HIDDEN IN THE DATA</p>
         <div style="display:flex; gap:20px;">
             <button class="big-btn" onclick="setLanguage('zh')">中文版</button>
             <button class="big-btn" onclick="setLanguage('ja')">日本語</button>
@@ -754,7 +335,7 @@
 
     <div id="config-screen" class="screen">
         <h2 data-key="apiTitle" style="color:var(--neon-cyan); font-size: 2em; letter-spacing: 3px;">SYSTEM LINK</h2>
-
+        
         <select id="provider-select" class="cyber-input" onchange="updatePlaceholder()" style="cursor: pointer;">
             <option value="gemini">Google Gemini</option>
             <option value="siliconflow-deepseek">SiliconFlow (DeepSeek V3)</option>
@@ -768,33 +349,25 @@
 
     <div id="game-screen" class="screen">
         <div class="main-area">
-            <div id="loading-overlay">
-                <div class="loading-text">CALCULATING...</div>
-            </div>
+            <div id="loading-overlay"><div class="loading-text">CALCULATING...</div></div>
 
             <div id="status-bar">
                 <div class="hp-box enemy-theme" style="text-align:left;">
                     <div class="role-info">
-                        <span class="role-emoji" id="enemy-emoji">😈</span>
+                        <span class="role-emoji" id="enemy-emoji">😈</span> 
                         <span id="enemy-name-ui">SUSPECT</span>
                     </div>
-                    <div class="hp-bar-bg">
-                        <div id="enemy-hp-bar" class="hp-bar-fill" style="width:100%"></div>
-                    </div>
-                    <div style="color:var(--neon-pink); font-size:0.8em; margin-top:5px; font-weight:bold;">MENTAL
-                        SHIELD</div>
+                    <div class="hp-bar-bg"><div id="enemy-hp-bar" class="hp-bar-fill" style="width:100%"></div></div>
+                    <div style="color:var(--neon-pink); font-size:0.8em; margin-top:5px; font-weight:bold;">MENTAL SHIELD</div>
                 </div>
-
+                
                 <div class="hp-box hero-theme" style="text-align:right;">
                     <div class="role-info" style="justify-content:flex-end;">
-                        <span id="hero-name-ui">DETECTIVE</span>
+                        <span id="hero-name-ui">DETECTIVE</span> 
                         <span class="role-emoji" id="hero-emoji">🧐</span>
                     </div>
-                    <div class="hp-bar-bg">
-                        <div id="hero-hp-bar" class="hp-bar-fill" style="width:100%"></div>
-                    </div>
-                    <div style="color:var(--neon-cyan); font-size:0.8em; margin-top:5px; font-weight:bold;">LOGIC DRIVE
-                    </div>
+                    <div class="hp-bar-bg"><div id="hero-hp-bar" class="hp-bar-fill" style="width:100%"></div></div>
+                    <div style="color:var(--neon-cyan); font-size:0.8em; margin-top:5px; font-weight:bold;">LOGIC DRIVE</div>
                 </div>
             </div>
 
@@ -808,7 +381,7 @@
 
         <div class="sidebar">
             <div class="sidebar-title">EVIDENCE FILE</div>
-            <div class="sidebar-subtitle">MAX: 5</div>
+            <div class="sidebar-subtitle">MAX: 7</div>
             <div id="evidence-list">
                 <div style="text-align:center; color:#666; font-size:0.8em; margin-top:20px;">NO DATA</div>
             </div>
@@ -836,26 +409,41 @@
                 - 任务：玩家必须用确凿的证据，当庭击溃嫌疑人的谎言。
                 - **通俗逻辑**：破绽必须是普通人一眼能看懂的逻辑矛盾（如：时间先后、地点、物理状态），严禁晦涩设定。
 
+                【RULE #0: 强制输出】
+                1. **Prologue 致命修正**：当收到 GENERATE_PROLOGUE 指令时，必须同时返回 'narrative'（案卷详情）和 'enemy_dialogue'（被告的第一句辩解）。缺一不可！
+                2. **Dynamic Evidence Spawn (动态补给)**：
+                   - 如果 [Inventory Count] < 3：**必须**生成 2-3 个新证据。
+                   - 如果 [Inventory Count] 为 3-5：生成 1-2 个新证据。
+                   - 如果 [Inventory Count] > 5：生成 0-1 个新证据（防止溢出）。
+                   - **强制**：如果玩家手里没有能击破当前破绽的证据，必须立刻生成一个新的关键证据。
+
                 【机制：旁白与证据详情】
-                1. **强制旁白 (Full Dossier)**：在开局 Prologue 中，你必须输出一份完整的【案件档案】。
-                   - 包含：受害者、嫌疑人、两人的人际关系（合伙人/仇敌/情侣等）、案发时间、地点、死因、现场状况等所有公开情报。
-                   - 必须让玩家一眼看懂前因后果。
+                1. **强制旁白**：每一轮都必须输出 narrative，回顾并更新法庭局势。
                 2. **证据格式**：**{{证据名|详细描述内容}}**。
                    - 描述必须包含用于推理的关键细节。
                 3. **开局爆发**：Prologue 必须一次性生成 **2-3 个** 不同的 {{证据}}。
                 4. **伏笔回收**：检查 [Player Inventory]。优先生成一个谎言，使其能被玩家**已有的旧证据**（或本轮新证据）击破。
-                5. **紧急补给**：如果玩家库存 [Inventory] < 2，无论剧情如何，必须在旁白中生成新的 {{证据}}。
 
                 【机制：真假破绽与锁血】
                 - **真破绽**：Boss证词中**只有 1 个**是真正的破绽，能被当前可用证据击破。
                 - **虚假破绽 (Red Herring)**：Boss证词中必须包含 **1-2 个 [[虚假破绽]]**（看起来可疑但其实没问题）。
-                - **格式约束**：所有 [[破绽]] 必须包裹**口语台词**中的具体词汇（如"我一直在家"）。**严禁**标记括号内的动作/心理描写。
+                - **格式约束**：所有 [[破绽]] 必须包裹**口语台词**中的具体词汇。
                 - **锁血**：普通破绽只能将HP降至10%。10%时刷新【致命破绽】，击破它才能归零。
+
+                【Phase 3: Defeat & Confession】
+                - **触发条件**：当 Boss HP 归零时。
+                - **行为**：Boss 必须**立刻认罪**（Breakdown）。
+                - **内容**：
+                  1. **enemy_dialogue**: 犯人崩溃后的自白，详细说明**作案动机**（为何杀人/犯罪）和心理活动。不再是辩解，而是彻底的交代。
+                  2. **narrative (CASE TRUTH)**: 必须输出一份完整的**【案件全貌复盘报告】**。
+                     - **格式要求**：请按以下结构撰写，确保逻辑通顺，像侦探小说结局一样精彩。
+                     - **【真相还原】**：用通俗易懂的语言，按时间顺序完整讲述案发当晚发生的所有事情。将之前提到的所有证物（如时间差、物理痕迹、特殊物品）全部串联起来。
+                     - **【核心诡计】**：解释犯人是如何制造不在场证明或误导调查的。
+                     - **【结案陈词】**：对犯人的最终审判结果。
 
                 【判定逻辑】
                 1. **STRICT (精准识破)**：正确证据 + 指出【真破绽】。Boss受损 10-20%。**移除证物，破绽变灰**。
                    - **重要**：返回 "logic_explanation" 字段，简要说明为什么这个证据推翻了这个破绽（20字以内）。
-                   - **必须**：resolved_statement 字段必须返回被击破的那句原话，**不要带标点符号**。
                 2. **FUZZY (模糊识破)**：正确证据但描述模糊。Boss受损 1%。
                 3. **QUERY (单纯询问)**：无证物，仅提问。玩家扣血 5%。Boss补充细节。
                 4. **MISS (失败)**：错误逻辑 / 攻击了【虚假破绽】 / 攻击了已变灰破绽。玩家扣血 10%。
@@ -869,12 +457,13 @@
                     "enemy_dialogue": "string (含 1个真[[破绽]] 和 1-2个虚假[[破绽]])",
                     "suspect_name": "string",
                     "removed_evidence": "string (仅限strict, 只返回名称)",
-                    "resolved_statement": "string (仅限strict, 被识破的原文，无标点)",
+                    "resolved_statement": "string (仅限strict)",
                     "logic_explanation": "string (仅限strict, 论破成功的理由)",
                     "enemy_surrendered": boolean,
                     "enemy_emoji": "string",
                     "identity_enemy_emoji": "string",
-                    "identity_hero_emoji": "string"
+                    "identity_hero_emoji": "string",
+                    "case_truth": "string (可选，如果在 narrative 无法完全放下，可放在这里作为补充)"
                 }
                 `
             },
@@ -892,22 +481,35 @@
                 【背景：最終審判】
                 - 舞台は最終法廷。常識的な論理ムジュンを使用。
 
+                【RULE #0: 強制出力】
+                1. **Prologueの修正**: GENERATE_PROLOGUE 指令の際、必ず 'narrative'（事件ファイル）と 'enemy_dialogue'（被告の最初の弁明）の両方を返してください。
+                2. **動的証拠生成**: 
+                   - [Inventory Count] < 3: **2-3個** の新証拠を生成。
+                   - [Inventory Count] 3-5: 1-2個 生成。
+                   - [Inventory Count] > 5: 0-1個 生成。
+
                 【仕組み：証拠と人間関係】
                 1. **完全なファイル**: Prologueでは、被害者、容疑者、**二人の人間関係**、犯行現場の全貌を詳述してください。
                 2. **証拠形式 (必須)**: ナレーション中で必ず **{{証拠名|詳細な説明文}}** の形式で証拠を提示すること。
                    - 例：{{ナイフ|血痕が付着している}}
                 3. **開幕**: Prologueでは **2-3個** の異なる証拠を一気に生成。
-                4. **緊急補充**: [Player Inventory] < 2 の場合、必ず新規証拠を生成。
 
                 【仕組み：真偽とロック】
                 - **真の綻び**: 論破可能な綻びは1つだけ。
                 - **偽の綻び**: **1-2個** の [[偽の綻び]] を混ぜる。
                 - **HPロック**: 10%でロック。致命的な綻びで0に。
 
+                【Phase 3: 敗北と自白】
+                - **条件**: BossのHPが0になった時。
+                - **行動**: 犯人は**完全に自白**する。
+                - **内容**: 
+                  1. **enemy_dialogue**: 崩れ落ちた犯人の独白。**犯行動機**と心理を詳細に語る。
+                  2. **narrative (重要)**: **【事件の真相レポート】**を出力。
+                     - トリック、時系列、動機を完全に解説し、小説の結末のように物語を完結させる。
+
                 【判定】
                 1. **STRICT**: 正解。Bossダメージ。証拠消費、ムジュン解決（灰色化）。
                    - **重要**: "logic_explanation" フィールドに論破の理由を記述。
-                   - **必須**: resolved_statement は元のテキスト（句読点なし）を返してください。
                 2. **FUZZY**: 曖昧。Boss微小ダメージ。
                 3. **QUERY**: 証拠不使用。プレイヤー5%ダメージ。
                 4. **MISS**: 不正解。プレイヤー10%ダメージ。
@@ -918,15 +520,16 @@
                     "hero_dmg_taken": int,
                     "enemy_dmg_taken": int,
                     "narrative": "string (詳細な事件ファイル/戦況。証拠タグ必須)",
-                    "enemy_dialogue": "string (含 1真[[綻び]] + 1-2偽[[綻び]])",
+                    "enemy_dialogue": "string (含 1真[[綻び]] + 1-2偽[[綻び]]。HP0で自白)",
                     "suspect_name": "string",
                     "removed_evidence": "string (名前のみ)",
-                    "resolved_statement": "string (句読点なしの原文)",
+                    "resolved_statement": "string",
                     "logic_explanation": "string (STRICT時のみ)",
                     "enemy_surrendered": boolean,
                     "enemy_emoji": "string",
                     "identity_enemy_emoji": "string",
-                    "identity_hero_emoji": "string"
+                    "identity_hero_emoji": "string",
+                    "case_truth": "string (Optional)"
                 }
                 `
             },
@@ -944,21 +547,33 @@
                 【Setting: Final Judgment】
                 - Scene: Final Courtroom. Common sense logic contradictions only.
 
+                【RULE #0: MANDATORY OUTPUT】
+                1. **Prologue Fix**: When "GENERATE_PROLOGUE", you MUST return both 'narrative' (Case File) AND 'enemy_dialogue' (Opening Plea). 
+                2. **Dynamic Evidence Spawn**:
+                   - If [Inventory Count] < 3: Generate **2-3** new items.
+                   - If [Inventory Count] 3-5: Generate 1-2 new items.
+                   - If [Inventory Count] > 5: Generate 0-1 new items.
+
                 【Mechanic: Narrative & Full Context】
-                1. **Full Dossier**: In Prologue, you MUST detail the Victim, Suspect, their **Relationship**, and Crime Scene fully.
+                1. **Full Dossier**: In Prologue, detail Victim, Suspect, **Relationship**, and Crime Scene.
                 2. **Evidence Format**: **{{Name|Detailed Description}}**.
                 3. **Start**: In Prologue, generate **2-3 items** of evidence.
-                4. **Evidence Refill**: If [Player Inventory] < 2, generate new evidence immediately.
 
                 【Mechanic: Real vs Fake】
                 - **Real Weak Point**: Only 1 statement is the true contradiction.
                 - **Red Herrings**: Include **1-2 [[Fake Weak Points]]**.
                 - **HP Lock**: Lock at 10%. Fatal Weak Point to kill.
 
+                【Phase 3: Defeat & Confession】
+                - **Trigger**: When Boss HP reaches 0.
+                - **Action**: The Suspect MUST **Breakdown and Confess**.
+                - **Content**:
+                  1. **enemy_dialogue**: The complete **Motive** and psychological state. No more lies.
+                  2. **narrative**: A full **【Case Reconstruction Report】**. Explain the trick, timeline, and motive from a god's eye view to conclude the story.
+
                 【Judgment】
                 1. **STRICT**: Correct. Boss dmg. Evidence removed. Statement resolved (Gray).
                    - **IMPORTANT**: Return "logic_explanation" explaining the logic.
-                   - **CRITICAL**: resolved_statement MUST match the original text WITHOUT punctuation.
                 2. **FUZZY**: Vague. Boss 1% dmg.
                 3. **QUERY**: No evidence. Player -5% HP.
                 4. **MISS**: Wrong. Player -10% HP.
@@ -972,19 +587,22 @@
                     "enemy_dialogue": "string (with 1 real [[Statement]] + 1-2 fake [[Statement]])",
                     "suspect_name": "string",
                     "removed_evidence": "string (name only)",
-                    "resolved_statement": "string (no punctuation)",
+                    "resolved_statement": "string",
                     "logic_explanation": "string (Strict only)",
                     "enemy_surrendered": boolean,
                     "enemy_emoji": "string",
                     "identity_enemy_emoji": "string",
-                    "identity_hero_emoji": "string"
+                    "identity_hero_emoji": "string",
+                    "case_truth": "string (Optional)"
                 }
                 `
             }
         };
 
         // ================= DEV MODE LOGIC =================
-        window.promptDevMode = function () {
+        let devLogData = []; 
+
+        window.promptDevMode = function() {
             const code = prompt("ENTER ACCESS CODE:", "");
             if (code === "dev") {
                 const consoleDiv = document.getElementById('dev-console');
@@ -995,25 +613,24 @@
             }
         };
 
-        window.closeDevConsole = function () {
+        window.closeDevConsole = function() {
             const consoleDiv = document.getElementById('dev-console');
             const triggerBtn = document.getElementById('dev-trigger');
             consoleDiv.classList.remove('open');
             triggerBtn.style.display = 'flex';
         };
 
-        window.clearDevLog = function () {
+        window.clearDevLog = function() {
             document.getElementById('dev-content').innerHTML = "";
+            devLogData = [];
         };
 
-        window.downloadDevLog = function () {
-            const content = document.getElementById('dev-content');
-            if (!content) return;
-
-            const entries = Array.from(content.querySelectorAll('.log-entry'));
-            const text = entries.map(e => e.innerText.trim()).filter(Boolean).reverse().join('\r\n\r\n');
-
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        window.downloadDevLog = function() {
+            if (devLogData.length === 0) {
+                alert("No logs to download.");
+                return;
+            }
+            const blob = new Blob([devLogData.join('\n')], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -1021,24 +638,27 @@
             a.download = `dev-log-${ts}.txt`;
             document.body.appendChild(a);
             a.click();
-            a.remove();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
         };
 
         function logDev(type, content) {
             const consoleContent = document.getElementById('dev-content');
             if (!consoleContent) return;
+            
+            const logString = `[${type}] ${new Date().toLocaleTimeString()} - ${typeof content === 'object' ? JSON.stringify(content, null, 2) : content}`;
+            devLogData.push(logString);
 
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-
+            
             let html = `<span class="log-label">[${type}] ${new Date().toLocaleTimeString()}</span>`;
             if (typeof content === 'object') {
                 html += `<span class="log-json">${JSON.stringify(content, null, 2)}</span>`;
             } else {
                 html += `<span>${content}</span>`;
             }
-
+            
             entry.innerHTML = html;
             consoleContent.insertBefore(entry, consoleContent.firstChild);
         }
@@ -1047,7 +667,7 @@
         class GeminiAdapter {
             constructor(apiKey, systemPrompt) {
                 this.genAI = new GoogleGenerativeAI(apiKey);
-                this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: systemPrompt, generationConfig: { responseMimeType: "application/json" } });
+                this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction: systemPrompt, generationConfig: { responseMimeType: "application/json" }});
                 this.chat = this.model.startChat({ history: [] });
             }
             async sendMessage(msg) { return JSON.parse((await this.chat.sendMessage(msg)).response.text()); }
@@ -1075,27 +695,26 @@
         // ================= STATE & LOGIC =================
         let currentLang = 'zh';
         let aiAdapter = null;
-        let gameState = {
-            heroHp: 100,
-            enemyHp: 100,
+        let gameState = { 
+            heroHp: 100, 
+            enemyHp: 100, 
             isOver: false,
             suspectName: null,
-            fixedHeroEmoji: null,
-            fixedEnemyEmoji: null
+            fixedHeroEmoji: null, 
+            fixedEnemyEmoji: null,
+            fatalTurnCount: 0 // 记录进入10%血量后的回合数
         };
-        // 存储结构：Key=证据名, Value=证据详情
-        let evidenceMap = new Map();
-        let usedEvidenceSet = new Set();
-        // 存储已解决的破绽详情，用于回溯
+        let evidenceMap = new Map(); 
+        let usedEvidenceSet = new Set(); 
         let resolvedStatementsMap = new Map();
 
-        window.setLanguage = (lang) => {
-            currentLang = lang;
+        window.setLanguage = (lang) => { 
+            currentLang = lang; 
             updateTexts();
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('config-screen').style.display = 'flex';
+            document.getElementById('start-screen').style.display='none'; 
+            document.getElementById('config-screen').style.display='flex'; 
         };
-
+        
         window.updatePlaceholder = () => {
             const p = document.getElementById('provider-select').value;
             const i = document.getElementById('api-key-input');
@@ -1117,9 +736,9 @@
             const key = document.getElementById('api-key-input').value.trim();
             const status = document.getElementById('api-status');
             const sysPrompt = i18n[currentLang].systemPrompt;
-
-            if (!key) return status.innerText = "KEY REQUIRED";
-
+            
+            if(!key) return status.innerText = "KEY REQUIRED";
+            
             status.innerText = "CONNECTING...";
             status.style.color = "var(--neon-yellow)";
 
@@ -1136,32 +755,32 @@
                 status.style.color = "var(--neon-cyan)";
                 setTimeout(startPrologue, 800);
 
-            } catch (e) {
+            } catch(e) {
                 status.innerText = "ERROR: " + e.message;
                 status.style.color = "var(--neon-pink)";
             }
         };
 
         async function startPrologue() {
-            document.getElementById('config-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'flex';
-            updateEvidenceUI();
-
+            document.getElementById('config-screen').style.display='none';
+            document.getElementById('game-screen').style.display='flex';
+            updateEvidenceUI(); 
+            
             document.getElementById('chat-log').innerHTML = `<div class="system-msg" style="text-align:center; color:#555;">${i18n[currentLang].welcome}</div>`;
-
+            
             handlePlayerAction("[SYSTEM: GENERATE_PROLOGUE]");
         }
 
         document.getElementById('send-btn').onclick = () => handlePlayerAction();
-        document.getElementById('player-input').onkeypress = (e) => { if (e.key === 'Enter') handlePlayerAction(); };
+        document.getElementById('player-input').onkeypress = (e) => { if(e.key==='Enter') handlePlayerAction(); };
 
         // --- Tooltip Logic ---
         const tooltip = document.getElementById('tooltip');
         function showTooltip(e, text, isLogicBreak = false) {
-            if (!text) return;
+            if(!text) return;
             tooltip.style.display = 'block';
             tooltip.innerHTML = text;
-            if (isLogicBreak) tooltip.classList.add('logic-break');
+            if(isLogicBreak) tooltip.classList.add('logic-break');
             else tooltip.classList.remove('logic-break');
             moveTooltip(e);
         }
@@ -1187,7 +806,7 @@
             if (!text) return;
 
             if (!hiddenCommand) {
-                appendChatBubble(text, 'hero');
+                appendChatBubble(text, 'hero'); 
                 inputField.value = '';
             }
 
@@ -1202,13 +821,21 @@
             let usedDesc = Array.from(usedEvidenceSet).join(", ");
 
             const isFatalPhase = gameState.enemyHp <= 10;
+            // 修正后的库存数量统计
+            const inventoryCount = evidenceMap.size;
+            
+            if (isFatalPhase) {
+                gameState.fatalTurnCount++;
+            }
 
             const turnInfo = `
 [Turn ID: ${Date.now()}]
 [Status] HeroHP:${gameState.heroHp}, EnemyHP:${gameState.enemyHp}.
 [Suspect] ${gameState.suspectName || "Unknown"}
 [Player Inventory] ${inventoryDesc || "Empty"}
-[Used Evidence (Do NOT Generate)] ${usedDesc || "None"}
+[Inventory Count] ${inventoryCount}
+[Used Evidence] ${usedDesc || "None"}
+[Fatal Phase Turn Count] ${gameState.fatalTurnCount}
 [Phase] ${isFatalPhase ? "FATAL PHASE (HP=10%) - Generate Fatal Weak Point!" : "NORMAL PHASE"}
 [Input] "${text}"
 
@@ -1222,6 +849,8 @@
 4. **Fatal Phase**: If HP=10% and STRICT hit, reduce HP to 0 (Confession).
 5. **Solvability**: Ensure at least one active [[Statement]] contradicts an item in [Player Inventory].
 6. **Refill**: If Inventory count < 2, generate new {{Evidence}}.
+7. **End Game**: If HP reaches 0, output full case report in 'narrative' or 'case_truth'.
+8. **IMPORTANT**: Output must use keys 'enemy_dialogue' and 'narrative'. DO NOT use 'hero_dialogue'.
 `;
             logDev("REQUEST", turnInfo);
 
@@ -1235,11 +864,22 @@
                 appendSystemMessage(`⚠️ SIGNAL LOST: ${error.message}`);
             } finally {
                 loader.style.display = 'none';
-                if (!hiddenCommand) inputField.focus();
+                if(!hiddenCommand) inputField.focus();
             }
         }
 
         function processTurnResult(data) {
+            // V30 稳定性修复：容错处理 key 名不对的情况
+            if (!data.enemy_dialogue && data.hero_dialogue) {
+                data.enemy_dialogue = data.hero_dialogue; // AI 犯傻时自动修正
+                logDev("AUTO-FIX", "Mapped hero_dialogue to enemy_dialogue");
+            }
+            
+            // V30 稳定性修复：旁白缺失时的默认值
+            if (!data.narrative && !data.case_truth) {
+                data.narrative = "（系统提示：数据流重组中...请继续你的推理）";
+            }
+
             // 1. 身份
             if (data.identity_enemy_emoji && !gameState.fixedEnemyEmoji) {
                 gameState.fixedEnemyEmoji = filterEmoji(data.identity_enemy_emoji);
@@ -1252,56 +892,63 @@
             if (data.suspect_name && !gameState.suspectName) {
                 gameState.suspectName = data.suspect_name;
                 document.getElementById('enemy-name-ui').innerText = gameState.suspectName;
+            } else if (gameState.suspectName) {
+                document.getElementById('enemy-name-ui').innerText = gameState.suspectName;
             }
 
             // 2. 血量
-            let heroDmg = data.hero_dmg_taken || 0;
+            let heroDmg = Number(data.hero_dmg_taken);
+            if (isNaN(heroDmg)) heroDmg = 0;
             gameState.heroHp = Math.min(100, Math.max(0, gameState.heroHp - heroDmg));
 
-            let enemyDmg = data.enemy_dmg_taken || 0;
+            let enemyDmg = Number(data.enemy_dmg_taken);
+            if (isNaN(enemyDmg)) {
+                // 回退策略：根据攻击类型估算伤害
+                if (data.attack_type === 'strict') enemyDmg = 20;
+                else if (data.attack_type === 'fuzzy') enemyDmg = 1;
+                else enemyDmg = 0;
+            }
             let nextEnemyHp = gameState.enemyHp - enemyDmg;
 
             if (gameState.enemyHp > 10 && nextEnemyHp < 10) {
-                nextEnemyHp = 10;
+                nextEnemyHp = 10; 
                 appendSystemMessage("⚠️ MENTAL SHIELD CRITICAL - LOCKED AT 10%");
             } else if (gameState.enemyHp <= 10 && nextEnemyHp < 0) {
                 if (data.attack_type === 'strict') nextEnemyHp = 0;
-                else nextEnemyHp = Math.max(1, nextEnemyHp);
+                else nextEnemyHp = Math.max(1, nextEnemyHp); 
             }
             gameState.enemyHp = Math.max(0, nextEnemyHp);
 
             updateStatusUI();
-
+            
             // 3. 移除证物
             let usedEvDetail = "Details not available.";
             let usedEvName = data.removed_evidence || "Unknown Evidence";
 
             if (data.attack_type === 'strict' && data.removed_evidence) {
                 logDev("ACTION", `Removing Evidence: ${data.removed_evidence}`);
-
-                // 查找并获取详情，然后删除
+                
                 let targetKey = null;
                 for (let [key, val] of evidenceMap.entries()) {
                     if (key.includes(data.removed_evidence) || data.removed_evidence.includes(key)) {
                         targetKey = key;
-                        usedEvDetail = val; // 获取详情
+                        usedEvDetail = val; 
                         break;
                     }
                 }
-
+                
                 if (targetKey) {
                     evidenceMap.delete(targetKey);
                     usedEvidenceSet.add(targetKey);
-                    usedEvName = targetKey; // 使用更准确的本地名称
+                    usedEvName = targetKey; 
                 }
-
+                
                 updateEvidenceUI();
                 markEvidenceAsUsedInDOM(data.removed_evidence);
             }
 
-            // 4. 破绽变灰 & 绑定完整逻辑解释 & 存入历史库
+            // 4. 破绽变灰
             if (data.attack_type === 'strict' && data.resolved_statement) {
-                // 存入全局解析库，方便后续自动识别
                 const cleanStmt = normalizeText(data.resolved_statement);
                 resolvedStatementsMap.set(cleanStmt, {
                     logic: data.logic_explanation,
@@ -1310,25 +957,33 @@
                 });
 
                 markStatementAsResolvedInDOM(
-                    data.resolved_statement,
-                    data.logic_explanation,
-                    usedEvName,
+                    data.resolved_statement, 
+                    data.logic_explanation, 
+                    usedEvName, 
                     usedEvDetail
                 );
             }
 
-            // 5. 渲染 (Narrative + Dialogue)
-            if (data.narrative && data.narrative.trim()) {
-                appendNarrative(data.narrative);
+            // 5. 渲染
+            const isEnding = (gameState.enemyHp <= 0 || data.enemy_surrendered);
+
+            if (data.case_truth && data.case_truth.trim()) {
+                 appendNarrative(data.case_truth, true);
+            } else if (data.narrative && data.narrative.trim()) {
+                 appendNarrative(data.narrative, isEnding);
             }
+
             if (data.enemy_dialogue && data.enemy_dialogue.trim()) {
                 const emotionEmoji = filterEmoji(data.enemy_emoji || gameState.fixedEnemyEmoji || "😈");
                 appendChatBubble(data.enemy_dialogue, 'enemy', emotionEmoji);
+            } else if (!isEnding) {
+                // 如果 AI 连话都没说，强制显示一个错误提示
+                appendSystemMessage("⚠️ 数据解析异常: 对方沉默了 (JSON Error)");
             }
 
             // 6. 判定
             if (gameState.enemyHp <= 10 && nextEnemyHp <= 10 && gameState.enemyHp > 0) {
-                appendSystemMessage("🔥 FATAL PHASE ACTIVE: FIND THE FINAL WEAK POINT!");
+                 appendSystemMessage("🔥 FATAL PHASE ACTIVE: FIND THE FINAL WEAK POINT!");
             }
 
             if (gameState.enemyHp <= 0 || data.enemy_surrendered) {
@@ -1347,10 +1002,9 @@
             return str.replace(/[a-zA-Z0-9\u4e00-\u9fa5]/g, '').trim() || str.substring(0, 2);
         }
 
-        // 核心辅助函数：标准化文本（去除标点）
         function normalizeText(text) {
             if (!text) return "";
-            return text.replace(/[.,;!?，。；！？\s]/g, "");
+            return text.replace(/[.,;!?，。；！？\s]/g, ""); 
         }
 
         // ================= UI Helpers =================
@@ -1375,8 +1029,7 @@
             const spans = document.querySelectorAll('.highlight-statement');
             let count = 0;
             const targetClean = normalizeText(stmtText);
-
-            // 构建丰富的 Tooltip 内容
+            
             const tooltipContent = `
 <strong style="color:var(--neon-yellow)">LOGIC BREAK</strong>
 ${explanation || "Logic crushed successfully."}
@@ -1388,7 +1041,6 @@ ${explanation || "Logic crushed successfully."}
 
             spans.forEach(span => {
                 const spanClean = normalizeText(span.innerText);
-                // 使用模糊匹配：只要核心文字重叠就算
                 if (spanClean.includes(targetClean) || targetClean.includes(spanClean)) {
                     span.classList.add('resolved');
                     if (explanation) {
@@ -1401,23 +1053,24 @@ ${explanation || "Logic crushed successfully."}
             logDev("DOM", `Resolved ${count} statements for '${stmtText}'`);
         }
 
-        function appendNarrative(text) {
+        function appendNarrative(text, isFinal = false) {
             const log = document.getElementById('chat-log');
             const div = document.createElement('div');
             div.className = 'narrative-box';
-
+            if (isFinal) div.classList.add('final');
+            
             const label = document.createElement('span');
             label.className = 'narrative-label';
-            label.innerText = "COURT RECORD";
+            label.innerText = isFinal ? "CASE VERDICT / 结案报告" : "COURT RECORD";
             div.appendChild(label);
 
             const parts = text.split(/(\{\{.*?\}\})/g);
-
+            
             parts.forEach(part => {
                 if (part.startsWith('{{') && part.endsWith('}}')) {
                     const inner = part.slice(2, -2);
                     const splitIdx = inner.indexOf('|');
-
+                    
                     let name, detail;
                     if (splitIdx > -1) {
                         name = inner.substring(0, splitIdx);
@@ -1431,12 +1084,11 @@ ${explanation || "Logic crushed successfully."}
                     span.className = 'highlight-evidence';
                     span.innerText = name;
                     span.setAttribute('data-name', name);
-
-                    // 检查状态：已使用 > 已拥有 > 未拥有
+                    
                     if (usedEvidenceSet.has(name)) {
                         span.classList.add('used');
                     } else if (evidenceMap.has(name)) {
-                        span.classList.add('collected');
+                        span.classList.add('collected'); 
                         span.onmousemove = (e) => showTooltip(e, `<strong>${name}</strong><br>${detail}`);
                         span.onmouseleave = hideTooltip;
                     } else {
@@ -1458,7 +1110,7 @@ ${explanation || "Logic crushed successfully."}
             const log = document.getElementById('chat-log');
             const row = document.createElement('div');
             row.className = `bubble-row ${role}`;
-
+            
             if (role === 'enemy' && avatarEmoji) {
                 const avatar = document.createElement('div');
                 avatar.className = 'bubble-avatar';
@@ -1477,11 +1129,10 @@ ${explanation || "Logic crushed successfully."}
                         const span = document.createElement('span');
                         span.className = 'highlight-statement';
                         span.innerText = content;
-
-                        // V22: 自动检查是否已被击破过 (使用 normalize 提高命中率)
+                        
                         const contentClean = normalizeText(content);
                         let historyData = null;
-
+                        
                         for (let [resolvedText, data] of resolvedStatementsMap) {
                             if (contentClean.includes(resolvedText) || resolvedText.includes(contentClean)) {
                                 historyData = data;
@@ -1490,7 +1141,6 @@ ${explanation || "Logic crushed successfully."}
                         }
 
                         if (historyData) {
-                            // 自动标记为已解决
                             span.classList.add('resolved');
                             const tooltipContent = `
 <strong style="color:var(--neon-yellow)">LOGIC BREAK</strong>
@@ -1519,21 +1169,18 @@ ${historyData.logic}
         }
 
         function collectEvidence(name, detail) {
-            // V22 严格去重：如果已存在，直接返回
             if (evidenceMap.has(name) || usedEvidenceSet.has(name)) {
                 return;
             }
 
-            // FIFO: Max 5
-            if (evidenceMap.size >= 5) {
+            if (evidenceMap.size >= 7) {
                 const firstKey = evidenceMap.keys().next().value;
                 evidenceMap.delete(firstKey);
             }
 
             evidenceMap.set(name, detail);
             updateEvidenceUI();
-
-            // 立即刷新DOM，标记为已收集
+            
             const spans = document.querySelectorAll('.highlight-evidence');
             spans.forEach(span => {
                 if (span.getAttribute('data-name') === name && !span.classList.contains('used')) {
@@ -1546,7 +1193,7 @@ ${historyData.logic}
         function updateEvidenceUI() {
             const list = document.getElementById('evidence-list');
             list.innerHTML = '';
-
+            
             if (evidenceMap.size === 0) {
                 list.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8em; margin-top:20px;">${i18n[currentLang].emptyEvidence}</div>`;
                 return;
@@ -1563,7 +1210,7 @@ ${historyData.logic}
                 };
                 div.onmousemove = (e) => showTooltip(e, `<strong>${name}</strong><br>${detail}`);
                 div.onmouseleave = hideTooltip;
-
+                
                 list.appendChild(div);
             });
         }
@@ -1592,5 +1239,4 @@ ${historyData.logic}
         }
     </script>
 </body>
-
 </html>
