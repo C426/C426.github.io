@@ -119,12 +119,12 @@
         .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
         .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
 
-        /* BGM 按钮 */
+        /* BGM 按钮（标题画面隐藏，进入游戏后显示） */
         #bgm-mute {
             position: fixed; top: 18px; right: 20px; z-index: 4000;
             width: 42px; height: 42px; border-radius: 50%;
             background: rgba(0,0,0,0.6); color: var(--neon-cyan);
-            border: 1px solid var(--neon-cyan); display:flex; align-items:center; justify-content:center;
+            border: 1px solid var(--neon-cyan); display: none; align-items:center; justify-content:center;
             font-weight: 900; cursor: pointer; box-shadow: 0 0 10px rgba(0,255,213,0.08);
         }
         #bgm-mute.muted { background: rgba(80,80,80,0.9); color: #999; border-color: #666; }
@@ -818,7 +818,12 @@
             document.getElementById('config-screen').style.display='none';
             document.getElementById('game-screen').style.display='flex';
             updateEvidenceUI(); 
-            try { window.playBGM && window.playBGM(); } catch(e) { logDev('BGM', 'autoplay failed'); }
+            // 显示静音按钮并在用户交互后尝试播放 BGM
+            try {
+                const btn = document.getElementById('bgm-mute');
+                if (btn) btn.style.display = 'flex';
+                window.playBGM && window.playBGM();
+            } catch(e) { logDev('BGM', 'autoplay failed'); }
             
             document.getElementById('chat-log').innerHTML = `<div class="system-msg" style="text-align:center; color:#555;">${i18n[currentLang].welcome}</div>`;
             
