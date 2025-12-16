@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>論破 BATTLE</title>
+    <title>論破BATTLE</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -40,14 +40,6 @@
             backdrop-filter: blur(10px);
             border-radius: 4px;
         }
-        /* 全局返回主页按钮（页面左上角，视口外层） */
-        #global-back-btn {
-            position: fixed; left: 12px; top: 12px; z-index: 2000;
-            background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(0,255,213,0.12);
-            padding: 8px 12px; border-radius: 6px; text-decoration: none; font-weight: 800;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-        }
-        #global-back-btn:hover { transform: translateY(-2px); background: rgba(0,255,213,0.04); }
         .screen.active { display: flex; animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
         @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
@@ -98,21 +90,20 @@
         /* Tooltip (通用) */
         .evidence-tooltip {
             position: absolute; background: rgba(0, 0, 0, 0.98);
-            border: 1px solid var(--neon-blue); color: #fff; padding: 15px;
-            border-radius: 4px; font-size: 0.9em; max-width: 350px;
+            border: 1px solid var(--neon-blue); color: #fff; padding: 12px;
+            border-radius: 4px; font-size: 0.9em; max-width: 320px;
             z-index: 2000; pointer-events: none; display: none;
-            box-shadow: 0 0 25px rgba(41, 121, 255, 0.5);
-            white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6;
+            box-shadow: 0 0 20px rgba(41, 121, 255, 0.4);
+            white-space: pre-wrap; font-family: monospace; line-height: 1.5;
         }
-        .evidence-tooltip strong { display: block; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; font-size: 1.1em; letter-spacing: 1px;}
-        
+        .evidence-tooltip strong { color: var(--neon-blue); display: block; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 3px; font-size: 1.1em;}
         /* 论破解释的特殊样式 */
         .evidence-tooltip.logic-break {
             border-color: var(--neon-yellow);
-            box-shadow: 0 0 25px rgba(244, 208, 63, 0.5);
+            box-shadow: 0 0 20px rgba(244, 208, 63, 0.4);
         }
         .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
-        .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
+        .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 8px 0; }
 
         /* Developer Button */
         #dev-trigger {
@@ -280,7 +271,6 @@
     <script type="importmap">{ "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }</script>
 </head>
 <body>
-    <a id="global-back-btn" href="../index.html" title="返回主页面">◀ホームページ</a>
 
     <div id="tooltip" class="evidence-tooltip"></div>
 
@@ -388,7 +378,7 @@
                    - 描述必须包含用于推理的关键细节。
                 3. **开局爆发**：Prologue 必须一次性生成 **2-3 个** 不同的 {{证据}}。
                 4. **伏笔回收**：检查 [Player Inventory]。优先生成一个谎言，使其能被玩家**已有的旧证据**（或本轮新证据）击破。
-                5. **紧急补给 (EMERGENCY REFILL)**：如果玩家库存 [Inventory] < 2，无论剧情如何，必须在旁白中生成新的 {{证据}}。
+                5. **紧急补给**：如果玩家库存 [Inventory] < 2，无论剧情如何，必须在旁白中生成新的 {{证据}}。
 
                 【机制：真假破绽与锁血】
                 - **真破绽**：Boss证词中**只有 1 个**是真正的破绽，能被当前可用证据击破。
@@ -437,7 +427,8 @@
 
                 【仕組み：証拠と人間関係】
                 1. **完全なファイル**: Prologueでは、被害者、容疑者、**二人の人間関係**、犯行現場の全貌を詳述してください。
-                2. **証拠形式**: **{{証拠名|詳細な説明文}}**。
+                2. **証拠形式 (必須)**: ナレーション中で必ず **{{証拠名|詳細な説明文}}** の形式で証拠を提示すること。
+                   - 例：{{ナイフ|血痕が付着している}}
                 3. **開幕**: Prologueでは **2-3個** の異なる証拠を一気に生成。
                 4. **緊急補充**: [Player Inventory] < 2 の場合、必ず新規証拠を生成。
 
@@ -458,7 +449,7 @@
                     "attack_type": "strict" | "fuzzy" | "query" | "miss" | "prologue",
                     "hero_dmg_taken": int,
                     "enemy_dmg_taken": int,
-                    "narrative": "string (詳細な事件ファイル/戦況)",
+                    "narrative": "string (詳細な事件ファイル/戦況。証拠タグ必須)",
                     "enemy_dialogue": "string (含 1真[[綻び]] + 1-2偽[[綻び]])",
                     "suspect_name": "string",
                     "removed_evidence": "string (名前のみ)",
@@ -488,7 +479,8 @@
                 【Mechanic: Narrative & Full Context】
                 1. **Full Dossier**: In Prologue, you MUST detail the Victim, Suspect, their **Relationship**, and Crime Scene fully.
                 2. **Evidence Format**: **{{Name|Detailed Description}}**.
-                3. **Evidence Refill**: If [Player Inventory] < 2, generate new evidence immediately.
+                3. **Start**: In Prologue, generate **2-3 items** of evidence.
+                4. **Evidence Refill**: If [Player Inventory] < 2, generate new evidence immediately.
 
                 【Mechanic: Real vs Fake】
                 - **Real Weak Point**: Only 1 statement is the true contradiction.
@@ -596,7 +588,7 @@
         };
         // 存储结构：Key=证据名, Value=证据详情
         let evidenceMap = new Map(); 
-        let usedEvidenceSet = new Set(); // 存储已使用的证物名称（不做详情存储，详情直接拿去展示了）
+        let usedEvidenceSet = new Set(); 
 
         window.setLanguage = (lang) => { 
             currentLang = lang; 
@@ -715,7 +707,7 @@
 [Turn ID: ${Date.now()}]
 [Status] HeroHP:${gameState.heroHp}, EnemyHP:${gameState.enemyHp}.
 [Suspect] ${gameState.suspectName || "Unknown"}
-[Player Inventory (Count: ${evidenceMap.size})] ${inventoryDesc || "Empty"}
+[Inventory] ${inventoryDesc || "Empty"}
 [Phase] ${isFatalPhase ? "FATAL PHASE (HP=10%) - Generate Fatal Weak Point!" : "NORMAL PHASE"}
 [Input] "${text}"
 
@@ -986,6 +978,7 @@ ${explanation || "Logic crushed successfully."}
             while (evidenceMap.has(finalName) || usedEvidenceSet.has(finalName)) {
                 count++;
                 // 如果原始名字已经包含数字结尾，去掉它再加新的
+                // 简单正则：如果结尾是 空格+数字，就去掉
                 finalName = name.replace(/ \d+$/, '') + ` ${count.toString().padStart(2, '0')}`;
             }
 
