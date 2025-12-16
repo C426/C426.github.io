@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Court: 論破バトル V30 (Stable Fix)</title>
+    <title>論破バトル</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -118,6 +118,16 @@
         }
         .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
         .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
+
+        /* BGM 按钮 */
+        #bgm-mute {
+            position: fixed; top: 18px; right: 20px; z-index: 4000;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan); display:flex; align-items:center; justify-content:center;
+            font-weight: 900; cursor: pointer; box-shadow: 0 0 10px rgba(0,255,213,0.08);
+        }
+        #bgm-mute.muted { background: rgba(80,80,80,0.9); color: #999; border-color: #666; }
 
         /* Developer Button */
         #dev-trigger {
@@ -306,6 +316,7 @@
 <body>
 
     <a id="back-btn" href="../index.html">◀ HOME</a>
+    <button id="bgm-mute" title="静音/恢复音乐">♪</button>
 
     <div id="tooltip" class="evidence-tooltip"></div>
 
@@ -322,6 +333,8 @@
         </div>
         <div id="dev-content"></div>
     </div>
+
+    <audio id="bgm-audio" src="audio/bgm.mp3" loop preload="auto"></audio>
 
     <div id="start-screen" class="screen active">
         <h1>論破 BATTLE</h1>
@@ -663,6 +676,46 @@
             consoleContent.insertBefore(entry, consoleContent.firstChild);
         }
 
+        // ================= BGM 控制 =================
+        window.playBGM = async function() {
+            const a = document.getElementById('bgm-audio');
+            const btn = document.getElementById('bgm-mute');
+            if (!a) return;
+            try {
+                a.volume = 0.6;
+                const p = a.play();
+                if (p && p.then) await p;
+                if (btn) btn.classList.remove('muted');
+                logDev('BGM', 'play');
+            } catch (e) {
+                logDev('BGM', `play failed: ${e.message}`);
+            }
+        };
+
+        window.stopBGM = function() {
+            const a = document.getElementById('bgm-audio');
+            const btn = document.getElementById('bgm-mute');
+            if (!a) return;
+            a.pause();
+            a.currentTime = 0;
+            if (btn) btn.classList.add('muted');
+            logDev('BGM', 'stopped');
+        };
+
+        window.toggleBgmMute = function() {
+            const a = document.getElementById('bgm-audio');
+            if (!a) return;
+            if (a.paused) window.playBGM();
+            else window.stopBGM();
+        };
+
+        // attach to button
+        (function(){
+            const btn = document.getElementById('bgm-mute');
+            if (!btn) return;
+            btn.onclick = () => { window.toggleBgmMute(); };
+        })();
+
         // ================= ADAPTERS =================
         class GeminiAdapter {
             constructor(apiKey, systemPrompt) {
@@ -765,6 +818,7 @@
             document.getElementById('config-screen').style.display='none';
             document.getElementById('game-screen').style.display='flex';
             updateEvidenceUI(); 
+            try { window.playBGM && window.playBGM(); } catch(e) { logDev('BGM', 'autoplay failed'); }
             
             document.getElementById('chat-log').innerHTML = `<div class="system-msg" style="text-align:center; color:#555;">${i18n[currentLang].welcome}</div>`;
             
