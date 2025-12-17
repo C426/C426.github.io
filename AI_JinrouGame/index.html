@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI人狼ゲーム</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+      body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+      .font-mono { font-family: 'JetBrains Mono', monospace; }
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      .model-checkbox:checked + div { background-color: #9333ea; border-color: #9333ea; color: white; }
+            /* 返回主页面按钮 */
+            .home-btn {
+                position: fixed; top: 16px; left: 16px; z-index: 9999;
+                background: rgba(255,255,255,0.06); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.06);
+                padding: 8px 12px; border-radius: 8px; font-weight: 700; text-decoration: none;
+                display: inline-flex; align-items: center; gap: 8px;
+            }
+            .home-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
+    </style>
+
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <a href="../index.html" class="home-btn">◀ 返回主页面</a>
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+    /***********************************************************
+     * 1. CONSTANTS & CONFIG
+     ***********************************************************/
+    const { useState, useEffect, useRef } = React;
+    const generateId = () => Math.random().toString(36).substr(2, 9);
+    
+    const Role = { VILLAGER: 'Villager', WEREWOLF: 'Werewolf' };
+    const ModelProvider = { GEMINI: 'gemini', SILICONFLOW: 'siliconflow', OLLAMA: 'ollama', OFFLINE: 'offline' };
+
+    const SILICON_MODELS = [
+        { id: 'deepseek-ai/DeepSeek-V3', name: 'DeepSeek V3', short: 'DS-V3' },
+        { id: 'Qwen/Qwen2.5-7B-Instruct', name: 'Qwen 2.5 7B', short: 'Qwen-7B' },
+        { id: 'Qwen/Qwen2.5-72B-Instruct', name: 'Qwen 2.5 72B', short: 'Qwen-72B' },
+        { id: 'THUDM/glm-4-9b-chat', name: 'GLM-4 9B', short: 'GLM-4' }
+    ];
+
+    const GamePhase = {
+        SETUP: 'SETUP', DAY_INTRO: 'DAY_INTRO', DAY_DISCUSSION: 'DAY_DISCUSSION',
+        DAY_VOTE: 'DAY_VOTE', NIGHT_ACTION: 'NIGHT_ACTION', GAME_OVER: 'GAME_OVER'
+    };
+
+    const NAMES = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Lily"];
+
+    /***********************************************************
+     * 2. I18N
+     ***********************************************************/
+    const UI_LABELS = {
+      en: {
+        title: "AI Werewolf", subtitle: "Stable Core Edition (Rate-Limit Safe)",
+        playerCount: "Players (3-12)", maxRounds: "Rounds/Day",
+        playAsChar: "Play?", yes: "Yes", no: "No (Spectator)",
+        geminiPlaceholder: "Gemini Key (Optional)",
+        siliconPlaceholder: "SiliconFlow Key (Required)",
+        siliconLabel: "Select Models (Randomly assigned):",
+        useOllama: "Local AI (Ollama)", devMode: "Dev Mode (Logs)",
+        startGame: "Start Game", villageLog: "Village Log",
+        chatPlaceholder: "Speak...", send: "Send",
+        day: "DAY", night: "NIGHT", dayCount: "Day {count}",
+        votePrompt: "CLICK TO VOTE", votingProgress: "VOTING IN PROGRESS...", killPrompt: "CHOOSE VICTIM",
+        villagerWin: "VILLAGERS WIN", werewolfWin: "WEREWOLVES WIN", playAgain: "Play Again",
+        you: "YOU", [Role.VILLAGER]: "Villager", [Role.WEREWOLF]: "Werewolf",
+        gameStarted: "Game Started. Total: {total}. Wolves: {wolves}.",
+        discussionEnd: "Discussion ended.", roundStart: "--- Round {round} / {total} ---",
+        executed: "{name} executed ({votes} votes).", foundDead: "{name} found dead.",
+        missingKeys: "No keys? Starting Offline Mode.", downloadLogs: "Download Logs",
+        devConsole: "Dev Console", offlineNotice: "Offline Mode.", speechError: "⚠️ Connection Error",
+        testConnection: "Test Keys", testing: "Testing...", connectionOk: "OK", connectionFail: "Fail",
+        voteSummary: "--- Voting Results ---",
+        rateLimitWarn: "⏳ Rate limit hit, retrying..."
+      },
+      zh: {
+        title: "AI 狼人杀", subtitle: "稳定核心版 (防频控+自动重试)",
+        playerCount: "玩家人数 (3-12)", maxRounds: "每日发言轮数",
+        playAsChar: "亲自参战?", yes: "是", no: "否 (观战模式)",
+        geminiPlaceholder: "Gemini Key (选填)",
+        siliconPlaceholder: "硅基流动 (SiliconFlow) Key (推荐)",
+        siliconLabel: "选择 AI 模型 (开局随机分配):",
+        useOllama: "启用本地 AI (Ollama)", devMode: "开发者模式 (完整日志)",
+        startGame: "开始游戏", villageLog: "村庄日志",
+        chatPlaceholder: "发言...", send: "发送",
+        day: "白天", night: "夜晚", dayCount: "第 {count} 天",
+        votePrompt: "点击玩家进行投票", votingProgress: "等待其他玩家投票中...", killPrompt: "选择猎杀目标",
+        villagerWin: "村民胜利", werewolfWin: "狼人胜利", playAgain: "再玩一次",
+        you: "你", [Role.VILLAGER]: "村民", [Role.WEREWOLF]: "狼人",
+        gameStarted: "【游戏开始】本局共 {total} 人，其中 {wolves} 人是狼人。",
+        discussionEnd: "讨论结束，进入投票。", roundStart: "--- 第 {round} / {total} 轮 ---",
+        executed: "{name} 被高票处决 ({votes}票)。", foundDead: "天亮了，{name} 惨遭毒手。",
+        missingKeys: "未检测到 Key，将启动离线模拟模式。", downloadLogs: "下载日志 (TXT)",
+        devConsole: "后台日志", offlineNotice: "当前为离线模拟模式。", speechError: "⚠️ 连接中断",
+        testConnection: "测试连接", testing: "测试中...", connectionOk: "正常", connectionFail: "失败",
+        voteSummary: "--- 投票结果公示 ---",
+        rateLimitWarn: "⏳ 触发频率限制，正在自动重试..."
+      },
+      ja: {
+        title: "AI 人狼", subtitle: "安定版 (レート制限対策済み)",
+        playerCount: "人数 (3-12)", maxRounds: "議論ラウンド",
+        playAsChar: "参加しますか？", yes: "はい", no: "いいえ (観戦)",
+        geminiPlaceholder: "Gemini Key (任意)",
+        siliconPlaceholder: "SiliconFlow Key (推奨)",
+        siliconLabel: "AIモデル選択 (ランダム割当):",
+        useOllama: "ローカルAI (Ollama)", devMode: "開発モード (ログ)",
+        startGame: "開始", villageLog: "ログ",
+        chatPlaceholder: "発言...", send: "送信",
+        day: "昼", night: "夜", dayCount: "{count}日目",
+        votePrompt: "投票してください", votingProgress: "投票進行中...", killPrompt: "襲撃先を選択",
+        villagerWin: "村人の勝利", werewolfWin: "人狼の勝利", playAgain: "もう一度",
+        you: "あなた", [Role.VILLAGER]: "村人", [Role.WEREWOLF]: "人狼",
+        gameStarted: "開始。合計 {total} 人中、人狼は {wolves} 人です。",
+        discussionEnd: "議論終了。", roundStart: "--- Round {round} / {total} ---",
+        executed: "{name} が処刑されました ({votes}票)。", foundDead: "{name} が無惨な姿で発見されました。",
+        missingKeys: "キーなし。オフラインモード。", downloadLogs: "ログ保存 (TXT)",
+        devConsole: "デバッグ", offlineNotice: "オフラインモード。", speechError: "⚠️ エラー",
+        testConnection: "テスト", testing: "...", connectionOk: "OK", connectionFail: "失敗",
+        voteSummary: "--- 投票結果 ---",
+        rateLimitWarn: "⏳ 制限にかかりました。再試行中..."
+      }
+    };
+
+    /***********************************************************
+     * 3. AI SERVICES (With Retry Logic)
+     ***********************************************************/
+    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const cleanThink = (text) => text.replace(/<think>[\s\S]*?<\/think>/g, '').trim().replace(/^['"]|['"]$/g, '');
+    const buildContext = (logs) => logs.slice(-20).map(l => {
+        if(l.type === 'vote_summary') return `[SYSTEM] Voting Results: ${l.text}`;
+        if(l.type === 'system') return `[SYSTEM] ${l.text}`;
+        return `${l.senderName}: ${l.text}`;
+    }).join('\n');
+
+    // --- ROBUST FETCH WITH RETRY ---
+    const fetchWithRetry = async (url, options, retries = 3, backoff = 2000) => {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const res = await fetch(url, options);
+                
+                // If Rate Limited (429), throw specifically to catch and retry
+                if (res.status === 429) {
+                    throw new Error("429 Too Many Requests");
+                }
+                
+                // If generic error, throw to stop (or retry depending on logic, here we stick to standard fetch behavior)
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${errText}`);
+                }
+                
+                return res;
+            } catch (err) {
+                const isRateLimit = String(err).includes("429") || String(err).includes("Too Many Requests");
+                
+                // Only retry on rate limits or network errors, not 401/403
+                if ((isRateLimit || String(err).includes("fetch")) && i < retries - 1) {
+                    console.warn(`[API] Rate Limit or Network Error. Retrying in ${backoff}ms...`, err);
+                    await delay(backoff);
+                    backoff *= 2; // Exponential Backoff: 2s -> 4s -> 8s
+                } else {
+                    throw err;
+                }
+            }
+        }
+    };
+
+    const callApi = async (provider, apiKey, config, prompt, systemInfo) => {
+        try {
+            if (provider === ModelProvider.GEMINI) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                const body = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemInfo }] } };
+                
+                const res = await fetchWithRetry(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            } 
+            else if (provider === ModelProvider.SILICONFLOW) {
+                const res = await fetchWithRetry("https://api.siliconflow.cn/v1/chat/completions", {
+                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                    body: JSON.stringify({ 
+                        model: config.modelId, messages: [{ role: "system", content: systemInfo }, { role: "user", content: prompt }], 
+                        stream: false, max_tokens: 400, temperature: 0.8 
+                    })
+                });
+                const data = await res.json();
+                return data.choices[0].message.content;
+            }
+            else if (provider === ModelProvider.OLLAMA) {
+                let url = config.url.trim().replace(/\/+$/, "");
+                url += (url.includes('/v1') || url.includes('/api')) ? '/chat/completions' : '/v1/chat/completions';
+                // Ollama usually local, retry might not help with rate limits, but helps with boot-up
+                const res = await fetchWithRetry(url, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ model: config.model, messages: [{ role: "system", content: systemInfo }, { role: "user", content: prompt }], stream: false, temperature: 0.8 })
+                }, 1, 1000); // Less retries for local
+                const data = await res.json();
+                return data.choices?.[0]?.message?.content || "";
+            }
+        } catch (e) { console.error(e); throw e; }
+    };
+
+    const LLMService = {
+        testConnection: async (apiKey, provider, config) => {
+             if (provider === ModelProvider.OFFLINE) return { success: true };
+             try { await callApi(provider, apiKey, config, "Ping", "Pong"); return { success: true }; } 
+             catch (e) { return { success: false, error: String(e) }; }
+        },
+        
+        generateSpeech: async (player, allPlayers, logs, keys, language, gameInfo, onDebug) => {
+            if (player.provider === ModelProvider.OFFLINE) {
+                await delay(500); return ["🤔 Hmm...", "😐 I am Villager.", "😠 Wolf is among us."][Math.floor(Math.random()*3)];
+            }
+
+            const context = buildContext(logs);
+            const aliveList = allPlayers.filter(p => p.isAlive).map(p => p.name).join(', ');
+            const langName = { 'zh': 'Chinese (简体中文)', 'ja': 'Japanese (日本語)', 'en': 'English' }[language] || 'English';
+            
+            // --- Day 1 & Hallucination Fix ---
+            const dayContext = gameInfo.day === 1 
+                ? "IMPORTANT: It is DAY 1. The game just started. NO events happened yesterday. Do not mention 'last night' or 'yesterday'."
+                : `It is Day ${gameInfo.day}.`;
+
+            let roleInfo = player.role === Role.WEREWOLF 
+                ? `ROLE: WEREWOLF. Teammates: ${allPlayers.filter(p=>p.role===Role.WEREWOLF&&p.id!==player.id).map(p=>p.name).join(', ')}. STRATEGY: LIE. Pretend to be a villager. Blame others.`
+                : `ROLE: VILLAGER. STRATEGY: Find Wolves. Be suspicious.`;
+
+            const prompt = `
+            GAME SETUP: Total ${gameInfo.total} players. ${gameInfo.wolves} Wolves.
+            ${dayContext}
+            Current Player: ${player.name}
+            Alive: ${aliveList}
+            
+            HISTORY:
+            ${context}
+
+            ${roleInfo}
+
+            TASK: Speak to village.
+            
+            REQUIREMENTS:
+            1. START with an EMOTION EMOJI from: [🤔, 😠, 😨, 😂, 😈, 🙄, 😱, 🤷, 🤐, 🤢, 🤡].
+            2. Speak ONLY in ${langName}.
+            3. Max 40 words.
+            4. STRICTLY FORBIDDEN: Do not say "Here is my response" or "My turn". Just output the dialogue.
+            5. REMEMBER: Your name is ${player.name}.
+
+            Response:`; 
+
+            try {
+                let apiKey = keys.silicon; let config = { modelId: player.modelId };
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
+                if (player.provider === ModelProvider.OLLAMA) { config = keys.ollamaConfig; }
+
+                const systemInstruction = "You are a player in a Werewolf game. Roleplay strictly.";
+                if(onDebug) onDebug(`${player.name} Prompt`, `Generating Speech`, `SYSTEM: ${systemInstruction}\n\nUSER: ${prompt}`);
+
+                const res = await callApi(player.provider, apiKey, config, prompt, systemInstruction);
+                if(onDebug) onDebug(`${player.name} Response`, `Raw Output`, res);
+
+                return cleanThink(res);
+            } catch (e) {
+                if(onDebug) onDebug("API Error", String(e));
+                return "🤐 (Connection/RateLimit Error)";
+            }
+        },
+
+        generateVote: async (player, allPlayers, logs, keys, language, gameInfo, onDebug) => {
+             const candidates = allPlayers.filter(p => p.isAlive && p.id !== player.id);
+             if (player.provider === ModelProvider.OFFLINE) return { targetId: candidates[0]?.id, reason: "Sim" };
+
+             const prompt = `
+             My Name: ${player.name}. Role: ${player.role}.
+             Candidates: ${candidates.map(p=>p.name).join(',')}.
+             History: ${buildContext(logs)}
+             Task: Vote to eliminate someone.
+             Return JSON: { "targetName": "Name", "reason": "Short text" }`;
+
+             try {
+                let apiKey = keys.silicon; let config = { modelId: player.modelId };
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
+                if (player.provider === ModelProvider.OLLAMA) { config = keys.ollamaConfig; }
+
+                if(onDebug) onDebug(`${player.name} Vote Prompt`, "Voting", prompt);
+                const raw = await callApi(player.provider, apiKey, config, prompt, "JSON generator");
+                if(onDebug) onDebug(`${player.name} Vote Raw`, "Output", raw);
+
+                const clean = cleanThink(raw).replace(/```json/g, '').replace(/```/g, '').trim();
+                let parsed = JSON.parse(clean.match(/\{[\s\S]*\}/)?.[0] || "{}");
+                const target = candidates.find(c => c.name.includes(parsed.targetName));
+                return { targetId: target ? target.id : candidates[0].id, reason: parsed.reason };
+             } catch { return { targetId: candidates[0].id, reason: "Error" }; }
+        },
+        
+        generateNightAction: async (player, allPlayers, logs, keys, language, gameInfo, onDebug) => {
+            const candidates = allPlayers.filter(p => p.isAlive && p.role !== Role.WEREWOLF);
+            if (!candidates.length) return null;
+            if (player.provider === ModelProvider.OFFLINE) return candidates[0].id;
+            
+            const prompt = `Targets: ${candidates.map(p=>p.name).join(',')}. Pick one to KILL. Return JSON: { "targetName": "Name" }`;
+            try {
+                let apiKey = keys.silicon; let config = { modelId: player.modelId };
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
+                if (player.provider === ModelProvider.OLLAMA) { config = keys.ollamaConfig; }
+                
+                if(onDebug) onDebug(`${player.name} Kill Prompt`, "Night Action", prompt);
+                const raw = await callApi(player.provider, apiKey, config, prompt, "JSON generator");
+                const parsed = JSON.parse(cleanThink(raw).match(/\{[\s\S]*\}/)?.[0] || "{}");
+                const target = candidates.find(c => c.name.includes(parsed.targetName));
+                return target ? target.id : candidates[0].id;
+            } catch { return candidates[0].id; }
+        }
+    };
+
+    /***********************************************************
+     * 4. UI COMPONENTS
+     ***********************************************************/
+    
+    const PlayerCard = ({ player, isSpeaking, revealRole, onClick, language }) => {
+        const t = UI_LABELS[language];
+        const getBadge = (p) => {
+            if (p.provider === ModelProvider.GEMINI) return <span className="text-cyan-400">GEMINI</span>;
+            if (p.provider === ModelProvider.SILICONFLOW) return <span className="text-purple-400">{p.modelShort}</span>;
+            if (p.provider === ModelProvider.OLLAMA) return <span className="text-green-400">OLLAMA</span>;
+            return <span className="text-gray-500">SIM</span>;
+        };
+        return (
+            <div onClick={onClick} className={`
+                relative p-2 md:p-3 rounded-xl border-2 transition-all duration-300 cursor-pointer flex flex-col items-center gap-1
+                ${player.isAlive ? 'bg-slate-800 border-slate-700' : 'bg-slate-900 border-slate-800 opacity-60 grayscale'}
+                ${isSpeaking ? 'ring-4 ring-yellow-400 border-yellow-400 scale-105 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : ''}
+                hover:bg-slate-750
+            `}>
+                <div className="relative">
+                    <img src={player.avatarUrl} alt={player.name} className={`w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 ${isSpeaking ? 'border-yellow-400' : 'border-slate-500'}`} />
+                    {!player.isAlive && <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full"><span className="text-xl">💀</span></div>}
+                    {player.isHuman && <div className="absolute -top-1 -right-1 bg-blue-500 text-[10px] text-white px-1.5 py-0.5 rounded-full border border-slate-900">{t.you}</div>}
+                </div>
+                <div className="text-center w-full overflow-hidden">
+                    <div className="font-bold text-xs md:text-sm text-slate-200 truncate px-1">{player.name}</div>
+                    {!player.isHuman && (
+                        <div className="mt-1 inline-block px-1.5 py-0.5 bg-slate-900/80 rounded border border-slate-700/50">
+                            <span className="text-[9px] font-mono tracking-wider font-bold">{getBadge(player)}</span>
+                        </div>
+                    )}
+                    {revealRole && (
+                        <div className={`mt-1 text-[10px] md:text-xs px-2 py-0.5 rounded-full font-bold ${player.role === Role.WEREWOLF ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400'}`}>
+                            {t[player.role]}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const GameLog = ({ logs }) => {
+        const bottomRef = useRef(null);
+        useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [logs]);
+        return (
+            <div className="flex-1 bg-slate-900/50 rounded-xl p-4 overflow-y-auto scrollbar-hide h-[400px] md:h-full border border-slate-700/50 font-mono text-sm">
+                <div className="space-y-4">
+                    {logs.map((log) => (
+                        <div key={log.id} className={`flex flex-col ${log.type === 'vote_summary' ? 'items-center my-6' : log.type === 'system' ? 'items-center text-center opacity-70 my-2 text-xs' : log.type === 'narrative' ? 'items-start italic text-purple-300 bg-purple-900/20 p-2 rounded' : log.senderId === 'USER' ? 'items-end' : 'items-start'}`}>
+                            {log.type === 'speech' && <span className="text-[10px] text-slate-400 mb-1 ml-1">{log.senderName}</span>}
+                            {log.type === 'vote_summary' ? (
+                                <div className="bg-slate-800 border-2 border-slate-600 rounded-xl p-4 w-full max-w-sm">
+                                    <div className="text-center font-bold text-yellow-400 mb-2 border-b border-slate-600 pb-2">📊 VOTING RESULTS</div>
+                                    <div className="whitespace-pre-wrap text-xs text-slate-300 leading-relaxed">{log.text}</div>
+                                </div>
+                            ) : (
+                                <div className={`max-w-[90%] px-3 py-2 rounded-xl leading-relaxed whitespace-pre-wrap ${log.type === 'system' ? 'text-yellow-500 font-bold bg-yellow-900/10 px-4' : ''} ${log.type === 'speech' && log.senderId === 'USER' ? 'bg-blue-600 text-white rounded-tr-none' : ''} ${log.type === 'speech' && log.senderId !== 'USER' ? 'bg-slate-700 text-slate-200 rounded-tl-none' : ''} ${log.type === 'action' ? 'text-red-400 border border-red-900/50 p-2 bg-red-900/10 text-xs' : ''}`}>
+                                    {log.text}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                    <div ref={bottomRef} />
+                </div>
+            </div>
+        );
+    };
+
+    const DevConsole = ({ logs, t }) => {
+        const downloadLogs = () => {
+            const content = logs.map(l => `[${l.timestamp}] ${l.action}: ${l.explanation}\n${l.details||''}`).join('\n\n========================================\n\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `werewolf_debug_${Date.now()}.txt`;
+            a.click();
+        };
+        const bottomRef = useRef(null);
+        useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [logs]);
+        return (
+            <div className="flex flex-col h-full bg-black text-green-400 font-mono text-xs border-l border-slate-800 w-full md:w-96 shadow-2xl">
+                <div className="p-2 border-b border-slate-800 flex justify-between items-center bg-slate-900">
+                    <span className="font-bold">🖥️ {t.devConsole}</span>
+                    <button onClick={downloadLogs} className="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-[10px] text-white">⬇️ {t.downloadLogs}</button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-2 space-y-3 scrollbar-hide">
+                    {logs.map((log) => (
+                        <div key={log.id} className="border border-green-900/30 rounded bg-green-900/5 p-2 break-all">
+                            <div className="opacity-50 text-[10px] mb-1">{log.timestamp}</div>
+                            <div className="font-bold text-green-300 mb-1">[{log.action}]</div>
+                            <div className="text-slate-400 mb-2">{log.explanation}</div>
+                            {log.details && (
+                                <details>
+                                    <summary className="cursor-pointer text-slate-500 hover:text-slate-300">View Payload</summary>
+                                    <pre className="mt-2 text-[10px] text-green-600 whitespace-pre-wrap bg-black/50 p-2 rounded">{log.details}</pre>
+                                </details>
+                            )}
+                        </div>
+                    ))}
+                    <div ref={bottomRef} />
+                </div>
+            </div>
+        );
+    };
+
+    /***********************************************************
+     * 5. MAIN APP
+     ***********************************************************/
+    const App = () => {
+        const [config, setConfig] = useState({
+            playerCount: 6, maxRounds: 3, 
+            geminiKey: '', siliconKey: '', siliconModels: ['deepseek-ai/DeepSeek-V3'],
+            useOllama: false, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3',
+            humanPlayerId: null, language: 'zh', devMode: false
+        });
+        const [phase, setPhase] = useState(GamePhase.SETUP);
+        const [dayCount, setDayCount] = useState(1);
+        const [players, setPlayers] = useState([]);
+        const [logs, setLogs] = useState([]);
+        const [devLogs, setDevLogs] = useState([]);
+        const [roundCount, setRoundCount] = useState(0);
+        const [currentSpeakerIndex, setCurrentSpeakerIndex] = useState(0);
+        const [winner, setWinner] = useState(null);
+        const [humanInput, setHumanInput] = useState('');
+        const [isHumanTurn, setIsHumanTurn] = useState(false);
+        const [apiStatus, setApiStatus] = useState('idle');
+        const [testStatusMsg, setTestStatusMsg] = useState('');
+        const isProcessingTurn = useRef(false);
+        const t = UI_LABELS[config.language];
+
+        const addLog = (text, type, senderName='GM', senderId='GM') => setLogs(p => [...p, { id: generateId(), text, type, senderName, senderId }]);
+        const addDevLog = (action, explanation, details='') => {
+            if(!config.devMode) return;
+            const time = new Date().toLocaleTimeString();
+            setDevLogs(p => [...p, { id: generateId(), timestamp: time, action, explanation, details }]);
+        };
+        const updateApiStatus = (status) => setApiStatus(status);
+        const toggleModel = (id) => {
+            setConfig(prev => {
+                const newSet = new Set(prev.siliconModels);
+                if (newSet.has(id)) { if(newSet.size > 1) newSet.delete(id); } 
+                else newSet.add(id);
+                return { ...prev, siliconModels: Array.from(newSet) };
+            });
+        };
+
+        const testConnection = async () => {
+            setTestStatusMsg(t.testing);
+            let results = [];
+            if(config.geminiKey) { const r = await LLMService.testConnection(config.geminiKey, ModelProvider.GEMINI); results.push(r.success?'Gemini OK':'Gemini Fail'); }
+            if(config.siliconKey) { 
+                const r = await LLMService.testConnection(config.siliconKey, ModelProvider.SILICONFLOW, { modelId: config.siliconModels[0] }); 
+                results.push(r.success?'SiliconFlow OK':'SiliconFlow Fail'); 
+            }
+            if(config.useOllama) { const r = await LLMService.testConnection('', ModelProvider.OLLAMA, { url:config.ollamaUrl, model:config.ollamaModel }); results.push(r.success?'Ollama OK':'Ollama Fail'); }
+            setTestStatusMsg(results.length ? results.join(' | ') : t.missingKeys);
+        };
+
+        const startGame = () => {
+            const hasApi = config.geminiKey || config.siliconKey || (config.useOllama && config.ollamaUrl);
+            let useOffline = !hasApi;
+            if(!hasApi && !confirm(t.missingKeys)) return;
+
+            isProcessingTurn.current=false; updateApiStatus('idle'); setDevLogs([]);
+            
+            let wc = 1;
+            if (config.playerCount >= 10) wc = 3;
+            else if (config.playerCount >= 7) wc = 2;
+            
+            const roles = Array(wc).fill(Role.WEREWOLF).concat(Array(config.playerCount-wc).fill(Role.VILLAGER)).sort(()=>Math.random()-0.5);
+            const avProviders = [];
+            if(useOffline) avProviders.push(ModelProvider.OFFLINE);
+            else {
+                if(config.geminiKey) avProviders.push(ModelProvider.GEMINI);
+                if(config.siliconKey) avProviders.push(ModelProvider.SILICONFLOW);
+                if(config.useOllama) avProviders.push(ModelProvider.OLLAMA);
+            }
+            
+            const newPlayers = [];
+            for(let i=0; i<config.playerCount; i++) {
+                const isHuman = config.humanPlayerId && i===0;
+                let provider = isHuman ? null : avProviders[Math.floor(Math.random()*avProviders.length)];
+                let modelId = null, modelShort = null;
+                if (provider === ModelProvider.SILICONFLOW) {
+                    const randomModelId = config.siliconModels[Math.floor(Math.random() * config.siliconModels.length)];
+                    const modelObj = SILICON_MODELS.find(m => m.id === randomModelId);
+                    modelId = randomModelId;
+                    modelShort = modelObj ? modelObj.short : 'SF';
+                }
+                newPlayers.push({ 
+                    id: generateId(), name: isHuman?t.you:NAMES[i], role: roles[i], isHuman, isAlive: true, 
+                    provider, modelId, modelShort, avatarUrl: `https://picsum.photos/seed/${NAMES[i]}/200` 
+                });
+            }
+
+            setPlayers(newPlayers); setPhase(GamePhase.DAY_INTRO); setDayCount(1); setLogs([]);
+            
+            if(useOffline) addLog(t.offlineNotice, 'system');
+            addLog(t.gameStarted.replace('{total}', config.playerCount).replace('{wolves}', wc), 'system');
+            
+            setTimeout(() => {
+                 setPhase(GamePhase.DAY_DISCUSSION); setRoundCount(1);
+                 const first = newPlayers.findIndex(p=>p.isAlive); setCurrentSpeakerIndex(first>-1?first:0);
+            }, 1000);
+        };
+
+        const checkWin = (cps) => {
+             const aw = cps.filter(p=>p.isAlive && p.role===Role.WEREWOLF).length;
+             const av = cps.filter(p=>p.isAlive && p.role===Role.VILLAGER).length;
+             if(aw===0) { setWinner(Role.VILLAGER); setPhase(GamePhase.GAME_OVER); addLog(t.villagerWin, 'system'); return true; }
+             if(aw>=av) { setWinner(Role.WEREWOLF); setPhase(GamePhase.GAME_OVER); addLog(t.werewolfWin, 'system'); return true; }
+             return false;
+        };
+
+        const advanceTurn = (currIdx, currPlayers) => {
+             let next = (currIdx+1)%currPlayers.length;
+             let loop=0;
+             while(!currPlayers[next].isAlive && loop<currPlayers.length) { next=(next+1)%currPlayers.length; loop++; }
+             if(loop>=currPlayers.length) return;
+             if(next < currIdx) {
+                 const nr = roundCount+1;
+                 if(nr > config.maxRounds) { setPhase(GamePhase.DAY_VOTE); addLog(t.discussionEnd, 'system'); return; }
+                 setRoundCount(nr); addLog(t.roundStart.replace('{round}', nr).replace('{total}', config.maxRounds), 'system');
+             }
+             setCurrentSpeakerIndex(next);
+        };
+
+        const getKeys = () => ({ gemini: config.geminiKey, silicon: config.siliconKey, ollamaConfig: { url:config.ollamaUrl, model:config.ollamaModel } });
+        const getGameInfo = () => {
+            let wc = config.playerCount >= 10 ? 3 : config.playerCount >= 7 ? 2 : 1;
+            return { total: config.playerCount, wolves: wc, day: dayCount };
+        };
+
+        // --- GAME LOOPS (Adjusted for Rate Limits) ---
+        useEffect(() => {
+             if(phase!==GamePhase.DAY_DISCUSSION || !players.length) return;
+             const p = players[currentSpeakerIndex];
+             if(!p?.isAlive) { advanceTurn(currentSpeakerIndex, players); return; }
+             
+             const run = async () => {
+                 if(isProcessingTurn.current) return;
+                 isProcessingTurn.current=true;
+                 try {
+                     if(p.isHuman) { setIsHumanTurn(true); isProcessingTurn.current=false; }
+                     else {
+                         setIsHumanTurn(false);
+                         const isOnline = p.provider !== ModelProvider.OLLAMA && p.provider !== ModelProvider.OFFLINE;
+                         
+                         // --- SAFE DELAY: 4500ms to stay under 15 RPM ---
+                         await delay(isOnline ? 4500 : 500); 
+                         updateApiStatus('working');
+                         
+                         const text = await LLMService.generateSpeech(p, players, logs, getKeys(), config.language, getGameInfo(), addDevLog);
+                         updateApiStatus('success');
+                         addLog(text, 'speech', p.name, p.id);
+                         isProcessingTurn.current=false;
+                         advanceTurn(currentSpeakerIndex, players);
+                     }
+                 } catch(e) {
+                     updateApiStatus('error'); isProcessingTurn.current=false; advanceTurn(currentSpeakerIndex, players);
+                 }
+             };
+             run();
+        }, [phase, currentSpeakerIndex, roundCount]);
+
+        useEffect(() => {
+             if(phase===GamePhase.DAY_VOTE) {
+                 const humanAlive = players.some(p=>p.isHuman && p.isAlive);
+                 if(!humanAlive) handleVoteProcess("AUTO");
+             }
+        }, [phase]);
+
+        const handleVoteProcess = async (humanVoteId) => {
+             const votes = {};
+             if(humanVoteId!=="AUTO" && players.find(p=>p.isHuman)?.isAlive) votes[humanVoteId]=1;
+             
+             updateApiStatus('working');
+             const ais = players.filter(p=>!p.isHuman && p.isAlive);
+             for(const p of ais) {
+                 const isOnline = p.provider !== ModelProvider.OLLAMA && p.provider !== ModelProvider.OFFLINE;
+                 // --- SAFE DELAY ---
+                 await delay(isOnline ? 4500 : 300); 
+                 const dec = await LLMService.generateVote(p, players, logs, getKeys(), config.language, getGameInfo(), addDevLog);
+                 if(dec.targetId) {
+                     votes[dec.targetId] = (votes[dec.targetId]||0)+1;
+                     addDevLog(`${p.name} Vote`, `Voted for ${players.find(x=>x.id===dec.targetId)?.name}`, dec.reason);
+                 }
+             }
+             updateApiStatus('success');
+             
+             let voteList = [];
+             players.forEach(p => {
+                 if(votes[p.id]) voteList.push(`${p.name}: ${votes[p.id]} votes`);
+             });
+             addLog(voteList.join('\n'), 'vote_summary');
+             
+             let max=0, elId=null, tie=false;
+             Object.entries(votes).forEach(([targetId, count]) => {
+                if(count>max){max=count;elId=targetId;tie=false;} else if(count===max) tie=true;
+             });
+
+             if(elId && !tie) {
+                 const v = players.find(p=>p.id===elId);
+                 addLog(t.executed.replace('{name}', v?.name).replace('{votes}', max), 'action');
+                 const nextP = players.map(p => p.id===elId?{...p, isAlive:false}:p);
+                 setPlayers(nextP);
+                 if(checkWin(nextP)) return;
+             } else {
+                 addLog("Tie vote. No one executed.", 'system');
+             }
+             setPhase(GamePhase.NIGHT_ACTION);
+        };
+
+        useEffect(() => {
+             if(phase===GamePhase.NIGHT_ACTION) {
+                 addLog("Night falls...", 'narrative');
+                 const wolves = players.filter(p=>p.isAlive && p.role===Role.WEREWOLF);
+                 if(!wolves.length) { setPhase(GamePhase.DAY_DISCUSSION); return; }
+                 if(wolves.some(w=>w.isHuman)) { setIsHumanTurn(true); addLog(t.killPrompt, 'system'); return; }
+                 
+                 const aiKill = async () => {
+                     updateApiStatus('working'); await delay(2000);
+                     const id = await LLMService.generateNightAction(wolves[0], players, logs, getKeys(), config.language, getGameInfo(), addDevLog);
+                     updateApiStatus('success'); resolveNight(id);
+                 };
+                 aiKill();
+             }
+        }, [phase]);
+
+        const resolveNight = (tid) => {
+            if(!tid) { addLog("Morning. No deaths.", 'narrative'); } 
+            else {
+                const v = players.find(p=>p.id===tid);
+                addLog(t.foundDead.replace('{name}', v?.name), 'action');
+                const nextP = players.map(p=>p.id===tid?{...p, isAlive:false}:p);
+                setPlayers(nextP);
+                if(checkWin(nextP)) return;
+            }
+            setDayCount(d=>d+1); setRoundCount(1);
+            const f = players.findIndex(p=>p.isAlive); setCurrentSpeakerIndex(f>-1?f:0);
+            setPhase(GamePhase.DAY_DISCUSSION);
+        };
+
+        // --- RENDER ---
+        if(phase === GamePhase.SETUP) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100 p-4">
+                    <div className="max-w-xl w-full bg-slate-800 p-6 md:p-8 rounded-2xl border border-slate-700 shadow-2xl overflow-y-auto max-h-[90vh] scrollbar-hide">
+                        <h1 className="text-3xl font-bold text-center mb-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">{t.title}</h1>
+                        <p className="text-slate-400 text-center mb-6 text-xs font-mono">{t.subtitle}</p>
+                        
+                        <div className="flex justify-center gap-2 mb-6">
+                            {['zh','ja','en'].map(l=>(<button key={l} onClick={()=>setConfig({...config, language:l})} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${config.language===l?'bg-purple-600 text-white shadow-lg scale-105':'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}>{l.toUpperCase()}</button>))}
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                <div><label className="text-xs font-bold text-slate-400 uppercase">{t.playerCount}</label><input type="number" min="3" max="12" value={config.playerCount} onChange={e=>setConfig({...config, playerCount:parseInt(e.target.value)})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 mt-1 text-sm font-mono focus:border-purple-500 outline-none" /></div>
+                                <div><label className="text-xs font-bold text-slate-400 uppercase">{t.maxRounds}</label><input type="number" min="1" max="10" value={config.maxRounds} onChange={e=>setConfig({...config, maxRounds:parseInt(e.target.value)})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 mt-1 text-sm font-mono focus:border-purple-500 outline-none" /></div>
+                                <div className="col-span-2 flex items-center justify-between border-t border-slate-700/50 pt-3 mt-1">
+                                    <span className="text-xs font-bold text-slate-400 uppercase">{t.playAsChar}</span>
+                                    <div className="flex bg-slate-800 rounded p-1">
+                                        <button onClick={()=>setConfig({...config, humanPlayerId:'yes'})} className={`px-4 py-1 rounded text-xs transition-all ${config.humanPlayerId?'bg-purple-600 text-white':'text-slate-400'}`}>{t.yes}</button>
+                                        <button onClick={()=>setConfig({...config, humanPlayerId:null})} className={`px-4 py-1 rounded text-xs transition-all ${!config.humanPlayerId?'bg-slate-600 text-white':'text-slate-400'}`}>{t.no}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                    <label className="block text-xs font-bold text-purple-400 mb-2 uppercase tracking-wider">⚡ SiliconFlow (Recommended)</label>
+                                    <input type="password" placeholder={t.siliconPlaceholder} value={config.siliconKey} onChange={e=>setConfig({...config, siliconKey:e.target.value})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-sm font-mono mb-3 focus:border-purple-500 outline-none" />
+                                    <p className="text-[10px] text-slate-400 mb-2">{t.siliconLabel}</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {SILICON_MODELS.map(m => (
+                                            <label key={m.id} className="cursor-pointer relative group">
+                                                <input type="checkbox" className="sr-only model-checkbox" checked={config.siliconModels.includes(m.id)} onChange={()=>toggleModel(m.id)} />
+                                                <div className="p-2 rounded border border-slate-700 bg-slate-800 text-[10px] text-center transition-all group-hover:border-slate-500 font-mono">
+                                                    {m.name}
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <input type="password" placeholder={t.geminiPlaceholder} value={config.geminiKey} onChange={e=>setConfig({...config, geminiKey:e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-sm" />
+                                    <div className="flex items-center justify-between px-1">
+                                        <span className="text-xs font-bold text-slate-400">{t.useOllama}</span>
+                                        <input type="checkbox" checked={config.useOllama} onChange={e=>setConfig({...config, useOllama:e.target.checked})} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center bg-slate-700/30 p-2 rounded">
+                                <button onClick={testConnection} className="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-white transition-colors">{t.testConnection}</button>
+                                <span className={`text-xs font-mono ${testStatusMsg.includes('OK')?'text-green-400':'text-orange-400'}`}>{testStatusMsg}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-500">{t.devMode}</span>
+                                <input type="checkbox" checked={config.devMode} onChange={e=>setConfig({...config, devMode:e.target.checked})} />
+                            </div>
+                            <button onClick={startGame} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-4 rounded-xl font-bold shadow-lg text-white hover:scale-[1.02] transition-transform">{t.startGame}</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="h-screen flex flex-col md:flex-row bg-slate-950 text-slate-200 overflow-hidden">
+                <div className={`w-full md:w-1/3 flex flex-col h-1/2 md:h-full border-r border-slate-800 transition-all ${config.devMode?'md:w-1/4':'md:w-1/3'}`}>
+                    <div className="p-3 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+                        <h2 className="font-bold text-purple-400 text-sm tracking-wider">{t.villageLog}</h2>
+                        <span className="text-xs bg-slate-800 px-2 py-1 rounded font-mono">{phase===GamePhase.NIGHT_ACTION?`🌙 ${t.night}`:`☀️ ${t.day} ${dayCount}`}</span>
+                    </div>
+                    <GameLog logs={logs} />
+                    {phase===GamePhase.DAY_DISCUSSION && isHumanTurn && players.find(p=>p.isHuman)?.isAlive && (
+                        <div className="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
+                            <input type="text" value={humanInput} onChange={e=>setHumanInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&setHumanInput('')||addLog(humanInput,'speech',t.you,'USER')||setIsHumanTurn(false)||advanceTurn(currentSpeakerIndex,players)} placeholder={t.chatPlaceholder} className="flex-1 bg-slate-800 border-slate-700 rounded px-3 py-2 text-sm focus:border-purple-500 outline-none" />
+                            <button onClick={()=>{addLog(humanInput,'speech',t.you,'USER'); setHumanInput(''); setIsHumanTurn(false); advanceTurn(currentSpeakerIndex, players);}} className="bg-purple-600 px-4 rounded text-sm hover:bg-purple-500">{t.send}</button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 flex flex-col relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 to-slate-950">
+                    <div className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 backdrop-blur rounded-full px-3 py-1 border border-slate-700">
+                        <div className={`w-2 h-2 rounded-full ${apiStatus==='working'?'bg-yellow-400 animate-pulse':apiStatus==='error'?'bg-red-500':'bg-green-500'}`}></div>
+                        <span className="text-[10px] font-mono text-slate-300 uppercase">{apiStatus}</span>
+                    </div>
+                    <div className="absolute top-4 left-0 right-0 text-center pointer-events-none z-10">
+                        <div className="inline-block bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-xl">
+                            <span className="text-lg font-light tracking-widest text-slate-300 font-mono">{t.dayCount.replace('{count}', dayCount)}</span>
+                        </div>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-y-auto">
+                        <div className={`grid gap-4 md:gap-6 max-w-5xl w-full ${config.playerCount>8?'grid-cols-4':'grid-cols-3'}`}>
+                            {players.map(p => {
+                                const isSpectator = !players.some(player => player.isHuman);
+                                return (
+                                <PlayerCard key={p.id} player={p} 
+                                    isSpeaking={phase===GamePhase.DAY_DISCUSSION && players.indexOf(p)===currentSpeakerIndex} 
+                                    revealRole={isSpectator || phase===GamePhase.GAME_OVER || p.isHuman || (players.find(h=>h.isHuman)?.role===Role.WEREWOLF && p.role===Role.WEREWOLF)} 
+                                    language={config.language}
+                                    onClick={() => {
+                                        if(phase===GamePhase.DAY_VOTE && players.find(u=>u.isHuman)?.isAlive && !p.isHuman) handleVoteProcess(p.id);
+                                        if(phase===GamePhase.NIGHT_ACTION && isHumanTurn && p.role!==Role.WEREWOLF) { setIsHumanTurn(false); resolveNight(p.id); }
+                                    }}
+                                />
+                            )})}
+                        </div>
+                    </div>
+                    {(phase===GamePhase.DAY_VOTE || (phase===GamePhase.NIGHT_ACTION && isHumanTurn)) && (
+                        <div className="absolute bottom-10 left-0 right-0 flex justify-center animate-bounce z-20">
+                            <div className={`${phase===GamePhase.DAY_VOTE && (!players.find(p=>p.isHuman)?.isAlive) ? 'bg-slate-600' : 'bg-red-600'} text-white px-8 py-3 rounded-full font-bold shadow-2xl tracking-widest border-2 border-white/20`}>
+                                {phase===GamePhase.DAY_VOTE 
+                                    ? (players.find(p=>p.isHuman)?.isAlive ? t.votePrompt : t.votingProgress) 
+                                    : t.killPrompt}
+                            </div>
+                        </div>
+                    )}
+                    {phase===GamePhase.GAME_OVER && winner && (
+                        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 flex-col backdrop-blur-sm">
+                            <h1 className={`text-6xl md:text-8xl font-black mb-6 tracking-tighter ${winner === Role.WEREWOLF ? 'text-red-600 drop-shadow-[0_0_25px_rgba(220,38,38,0.8)]' : 'text-green-500 drop-shadow-[0_0_25px_rgba(34,197,94,0.8)]'}`}>
+                                {winner === Role.WEREWOLF ? t.werewolfWin : t.villagerWin}
+                            </h1>
+                            <button onClick={()=>window.location.reload()} className="bg-white text-black px-10 py-3 rounded-full font-bold hover:scale-110 transition-transform shadow-xl">{t.playAgain}</button>
+                        </div>
+                    )}
+                </div>
+
+                {config.devMode && <DevConsole logs={devLogs} t={t} />}
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+    </script>
+</body>
+</html>
