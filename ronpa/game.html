@@ -119,15 +119,27 @@
         .evidence-tooltip.logic-break strong { color: var(--neon-yellow); }
         .evidence-tooltip hr { border: 0; border-top: 1px dashed #444; margin: 10px 0; }
 
-        /* BGM 按钮（标题画面隐藏，进入游戏后显示） */
-        #bgm-mute {
-            position: fixed; top: 18px; right: 20px; z-index: 4000;
+        /* BGM 按钮 和 重启按钮（标题画面隐藏，进入游戏后显示） */
+        #bgm-mute, #restart-btn {
+            position: fixed; top: 18px; z-index: 4000;
             width: 42px; height: 42px; border-radius: 50%;
             background: rgba(0,0,0,0.6); color: var(--neon-cyan);
             border: 1px solid var(--neon-cyan); display: none; align-items:center; justify-content:center;
             font-weight: 900; cursor: pointer; box-shadow: 0 0 10px rgba(0,255,213,0.08);
+            transition: all 0.3s ease;
         }
-        #bgm-mute.muted { background: rgba(80,80,80,0.9); color: #999; border-color: #666; }
+        /* 分别定位 */
+        #bgm-mute { right: 20px; }
+        #restart-btn { right: 75px; font-size: 1.4em; padding-bottom: 2px; }
+
+        /* 共同的悬停效果 */
+        #bgm-mute:hover, #restart-btn:hover {
+            background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan); transform: rotate(15deg) scale(1.05);
+        }
+
+        /* BGM 静音特定样式 */
+        #bgm-mute.muted { background: rgba(80,80,80,0.9); color: #999; border-color: #666; transform: none; }
+        #bgm-mute.muted:hover { background: rgba(100,100,100,0.9); color: #eee; }
 
         /* Developer Button */
         #dev-trigger {
@@ -316,6 +328,8 @@
 <body>
 
     <a id="back-btn" href="../index.html">◀ HOME</a>
+    <!-- 新增重启按钮放在静音按钮旁边 -->
+    <button id="restart-btn" title="重新开始游戏" onclick="restartGame()">⟳</button>
     <button id="bgm-mute" title="静音/恢复音乐">♪</button>
 
     <div id="tooltip" class="evidence-tooltip"></div>
@@ -413,6 +427,7 @@
                 placeholder: "点击右侧证物，指出对方的矛盾...",
                 retry: "信号丢失，重连",
                 emptyEvidence: "暂无证据",
+                restartConfirm: "确定要重新开始吗？当前进度将丢失。",
                 systemPrompt: `
                 你是一个【赛博朋克风格逻辑对战游戏GM】。
                 【语言】请务必使用中文。
@@ -487,6 +502,7 @@
                 placeholder: "証拠品を使ってムジュンを指摘せよ...",
                 retry: "再試行",
                 emptyEvidence: "証拠品なし",
+                restartConfirm: "本当に再開しますか？現在の進行状況は失われます。",
                 systemPrompt: `
                 あなたは【サイバーパンク論理バトルGM】です。
                 【言語】日本語を使用してください。
@@ -553,6 +569,7 @@
                 placeholder: "Use evidence to point out contradictions...",
                 retry: "Retry",
                 emptyEvidence: "NO DATA",
+                restartConfirm: "Are you sure you want to restart? Current progress will be lost.",
                 systemPrompt: `
                 You are a 【Cyberpunk Logic Battle GM】.
                 【Language】English only.
@@ -818,10 +835,14 @@
             document.getElementById('config-screen').style.display='none';
             document.getElementById('game-screen').style.display='flex';
             updateEvidenceUI(); 
-            // 显示静音按钮并在用户交互后尝试播放 BGM
+            // 显示静音按钮和重启按钮并在用户交互后尝试播放 BGM
             try {
-                const btn = document.getElementById('bgm-mute');
-                if (btn) btn.style.display = 'flex';
+                const bgmBtn = document.getElementById('bgm-mute');
+                if (bgmBtn) bgmBtn.style.display = 'flex';
+                
+                const restartBtn = document.getElementById('restart-btn');
+                if (restartBtn) restartBtn.style.display = 'flex';
+
                 window.playBGM && window.playBGM();
             } catch(e) { logDev('BGM', 'autoplay failed'); }
             
@@ -829,6 +850,47 @@
             
             handlePlayerAction("[SYSTEM: GENERATE_PROLOGUE]");
         }
+
+        // ================= RESTART LOGIC =================
+        window.restartGame = function() {
+            if (!confirm(i18n[currentLang].restartConfirm)) {
+                return;
+            }
+            logDev("ACTION", "Game Restart Initiated");
+
+            // 1. Reset State
+            gameState = {
+                heroHp: 100, enemyHp: 100, isOver: false,
+                suspectName: null, fixedHeroEmoji: null, fixedEnemyEmoji: null,
+                fatalTurnCount: 0
+            };
+            evidenceMap.clear();
+            usedEvidenceSet.clear();
+            resolvedStatementsMap.clear();
+
+            // 2. Reset UI Elements
+            document.getElementById('chat-log').innerHTML = '';
+            updateEvidenceUI();
+            updateStatusUI();
+
+            // Reset Names & Emojis to Defaults
+            document.getElementById('hero-name-ui').innerText = i18n[currentLang].hero;
+            document.getElementById('enemy-name-ui').innerText = i18n[currentLang].enemy;
+            document.getElementById('hero-emoji').innerText = "🧐";
+            document.getElementById('enemy-emoji').innerText = "😈";
+
+            // Re-enable inputs
+            const input = document.getElementById('player-input');
+            const sendBtn = document.getElementById('send-btn');
+            input.disabled = false;
+            input.value = '';
+            sendBtn.disabled = false;
+            sendBtn.innerText = i18n[currentLang].actionBtn;
+            sendBtn.style.background = ""; // Reset background color
+
+            // 3. Restart Sequence (Start Prologue again using existing adapter)
+            startPrologue();
+        };
 
         document.getElementById('send-btn').onclick = () => handlePlayerAction();
         document.getElementById('player-input').onkeypress = (e) => { if(e.key==='Enter') handlePlayerAction(); };
