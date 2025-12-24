@@ -42,7 +42,7 @@
         }
         .line { width: 1px; height: 100%; background: var(--line-color); opacity: 0.5; }
 
-        /* 左上角 UI 容器 */
+        /* 左上角 UI */
         .top-left-ui {
             position: absolute;
             top: 2rem;
@@ -54,7 +54,6 @@
             align-items: flex-start;
         }
 
-        /* 顶部 Header */
         .header-meta {
             font-size: 0.9rem;
             font-weight: 700;
@@ -63,7 +62,6 @@
         }
         .header-meta .dot { color: var(--accent-color); font-size: 1.5rem; line-height: 0; display: inline-block; vertical-align: middle; }
 
-        /* 返回按钮 */
         .back-btn {
             text-decoration: none;
             color: var(--text-color);
@@ -79,7 +77,7 @@
         .back-btn:hover { opacity: 1; color: var(--accent-color); }
         .back-btn::before { content: '←'; font-family: monospace; }
 
-        /* 左下角语言切换 */
+        /* 语言切换 */
         .lang-switch {
             position: absolute;
             bottom: 4rem;
@@ -97,7 +95,6 @@
             transition: opacity 0.3s;
             text-transform: uppercase;
         }
-
         .lang-btn:hover { opacity: 0.7; }
         .lang-btn.active { opacity: 1; text-decoration: underline; text-decoration-color: var(--accent-color); text-underline-offset: 4px; }
 
@@ -110,13 +107,12 @@
             padding: 2rem;
             padding-top: 5rem;
             z-index: 10;
-            /* 增加最大宽度限制，防止在超宽屏上拉得太开 */
             max-width: 1800px;
             margin: 0 auto;
         }
 
         .left-panel {
-            flex: 1.2; /* 左侧文字稍微占多一点比例 */
+            flex: 1.2;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -132,7 +128,7 @@
             position: relative;
         }
 
-        /* 左侧巨大排版容器 */
+        /* 排版 */
         .hero-layer {
             display: flex;
             flex-direction: column;
@@ -149,20 +145,14 @@
 
         .row { display: flex; align-items: baseline; overflow: hidden; }
 
-        /* 字体基础样式 - 调大了 clamp 的参数 */
         .big-text, .chinese-stamp {
             display: inline-block;
             will-change: transform, opacity;
             transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
         }
 
-        .big-text {
-            /* 响应式字体：最小 4rem，首选 13vw (随视口变大)，最大 12rem */
-            font-size: clamp(4rem, 13vw, 12rem);
-            letter-spacing: -0.05em;
-        }
-
-        .outline { color: transparent; -webkit-text-stroke: 2px var(--text-color); -webkit-text-stroke: clamp(1px, 0.2vw, 3px) var(--text-color); }
+        .big-text { font-size: clamp(4rem, 13vw, 12rem); letter-spacing: -0.05em; }
+        .outline { color: transparent; -webkit-text-stroke: clamp(1px, 0.2vw, 3px) var(--text-color); }
         .accent { color: var(--accent-color); }
 
         .chinese-stamp {
@@ -177,16 +167,14 @@
             transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
         }
 
-        /* 动画状态逻辑 */
+        /* 动画状态 */
         #heroDefault .big-text { transform: translateY(0); opacity: 1; }
         #heroDefault .chinese-stamp { transform: translateY(0) rotate(-5deg); opacity: 1; }
-
         #heroDefault.scrolled-out .big-text { transform: translateY(-120%); opacity: 0; }
         #heroDefault.scrolled-out .chinese-stamp { transform: translateY(-120%) rotate(-5deg); opacity: 0; }
 
         #heroResult .big-text { transform: translateY(120%); opacity: 0; }
         #heroResult .chinese-stamp { transform: translateY(120%) rotate(-5deg); opacity: 0; }
-
         #heroResult.scrolled-in .big-text { transform: translateY(0); opacity: 1; }
         #heroResult.scrolled-in .chinese-stamp { transform: translateY(0) rotate(-5deg); opacity: 1; }
 
@@ -194,11 +182,9 @@
         .delay-2 { transition-delay: 100ms; }
         .delay-3 { transition-delay: 200ms; }
 
-        /* --- 交互式贺卡区域 --- */
+        /* 卡片 */
         .card-scene {
-            /* 响应式尺寸：最小300px，最大450px，随视口宽度缩放 */
             width: clamp(300px, 28vw, 450px);
-            /* 保持 2:3 比例 */
             height: clamp(450px, 42vw, 675px);
             perspective: 1000px;
             cursor: pointer;
@@ -228,9 +214,7 @@
             transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .card-object.is-flipped {
-            transform: rotateY(180deg);
-        }
+        .card-object.is-flipped { transform: rotateY(180deg); }
 
         .face {
             position: absolute;
@@ -256,26 +240,87 @@
             border-color: var(--accent-color);
         }
 
+        /* --- 液体动画重构 (优化流畅度) --- */
         .water-container {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 0%;
-            background: var(--accent-color);
-            transition: height 0.5s ease-out;
+            bottom: 0; left: 0; width: 100%;
+            height: 100%;
+            transform: translateY(100%); 
+            /* 关键修改：改用 cubic-bezier(0.2, 0.6, 0.3, 1) 实现快进慢出，消除启动延迟感 */
+            transition: transform 0.8s cubic-bezier(0.2, 0.6, 0.3, 1);
             z-index: 0;
+            will-change: transform;
         }
-        .water-container::before, .water-container::after {
-            content: ""; position: absolute; width: 200%; height: 200%;
-            top: -50%; left: -50%; background: rgba(255, 255, 255, 0.2);
-            border-radius: 40%; animation: wave 8s linear infinite;
+
+        .water-container.empty .waves-wrapper {
+            opacity: 0;
         }
-        .water-container::after {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 45%; animation: wave 12s linear infinite reverse;
+
+        .water-body {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--accent-color);
+        }
+
+        .waves-wrapper {
+            position: absolute;
+            bottom: 100%; 
+            left: 0;
+            width: 100%;
+            height: 50px; 
+            overflow: hidden;
+            margin-bottom: -2px; 
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+            background-size: 50% 100%;
+        }
+
+        .wave-front {
+            z-index: 2;
+            opacity: 1.0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 50' preserveAspectRatio='none'%3E%3Cpath fill='%232b00ff' d='M0,25 Q250,5 500,25 Q750,45 1000,25 V50 H0 Z'/%3E%3C/svg%3E");
+            animation: move-wave-front 3s linear infinite;
+        }
+
+        .wave-back {
+            z-index: 1;
+            opacity: 0.5;
+            background-position-x: 200px; /* 错位 */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 50' preserveAspectRatio='none'%3E%3Cpath fill='%232b00ff' d='M0,25 Q250,45 500,25 Q750,5 1000,25 V50 H0 Z'/%3E%3C/svg%3E");
+            animation: move-wave-back 5s linear infinite;
+        }
+
+        @keyframes move-wave-front {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        @keyframes move-wave-back {
+            0% { transform: translate3d(-50%, 0, 0); }
+            100% { transform: translate3d(0, 0, 0); }
+        }
+
+        .waves-wrapper {
+            animation: bob-vertical 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes bob-vertical {
+            from { bottom: 100%; }
+            to { bottom: calc(100% - 5px); }
         }
 
         .emoji-drop-zone {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
+            pointer-events: none; z-index: 3;
         }
 
         .falling-emoji {
@@ -293,22 +338,8 @@
             width: 100%;
         }
 
-        .back-content h3 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .back-content .local-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-top: 10px;
-            letter-spacing: 2px;
-            opacity: 0.95;
-            line-height: 1.4;
-            padding: 0 1rem;
-        }
+        .back-content h3 { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .back-content .local-text { font-size: 1.5rem; font-weight: 700; margin-top: 10px; opacity: 0.95; padding: 0 1rem; }
         .stamp-icon { font-size: 3.5rem; margin-bottom: 1.5rem; display: block; }
 
         .reset-btn {
@@ -324,7 +355,7 @@
         }
         .reset-btn:hover { color: rgba(255,255,255,0.8); border-color: #fff; }
 
-        /* --- Marquee --- */
+        /* Marquee */
         .marquee-container {
             border-top: 1px solid var(--text-color);
             background: var(--text-color);
@@ -336,36 +367,13 @@
             z-index: 20;
         }
         
-        .marquee-content {
-            display: flex;
-            width: max-content;
-            animation: scroll 40s linear infinite;
-        }
-        
-        .marquee-section {
-            display: flex;
-            align-items: center;
-            padding-right: 0; 
-        }
+        .marquee-content { display: flex; width: max-content; animation: scroll 40s linear infinite; }
+        .marquee-section { display: flex; align-items: center; padding-right: 0; }
+        .marquee-content span { margin: 0 15px; font-size: 1.2rem; font-weight: 700; letter-spacing: 3px; }
 
-        .marquee-content span { 
-            margin: 0 15px; 
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-        }
-
-        @keyframes scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-        }
-
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @keyframes dropIn {
-            0% { transform: translateY(-50px) scale(0.5); opacity: 0; }
-            60% { opacity: 1; }
-            100% { transform: translateY(350px) scale(1); opacity: 0; }
-        }
+        @keyframes dropIn { 0% { transform: translateY(-50px) scale(0.5); opacity: 0; } 60% { opacity: 1; } 100% { transform: translateY(350px) scale(1); opacity: 0; } }
 
         @media (max-width: 900px) {
             .main-container { flex-direction: column; align-items: center; padding-top: 6rem; }
@@ -376,7 +384,6 @@
             .lang-switch { bottom: 3.5rem; left: 50%; transform: translateX(-50%); }
             .hero-layer { position: relative; top: auto; transform: none; align-items: center; margin-bottom: -100px; }
             #heroResult { position: absolute; top: 0; left: 0; width: 100%; align-items: center; pointer-events: none; }
-            /* 移动端调整 Top UI 位置，防止遮挡 */
             .top-left-ui { top: 1.5rem; left: 1.5rem; }
         }
     </style>
@@ -391,7 +398,6 @@
         <div class="line"></div>
     </div>
 
-    <!-- 左上角 UI 组合 -->
     <div class="top-left-ui">
         <div class="header-meta">
             <span class="dot">•</span>
@@ -408,52 +414,36 @@
 
     <div class="main-container">
         <div class="left-panel" id="leftPanel">
-            
-            <!-- Default Layer -->
             <div class="hero-layer" id="heroDefault">
-                <div class="row">
-                    <span class="big-text outline delay-1">HAPPY</span>
-                </div>
-                <div class="row">
-                    <span class="big-text accent delay-2">NEW</span>
-                    <span class="chinese-stamp delay-2">2026</span>
-                </div>
-                <div class="row">
-                    <span class="big-text delay-3">YEAR</span>
-                </div>
+                <div class="row"><span class="big-text outline delay-1">HAPPY</span></div>
+                <div class="row"><span class="big-text accent delay-2">NEW</span><span class="chinese-stamp delay-2">2026</span></div>
+                <div class="row"><span class="big-text delay-3">YEAR</span></div>
             </div>
-
-            <!-- Result Layer -->
             <div class="hero-layer" id="heroResult">
-                <div class="row">
-                    <span id="resL1" class="big-text outline delay-1">MAKE</span>
-                </div>
-                <div class="row">
-                    <span id="resL2" class="big-text accent delay-2">IT</span>
-                    <span id="resStamp" class="chinese-stamp delay-2">2026</span>
-                </div>
-                <div class="row">
-                    <span id="resL3" class="big-text delay-3">RAIN</span>
-                </div>
+                <div class="row"><span id="resL1" class="big-text outline delay-1">MAKE</span></div>
+                <div class="row"><span id="resL2" class="big-text accent delay-2">IT</span><span id="resStamp" class="chinese-stamp delay-2">2026</span></div>
+                <div class="row"><span id="resL3" class="big-text delay-3">RAIN</span></div>
             </div>
-
         </div>
 
         <div class="right-panel">
             <div class="card-scene" id="cardScene" onclick="handleCardClick()">
                 <div class="click-hint" id="clickHint">点击充能</div>
-                
                 <div class="card-object" id="cardObject">
                     <div class="face front">
-                        <div class="water-container" id="waterLevel"></div>
+                        <div class="water-container empty" id="waterLevel">
+                            <div class="waves-wrapper">
+                                <div class="wave wave-back"></div>
+                                <div class="wave wave-front"></div>
+                            </div>
+                            <div class="water-body"></div>
+                        </div>
                         <div class="emoji-drop-zone" id="emojiZone"></div>
                         <div style="position: absolute; top: 10px; left: 10px; font-size: 0.8rem; font-weight: bold;">[+] 2026 CARD</div>
                         <div style="position: absolute; bottom: 10px; right: 10px; font-size: 0.8rem; font-weight: bold;" id="clickCounter">000/006</div>
                     </div>
                     <div class="face back">
-                        <div class="back-content" id="backContent">
-                            <!-- JS Filled -->
-                        </div>
+                        <div class="back-content" id="backContent"></div>
                     </div>
                 </div>
             </div>
@@ -485,9 +475,7 @@
             en: { hint: "CLICK TO CHARGE", processing: "PROCESSING...", reset: "PLAY AGAIN", header: "2026 / YEAR OF HORSE", back: "RETURN HOME" }
         };
 
-        // --- 66条贺词库 ---
         const rawThemes = [
-            // 1. Wealth (财运)
             {
                 left: [ ["MAKE","IT","RAIN"], ["RICH","&","YOUNG"], ["GOLD","RUSH","2026"], ["MONEY","FLOWS","IN"], ["ASSET","LEVEL","UP"], ["BILLION","DOLLAR","MIND"] ],
                 stamp: { zh: ["财源广进","一夜暴富","金玉满堂","日进斗金","财运亨通","恭喜发财"], jp: ["金運上昇","一攫千金","商売繁盛","金運隆盛","億万長者","財運到来"], en: ["WEALTH", "CASH", "GOLD", "PROFIT", "ASSET", "RICH"] },
@@ -499,7 +487,6 @@
                 },
                 icon: "💰"
             },
-            // 2. Career/Speed (事业)
             {
                 left: [ ["FULL","SPEED","AHEAD"], ["LEVEL","UP","NOW"], ["TOP","OF","WORLD"], ["GAME","CHANGER","2026"], ["BOSS","MODE","ON"], ["WIN","THE","RACE"] ],
                 stamp: { zh: ["一马当先","步步高升","前程似锦","马到成功","大展宏图","平步青云"], jp: ["先手必勝","昇進昇格","前途洋々","馬到成功","大展鴻図","立身出世"], en: ["SPEED", "UP", "PEAK", "CHANGE", "BOSS", "WIN"] },
@@ -511,7 +498,6 @@
                 },
                 icon: "🚀"
             },
-            // 3. Luck (好运)
             {
                 left: [ ["BEST","LUCK","EVER"], ["LUCKY","STAR","SHINE"], ["MAGIC","HAPPENS","NOW"], ["GOD","BLESS","YOU"], ["FATE","IS","KIND"], ["SUPER","LUCKY","YEAR"] ],
                 stamp: { zh: ["鸿运当头","欧气爆棚","吉星高照","万事大吉","好运连连","心想事成"], jp: ["開運招福","運気最高","吉星高照","万事大吉","幸運連続","心願成就"], en: ["LUCKY", "STAR", "MAGIC", "BLESS", "FATE", "FORTUNE"] },
@@ -523,7 +509,6 @@
                 },
                 icon: "🧧"
             },
-            // 4. Freedom (自由)
             {
                 left: [ ["BORN","TO","RUN"], ["RUN","WITH","WIND"], ["NO","LIMITS","2026"], ["FLY","SO","HIGH"], ["FREE","YOUR","SOUL"], ["ROAD","TRIP","LIFE"] ],
                 stamp: { zh: ["天马行空","自由自在","无拘无束","海阔天空","放飞自我","由于天际"], jp: ["天馬行空","自由自在","拘束なし","海闊天空","自分解放","天地悠々"], en: ["WILD", "WIND", "LIMITLESS", "FLY", "SOUL", "ROAD"] },
@@ -535,7 +520,6 @@
                 },
                 icon: "🐎"
             },
-            // 5. Love (爱情)
             {
                 left: [ ["LOVE","&","PEACE"], ["SWEET","HEART","2026"], ["TRUE","LOVE","ONLY"], ["BE","WITH","YOU"], ["ROMANCE","ALL","DAY"], ["HUG","ME","TIGHT"] ],
                 stamp: { zh: ["喜乐平安","甜甜蜜蜜","天作之合","恩恩爱爱","桃花朵朵","幸福美满"], jp: ["平穏無事","甘い生活","天作之合","相思相愛","恋愛成就","幸福円満"], en: ["PEACE", "SWEET", "TRUE", "TOGETHER", "ROMANCE", "HUG"] },
@@ -547,7 +531,6 @@
                 },
                 icon: "❤️"
             },
-            // 6. Chill (松弛/躺平)
             {
                 left: [ ["TAKE","IT","EASY"], ["JUST","CHILL","OUT"], ["SLOW","DOWN","BABY"], ["ZEN","MODE","ON"], ["SLEEP","TIGHT","NOW"], ["NO","RUSH","2026"] ],
                 stamp: { zh: ["松弛有度","快乐躺赢","难得糊涂","悠然自得","不论是非","大智若愚"], jp: ["悠々自適","気楽に行こう","難得糊塗","悠然自得","是非を問わず","大智若愚"], en: ["EASY", "CHILL", "SLOW", "ZEN", "SLEEP", "CALM"] },
@@ -559,7 +542,6 @@
                 },
                 icon: "☕"
             },
-            // 7. Health (健康)
             {
                 left: [ ["KEEP","MOVING","ON"], ["STAY","STRONG","FAM"], ["POWER","UP","2026"], ["HEALTH","IS","WEALTH"], ["GYM","LIFE","STYLE"], ["BODY","AND","SOUL"] ],
                 stamp: { zh: ["龙马精神","生龙活虎","身强体壮","百病不侵","活力四射","长命百岁"], jp: ["元気溌剌","生龍活虎","無病息災","百病不侵","活力四射","不老長寿"], en: ["MOVE", "STRONG", "POWER", "HEALTH", "GYM", "SOUL"] },
@@ -571,7 +553,6 @@
                 },
                 icon: "⚡"
             },
-            // 8. Creativity (创意/智慧)
             {
                 left: [ ["CREATE","THE","FUTURE"], ["NEW","IDEA","LOAD"], ["SMART","MIND","SET"], ["ART","IS","LIFE"], ["BRAIN","POWER","MAX"], ["THINK","BIG","2026"] ],
                 stamp: { zh: ["灵感爆棚","才思泉涌","独具匠心","妙笔生花","大开眼界","智慧超群"], jp: ["霊感爆発","才思泉湧","独具匠心","妙筆生花","眼界拡大","知恵抜群"], en: ["CREATE", "IDEA", "SMART", "ART", "BRAIN", "THINK"] },
@@ -583,7 +564,6 @@
                 },
                 icon: "💡"
             },
-            // 9. Social (社交)
             {
                 left: [ ["STAY","CONNECTED","FAM"], ["PARTY","ALL","NIGHT"], ["TEAM","WORK","WIN"], ["BEST","MATE","EVER"], ["POP","STAR","VIBE"], ["LINK","UP","NOW"] ],
                 stamp: { zh: ["高朋满座","左右逢源","贵人相助","人气爆棚","宾客盈门","众星捧月"], jp: ["千客万来","八方美人","貴人相助","人気爆発","商売繁盛","衆星捧月"], en: ["CONNECT", "PARTY", "TEAM", "MATE", "STAR", "LINK"] },
@@ -595,7 +575,6 @@
                 },
                 icon: "🤝"
             },
-            // 10. Beauty (颜值/魅力)
             {
                 left: [ ["SHINE","LIKE","STAR"], ["LOOK","SO","GOOD"], ["GLOW","UP","2026"], ["STYLE","ICON","HERE"], ["PRETTY","AND","RICH"], ["CHIC","VIBE","ONLY"] ],
                 stamp: { zh: ["容光焕发","魅力四射","倾国倾城","风华绝代","颜值爆表","气场全开"], jp: ["容姿端麗","魅力四射","傾国傾城","風華絶代","顔面偏差値","オーラ全開"], en: ["SHINE", "LOOK", "GLOW", "STYLE", "PRETTY", "CHIC"] },
@@ -607,7 +586,6 @@
                 },
                 icon: "✨"
             },
-            // 11. Joy (快乐/综合)
             {
                 left: [ ["SMILE","MORE","OFTEN"], ["HAPPY","YEAR","2026"], ["JOY","FULL","YEAR"], ["FUN","TIME","ONLY"], ["LAUGH","OUT","LOUD"], ["GOOD","TIMES","ROLL"] ],
                 stamp: { zh: ["笑口常开","喜气洋洋","乐乐呵呵","欢天喜地","其乐融融","逍遥快活"], jp: ["笑門来福","喜気洋々","和気藹々","歓天喜地","其楽融融","逍遥快活"], en: ["SMILE", "HAPPY", "JOY", "FUN", "LOL", "GOOD"] },
@@ -621,19 +599,14 @@
             }
         ];
 
-        // 扁平化数据生成 66 条
         let contentData = [];
         rawThemes.forEach(theme => {
             for(let i=0; i<6; i++) {
                 let stampEn = theme.stamp.en[i];
                 const leftWords = theme.left[i].map(w => w.toUpperCase());
-                
-                // 去重逻辑：如果英文印章内容 出现在了左侧大标题单词中（全词匹配）
-                // 则将印章替换为 "2026"
                 if (leftWords.includes(stampEn)) {
                     stampEn = "2026";
                 }
-
                 contentData.push({
                     left: theme.left[i],
                     stamp: {
@@ -651,7 +624,6 @@
                 });
             }
         });
-
 
         const emojis = ['🐴', '🧧', '🧨', '💰', '⚡', '🔥', '✨', '🏮'];
         let nextData = null;
@@ -674,7 +646,6 @@
             document.querySelector(`.lang-btn[onclick="switchLang('${lang}')"]`).classList.add('active');
 
             document.getElementById('headerText').innerText = uiText[lang].header;
-            // 更新返回按钮文本
             document.querySelector('.back-btn').innerText = uiText[lang].back;
 
             if (!isFlipped) {
@@ -704,6 +675,10 @@
                 updateWaterLevel();
                 dropEmoji();
                 document.getElementById('clickCounter').innerText = `00${clickCount}/00${maxClicks}`;
+                
+                if (clickCount > 0) {
+                    document.getElementById('waterLevel').classList.remove('empty');
+                }
             }
 
             if (clickCount === maxClicks) {
@@ -714,7 +689,9 @@
 
         function updateWaterLevel() {
             const percentage = (clickCount / maxClicks) * 100;
-            document.getElementById('waterLevel').style.height = percentage + '%';
+            // 使用 transform 替代 height
+            const translateValue = 100 - percentage;
+            document.getElementById('waterLevel').style.transform = `translateY(${translateValue}%)`;
         }
 
         function dropEmoji() {
@@ -752,7 +729,11 @@
 
             isFlipped = false;
             clickCount = 0;
-            updateWaterLevel();
+            
+            // 重置 transform
+            document.getElementById('waterLevel').style.transform = 'translateY(100%)';
+            document.getElementById('waterLevel').classList.add('empty');
+            
             document.getElementById('cardObject').classList.remove('is-flipped');
             document.getElementById('clickCounter').innerText = "000/006";
             
