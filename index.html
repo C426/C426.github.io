@@ -1,609 +1,438 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C426のPortfolio</title>
+    <title>C426 // DHGSVR25_ARCHIVE_REFINED</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Unbounded (英字标题) / Sawarabi Gothic (日本語正文) -->
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;900&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. 全局与基础设定 --- */
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text-color: #ffffff;
-            --accent-color: #00ffd5; /* 霓虹青色 */
-            --hover-color: rgba(0, 255, 213, 0.1);
+            --bg: #e5e5e5;
+            --fg: #000000;
+            --dot-bg: #d1d1d1;
+            --glitch-gray: #c5c5c5;
+            --safe-margin: 60px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: crosshair;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'Sawarabi Gothic', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        /* 背景装饰圆 (营造氛围) */
-        .bg-circle {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0,255,213,0.15) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            top: -100px;
-            left: -100px;
-            z-index: -1;
-            animation: float 10s infinite ease-in-out;
-        }
-        .bg-circle-2 {
-            top: auto;
-            bottom: -150px;
-            left: auto;
-            right: -150px;
-            background: radial-gradient(circle, rgba(157, 0, 255, 0.15) 0%, rgba(0,0,0,0) 70%);
-            animation: float 12s infinite ease-in-out reverse;
-        }
-
-        /* --- 2. 头部介绍 (Hero Section) --- */
-        header {
-            text-align: center;
-            padding: 100px 20px 60px;
-            opacity: 0;
-            animation: fadeUp 1s ease-out forwards;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-
-        h1 span {
-            color: var(--accent-color);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #ccc;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        /* --- 3. 作品展示卡片区 --- */
-        .projects-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 30px;
-            padding: 40px;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .project-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px); /* 毛玻璃效果 */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            width: 350px;
-            padding: 30px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 丝滑的贝塞尔曲线 */
-            opacity: 0;
-            animation: fadeUp 1s ease-out 0.3s forwards; /* 延迟出现 */
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* 鼠标悬停时的丝滑特效 */
-        .project-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            background: var(--hover-color);
-            border-color: var(--accent-color);
-            box-shadow: 0 15px 30px rgba(0, 255, 213, 0.2);
-        }
-
-        .project-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        .project-card p {
-            color: #aaa;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .tags {
-            display: flex;
-            gap: 10px;
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--accent-color);
-        }
-
-        .arrow-icon {
-            position: absolute;
-            right: 20px;
-            bottom: 20px;
-            font-size: 24px;
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: all 0.3s ease;
-            color: var(--accent-color);
-        }
-
-        .project-card:hover .arrow-icon {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* --- 4. 动画定义 --- */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(20px); }
-        }
-
-        /* --- 5. 联系/底部 --- */
-        footer {
-            margin-top: auto;
-            padding: 40px;
-            color: #666;
-            font-size: 0.9rem;
-            animation: fadeUp 1s ease-out 0.6s forwards;
-            opacity: 0;
-            align-self: stretch; /* 拉伸到父容器宽度，覆盖 body 的 align-items:center */
-            text-align: left; /* 内容左对齐 */
-        }
-
-        a { color: #666; text-decoration: none; transition: 0.3s; }
-        a:hover { color: var(--accent-color); }
-
-        /* --- 可调整的底部图片变量 ---
-           说明：
-           - 修改 --bottom-img-src 为图片路径（相对 index.html），图片建议放在 images/ 或 assets/ 目录。
-           - 修改 --bottom-img-width 控制图片显示宽度（支持 px, %, vw 等）。
-           - 修改 --bottom-img-bottom 控制距离视口底部的间距。
-           - 修改 --bottom-img-opacity 控制透明度（0 - 1）。
-        */
-        :root {
-            --bottom-img-src: "images/XXCAT.png"; /* <- 把这里改成你的图片文件名 */
-            --bottom-img-width: 420px;
-            --bottom-img-bottom: 12px;
-            --bottom-img-opacity: 1;
-            --bottom-img-z: 5; /* 层级，可根据需要调大 */
-        }
-
-        /* 底部图片容器（固定在视口底部中心） */
-        #bottom-image-wrapper {
-            position: fixed;
-            left: 50%;
-            bottom: var(--bottom-img-bottom);
-            transform: translateX(-50%);
-            z-index: var(--bottom-img-z);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: auto; /* 允许点击以实现交互 */
-            cursor: pointer;
-        }
-
-        /* 图片本体：自适应窗口，避免遮挡页面内容
-           可调节项（在上方 :root 中）：
-           - --bottom-img-width: 图片的最大理想宽度（例如 420px）
-           - --bottom-img-bottom: 距视口底部间距
-           - --bottom-img-opacity: 透明度
-        */
-        #bottom-image {
-            /* 基于视口宽度自适应，最小 160px，最大为 --bottom-img-width */
-            width: clamp(160px, 30vw, var(--bottom-img-width));
-            max-width: 95vw;
-            height: auto;
-            /* 限制高度，确保不会覆盖中间主区域 */
-            max-height: 30vh;
-            opacity: var(--bottom-img-opacity);
-            display: block;
-            -webkit-user-drag: none;
-            user-select: none;
-            object-fit: contain;
-            pointer-events: auto; /* 允许点击用于彩蛋交互 */
-            transform-origin: center center;
-            transition: transform 600ms cubic-bezier(0.2, 0.9, 0.2, 1);
-        }
-
-        /* 抖动动画 */
-        @keyframes clickShake {
-            0% { transform: translateX(0) scale(1); }
-            20% { transform: translateX(-6px) scale(1.05); }
-            50% { transform: translateX(6px) scale(1.02); }
-            80% { transform: translateX(-4px) scale(1.03); }
-            100% { transform: translateX(0) scale(1); }
-        }
-        .click-shake {
-            animation: clickShake 300ms ease;
-            transform-origin: center center;
-        }
-        /* 激活期间放大到约 2 倍，平滑过渡，位置不变 */
-        .egg-scale {
-            transform: scale(2);
-            transition: transform 600ms cubic-bezier(0.2, 0.9, 0.2, 1);
-        }
-
-        /* emoji 雨容器与单个表情样式 */
-        #emoji-container {
+        /* --- 0. 背景層 --- */
+        #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 0; /* 不影响布局 */
+            height: 100%;
+            z-index: -2;
             pointer-events: none;
-            overflow: visible;
-            z-index: 9999;
         }
-        .emoji-item {
+
+        .bg-dots {
             position: fixed;
-            font-size: 28px;
-            will-change: transform, opacity;
-            user-select: none;
-            animation-name: fallAndRotate;
-            animation-timing-function: linear;
-        }
-        @keyframes fallAndRotate {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.95; }
-        }
-
-        /* 小屏与窄高屏幕的额外收缩，进一步降低遮挡风险 */
-        @media (max-width: 600px) {
-            #bottom-image {
-                width: clamp(120px, 40vw, calc(var(--bottom-img-width) * 0.8));
-                max-height: 22vh;
-            }
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(var(--dot-bg) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            opacity: 0.4;
         }
 
-        @media (max-height: 520px) {
-            #bottom-image {
-                /* 当视口高度较小时，进一步限制高度或隐藏 */
-                max-height: 18vh;
-                width: clamp(100px, 35vw, calc(var(--bottom-img-width) * 0.7));
-            }
+        /* --- 1. UI フレームワーク (挡板优化) --- */
+        .corner {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--fg);
+            z-index: 100;
+            pointer-events: none;
+        }
+        .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .meta-info {
+            position: fixed;
+            font-size: 0.6rem;
+            font-family: 'Unbounded';
+            font-weight: 900;
+            letter-spacing: 2px;
+            z-index: 101;
+            pointer-events: none;
+            /* 移除黑框，仅保留挡板背景 */
+            background-color: var(--bg);
+            padding: 8px 14px;
+            line-height: 1.4;
+        }
+        .build-id { top: 35px; right: 35px; text-align: right; }
+        .sector-id { bottom: 35px; left: 35px; }
+
+        /* --- 2. レイアウト --- */
+        main {
+            width: 100%;
+            min-height: 100vh;
+            padding: 180px var(--safe-margin);
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            position: relative;
         }
 
-        /* 可选：当窗口非常小以致严重遮挡时可隐藏图片
-        @media (max-height: 380px) {
-            #bottom-image { display: none; }
+        #hero {
+            grid-column: 1 / 13;
+            margin-bottom: 100px;
         }
-        */
 
+        .main-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 7.5rem);
+            font-weight: 900;
+            line-height: 1.0;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+        }
+
+        #bio {
+            grid-column: 1 / 7;
+            padding: 40px 0;
+            border-top: 10px solid var(--fg);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: rgba(229, 229, 229, 0.45);
+            backdrop-filter: blur(12px);
+        }
+        #bio h2 { font-family: 'Unbounded'; font-size: 1.1rem; text-transform: uppercase; font-weight: 900; }
+        #bio p { font-size: 1rem; line-height: 2.1; letter-spacing: 0.05em; }
+
+        .system-monitor {
+            grid-column: 8 / 13;
+            border-left: 2px solid var(--fg);
+            padding-left: 30px;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-transform: uppercase;
+            font-family: 'Unbounded';
+        }
+        .bar-container { width: 100%; height: 14px; background: var(--dot-bg); margin-top: 5px; }
+        .bar-fill { height: 100%; background: var(--fg); transition: width 3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* --- 3. 作品グリッド --- */
+        .work-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 80px;
+            margin-top: 100px;
+            padding-bottom: 200px;
+        }
+
+        .card {
+            background: rgba(229, 229, 229, 0.6);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--fg);
+            padding: 45px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 440px;
+            overflow: hidden;
+            /* 瞬时反转切换 */
+            transition: background 0.1s steps(1), color 0.1s steps(1);
+        }
+
+        /* 子元素 pointer-events 禁止，防止鼠标移动时因穿透产生闪动 */
+        .card > * {
+            pointer-events: none;
+        }
+
+        .card:nth-child(even) { transform: translateY(60px); }
+        .card:nth-child(3n) { transform: translateY(-40px); }
+
+        .card:hover {
+            z-index: 50;
+            background-color: var(--fg);
+            color: var(--bg);
+        }
+
+        /* 内部精密グリッチ (无尺寸伸缩) */
+        @keyframes stableInternalGlitch {
+            0% { clip-path: inset(0 0 0 0); filter: invert(0); }
+            20% { clip-path: inset(50% 0 5% 0); background: var(--glitch-gray); }
+            40% { filter: invert(1); }
+            60% { clip-path: inset(5% 0 90% 0); }
+            100% { clip-path: inset(0 0 0 0); filter: invert(0); }
+        }
+
+        .glitch-active { animation: stableInternalGlitch 0.1s steps(4) forwards; }
+
+        .card .index { font-family: 'Unbounded'; font-size: 0.8rem; font-weight: 900; margin-bottom: 30px; display: block; opacity: 0.5; }
+        .card:hover .index { opacity: 1; }
+        .card h3 { font-family: 'Unbounded'; font-size: 1.8rem; font-weight: 900; line-height: 1; text-transform: uppercase; }
+        .card p { font-size: 0.85rem; margin-top: 30px; line-height: 1.8; font-weight: bold; }
+        .card .action { font-family: 'Unbounded'; margin-top: auto; font-size: 0.65rem; text-align: right; letter-spacing: 5px; opacity: 0.4; font-weight: 900; }
+        .card:hover .action { opacity: 1; }
+
+        .card.featured { grid-column: span 2; background: var(--fg); color: var(--bg); }
+
+        /* --- 4. 扫描线效果 --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        @media (max-width: 1024px) {
+            main { padding: 120px 30px; }
+            #bio, .system-monitor { grid-column: 1 / 13; }
+            .work-grid { grid-template-columns: 1fr; gap: 40px; }
+            .card { transform: none !important; min-height: 320px; }
+            .card.featured { grid-column: span 1; }
+            .meta-info { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-circle"></div>
-    <div class="bg-circle bg-circle-2"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-dots"></div>
 
-    <header>
-        <h1>こんにちは<span>C426</span>です</h1>
-        <p class="subtitle">
-            ここは私の遊び場です。<br>
-            面白いものを作ったらここに展示します。
-        </p>
-    </header>
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
 
-    <section class="projects-container">
-        
-        <div class="project-card" onclick="window.location.href='game/index.html'">
-            <h3>🕹️ 回避と収集</h3>
+    <!-- 移除黑框的挡板 -->
+    <div class="meta-info build-id">BUILD_26.01.2026<br>V_ARCHIVE_REFINED_STABLE</div>
+    <div class="meta-info sector-id">SECTOR 01 // DHGS_NODE</div>
+
+    <div id="overlay"></div>
+
+    <main>
+        <section id="hero">
+            <h1 class="main-title">#DHGSVR25<br>PORTFOLIO<br>C426</h1>
+        </section>
+
+        <section id="bio">
+            <h2>About_The_Author</h2>
             <p>
-                敵を回避してコインを収集。<br>
-                20枚集めたら勝利！
+                デジタルハリウッド大学大学院（DHGS）の22期生です。
+                <br>
+                ここはクリエイティブな実験場であり、ポートフォリオでもあります。制作した面白い作品をどんどん公開していく予定です。
             </p>
-            <div class="tags">
-                <span class="tag">JavaScript</span>
-                <span class="tag">Canvas</span>
-                <span class="tag">Game Dev</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+        </section>
 
-        <div class="project-card" onclick="window.location.href='flappy/index.html'">
-            <h3>🐦 Flappy Bird</h3>
-            <p>
-                あの定番カジュアルゲームのremake！<br>
-                操作はそのまま、スコア機能を搭載！
-            </p>
-            <div class="tags">
-                <span class="tag">Casual</span>
-                <span class="tag">Physics</span>
-                <span class="tag">Remake</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+        <aside class="system-monitor">
+            <div>Data_Integrity: Verified</div>
+            <div>Sync_Status: <span id="sync-val">0</span>% Active</div>
+            <div class="bar-container"><div class="bar-fill" id="sync-bar" style="width: 0%;"></div></div>
+            <div style="margin-top: 15px; opacity: 0.6;">DHGS_PROTOTYPE_REF_022</div>
+        </aside>
 
-        <div class="project-card" onclick="window.location.href='ronpa/game.html'">
-            <h3>🕵️ 論破バトル</h3>
-            <p>
-                AI × ダンガンロンパ風の推理バトル。<br>
-                矛盾指摘で、隠された真実を暴き出す。
-            </p>
-            <div class="tags">
-                <span class="tag">AI</span>
-                <span class="tag">Interactive</span>
-                <span class="tag">Narrative</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+        <div class="work-grid">
+            <a href="ronpa/game.html" class="card featured">
+                <span class="index">01_LOG_PRIMARY</span>
+                <div>
+                    <h3>RONPA_BATTLE</h3>
+                    <p>AIを搭載した論理博弈シミュレーター。不完全なターミナルの中で、矛盾という名の脆弱性を突き、真実に到達せよ。</p>
+                </div>
+                <div class="action">CONNECT_SESSION ></div>
+            </a>
 
-        <div class="project-card" onclick="window.location.href='AI_JinrouGame/index.html'">
-            <h3>🤖 AI 人狼ゲーム</h3>
-            <p>
-                AI駆動の人狼ゲーム<br>
-                複数のLLMが競い合うバトルロイヤル
-            </p>
-            <div class="tags">
-                <span class="tag">AI</span>
-                <span class="tag">React</span>
-                <span class="tag">Simulation</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+            <a href="DEPTH/index.html" class="card">
+                <span class="index">02_LOG_SYSTEM</span>
+                <div>
+                    <h3>DEPTH_OS</h3>
+                    <p>Reactで構築された深淵プロトコル。削除済みセクタに隠された異常な記録をサルベージする。</p>
+                </div>
+                <div class="action">MOUNT_VOLUME ></div>
+            </a>
 
-        <div class="project-card" onclick="window.location.href='new year 2026/2026.html'">
-            <h3>🐴 年賀状 2026</h3>
-            <p>HAPPY NEW YEAR！</p>
-            <div class="tags">
-                <span class="tag">Greeting</span>
-                <span class="tag">HTML</span>
-                <span class="tag">2026</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+            <a href="AI_JinrouGame/index.html" class="card">
+                <span class="index">03_LOG_SYSTEM</span>
+                <div>
+                    <h3>AI_WOLF_SIM</h3>
+                    <p>マルチエージェントによる社会的実験。LLMがどのように他者を誘導するかを精密に観測する。</p>
+                </div>
+                <div class="action">EXEC_SIMULATE ></div>
+            </a>
 
-        <div class="project-card" onclick="window.location.href='DEPTH/index.html'">
-            <h3>👻 DEPTH</h3>
-            <p>
-                Reactで作られたホラーパズルゲーム。<br>
-                深淵の秘密を解き明かせ。
-            </p>
-            <div class="tags">
-                <span class="tag">React</span>
-                <span class="tag">Horror</span>
-                <span class="tag">Puzzle</span>
-            </div>
-            <div class="arrow-icon">➜</div>
-        </div>
+            <a href="#" class="card">
+                <span class="index">04_LOG_LAB</span>
+                <div>
+                    <h3>UI_UX_LAB</h3>
+                    <p>認知心理学に基づく実験的なプロトタイプ制作。視覚的なフィードバックの限界を探る。</p>
+                </div>
+                <div class="action">OPEN_RESEARCH ></div>
+            </a>
 
-        <div class="project-card">
-            <h3>🚧 工事中...</h3>
-            <p>
-                ここはまだ準備中です。<br>
-                お楽しみに！
-            </p>
-            <div class="tags">
-                <span class="tag">Coming Soon</span>
+            <a href="#" class="card">
+                <span class="index">05_LOG_LAB</span>
+                <div>
+                    <h3>MOTION_GEN</h3>
+                    <p>アルゴリズムによって生成される動的ヴィジュアルの探求。静止画にはない時間軸の美学。</p>
+                </div>
+                <div class="action">GENERATE ></div>
+            </a>
+
+            <a href="game/index.html" class="card">
+                <span class="index">06_LOG_EXP</span>
+                <div>
+                    <h3>AVOID / COLLECT</h3>
+                    <p>物理的な衝突と回避の最小モデル。純粋な空間における意思決定の速度を測定する実験場。</p>
+                </div>
+                <div class="action">INITIALIZE ></div>
+            </a>
+
+            <a href="flappy/index.html" class="card">
+                <span class="index">07_LOG_EXP</span>
+                <div>
+                    <h3>FLAPPY_CORE</h3>
+                    <p>古典力学の再解釈。重力と頻度、そしてフラストレーションの数学的最適化を追求する。</p>
+                </div>
+                <div class="action">RUN_PHYSICS ></div>
+            </a>
+
+            <div class="card" style="border-style: dashed; opacity: 0.3;">
+                <span class="index">XX_LOG_NULL</span>
+                <div>
+                    <h3>[ENCRYPTED]</h3>
+                    <p>データ破損。セクタ426へのアクセスは現在管理者によって制限されています。</p>
+                </div>
+                <div class="action">ACCESS_DENIED</div>
             </div>
         </div>
-
-    </section>
-
-    <footer>
-        <p>© 2025 Powered by GitHub Pages | <a href="https://github.com/C426">Github Profile</a></p>
-    </footer>
-
-    <!-- 底部透明 PNG 图片（可替换图片路径）
-         调整方法：
-         1) 将图片放到仓库的 images/ 或 assets/ 目录。
-         2) 修改上方 CSS :root 中的 --bottom-img-src 为相对路径，例如 "images/my-footer.png"。
-         3) 通过 --bottom-img-width、--bottom-img-bottom、--bottom-img-opacity 调整大小、底部间距与透明度。
-    -->
-    <div id="bottom-image-wrapper">
-        <img id="bottom-image" src="images/XXCAT.png" alt="底部装饰图" />
-    </div>
-
-    <!-- emoji 容器（运行时由 JS 填充） -->
-    <div id="emoji-container" aria-hidden="true"></div>
+    </main>
 
     <script>
-        (function(){
-            const img = document.getElementById('bottom-image');
-            const wrapper = document.getElementById('bottom-image-wrapper');
-            const emojiContainer = document.getElementById('emoji-container');
-            let clicks = 0;
-            let activated = false;
-
-            const EMOJIS = ['🎉','😺','🌟','💥','✨','🍣','🎈','🌈','🔥','🎵'];
-
-            // 如果仓库根目录有 audio/17.mp3，会在激活时播放（循环），按需求停止
-            const eggAudio = new Audio('audio/17.mp3');
-            eggAudio.loop = true;
-            eggAudio.preload = 'auto';
-            eggAudio.volume = 0.8;
-
-            function playToneSequence() {
-                try {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const now = ctx.currentTime;
-                    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
-                    freqs.forEach((f, i) => {
-                        const o = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        o.type = 'sine';
-                        o.frequency.value = f;
-                        g.gain.value = 0.06;
-                        o.connect(g);
-                        g.connect(ctx.destination);
-                        o.start(now + i * 0.15);
-                        o.stop(now + i * 0.15 + 0.18);
-                    });
-                } catch (e) {
-                    console.warn('AudioContext unavailable', e);
-                }
+        class AudioManager {
+            constructor() { this.ctx = null; this.initialized = false; }
+            init() {
+                if (this.initialized) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.initialized = true;
             }
-
-            function spawnEmoji() {
-                const el = document.createElement('div');
-                el.className = 'emoji-item';
-                el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-                const left = Math.random() * 100; // vw
-                const size = 18 + Math.random() * 36; // px
-                el.style.left = left + 'vw';
-                el.style.fontSize = size + 'px';
-                const dur = 3.5 + Math.random() * 3.5; // seconds
-                el.style.animationDuration = dur + 's';
-                el.style.opacity = '0.95';
-                emojiContainer.appendChild(el);
-                el.addEventListener('animationend', () => el.remove());
+            playFlipSound() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.008; 
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 6200; filter.Q.value = 5.0;
+                const gain = this.ctx.createGain(); const now = this.ctx.currentTime;
+                gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
+                noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                noise.start();
             }
+        }
 
-            function startEmojiRain(durationSec = 8) {
-                const interval = setInterval(spawnEmoji, 120);
-                spawnEmoji();
-                setTimeout(() => clearInterval(interval), durationSec * 1000);
+        class TopographicWaves {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.numLines = 28; 
+                this.tick = 0;
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
             }
-
-            function activateEasterEgg(durationSec = 17) {
-                if (activated) return;
-                activated = true;
-                // save previous styles
-                const root = document.documentElement;
-                const rootStyle = getComputedStyle(root);
-                const prevVarBg = rootStyle.getPropertyValue('--bg-color') || '';
-                const prevVarText = rootStyle.getPropertyValue('--text-color') || '';
-                const prevBodyBg = document.body.style.backgroundColor || '';
-                const prevBodyColor = document.body.style.color || '';
-
-                // 音乐：优先播放根目录 audio/17.mp3（若可用），否则保留简短合成音序作为后备
-                let audioPlayed = false;
-                try {
-                    eggAudio.currentTime = 0;
-                    const p = eggAudio.play();
-                    if (p && p.catch) p.catch(() => { /* autoplay 被阻止时忽略 */ });
-                    audioPlayed = true;
-                } catch (e) {
-                    console.warn('Failed to play egg audio', e);
-                }
-                let audioInterval = null;
-                if (!audioPlayed) {
-                    // 后备使用合成音序循环
-                    playToneSequence();
-                    audioInterval = setInterval(playToneSequence, 1200);
-                }
-
-                    // 放大图片（位置不变），平滑过渡
-                    try { img.classList.add('egg-scale'); } catch (e) { /* ignore */ }
-
-                // 切换为白色主题
-                document.body.style.transition = 'background-color 0.6s ease, color 0.6s ease';
-                document.body.style.backgroundColor = '#ffffff';
-                document.body.style.color = '#111111';
-                root.style.setProperty('--bg-color', '#ffffff');
-                root.style.setProperty('--text-color', '#111111');
-
-                // emoji 雨（持续 durationSec 秒）
-                startEmojiRain(durationSec);
-
-                // 17 秒后恢复
-                setTimeout(() => {
-                    if (audioInterval) clearInterval(audioInterval);
-                    try { if (audioPlayed) { eggAudio.pause(); eggAudio.currentTime = 0; } } catch (e) { /* ignore */ }
-                    // 恢复图片大小
-                    try { img.classList.remove('egg-scale'); } catch (e) { /* ignore */ }
-                    // restore
-                    if (prevVarBg) root.style.setProperty('--bg-color', prevVarBg);
-                    else root.style.removeProperty('--bg-color');
-                    if (prevVarText) root.style.setProperty('--text-color', prevVarText);
-                    else root.style.removeProperty('--text-color');
-                    document.body.style.backgroundColor = prevBodyBg;
-                    document.body.style.color = prevBodyColor;
-                    activated = false;
-                }, durationSec * 1000);
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
             }
-
-            function flashShake() {
-                img.classList.add('click-shake');
-                setTimeout(() => img.classList.remove('click-shake'), 320);
-                // small instantaneous scale (ensure quick visual pop)
-                // handled inside keyframes
+            draw() {
+                this.tick += 0.003; 
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                this.ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < this.numLines; i++) {
+                    this.ctx.beginPath();
+                    const distFromCenter = Math.abs(i - this.numLines/2) / (this.numLines/2);
+                    const opacity = 0.04 + (1 - distFromCenter) * 0.12;
+                    const lineWidth = 0.5 + (1 - distFromCenter) * 1.5;
+                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
+                    this.ctx.lineWidth = lineWidth;
+                    for (let x = 0; x <= w; x += 30) {
+                        const wave1 = Math.sin(x * 0.0006 + this.tick + i * 0.5) * 80;
+                        const wave2 = Math.cos(x * 0.0003 - this.tick * 0.4 + i * 0.8) * 45;
+                        const yBase = (h / (this.numLines - 1)) * i;
+                        const y = yBase + wave1 + wave2;
+                        if (x === 0) this.ctx.moveTo(x, y);
+                        else this.ctx.lineTo(x, y);
+                    }
+                    this.ctx.stroke();
+                }
+                requestAnimationFrame(() => this.draw());
             }
+        }
 
-            // 点击计数与时间窗口逻辑：17 秒窗口内 17 次触发；3 秒无操作清零
-            let clicksWindowStart = 0;
-            let lastClickTime = 0;
-            let resetTimer = null;
-            wrapper.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (activated) return;
-                const now = Date.now();
+        const audio = new AudioManager();
+        window.addEventListener('load', () => {
+            const waves = new TopographicWaves('bg-canvas');
+            waves.draw();
+            document.addEventListener('mousedown', () => audio.init(), { once: true });
+            
+            const targetSync = 98;
+            let currentSync = 0;
+            const syncInt = setInterval(() => {
+                currentSync += 1;
+                const valEl = document.getElementById('sync-val');
+                const barEl = document.getElementById('sync-bar');
+                if (valEl) valEl.textContent = currentSync;
+                if (barEl) barEl.style.width = currentSync + '%';
+                if (currentSync >= targetSync) clearInterval(syncInt);
+            }, 25);
 
-                // 超过 3 秒无操作则清零
-                if (lastClickTime && (now - lastClickTime) > 3000) {
-                    clicks = 0;
-                    clicksWindowStart = 0;
-                }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.filter = 'blur(0)'; } });
+            }, { threshold: 0.1 });
 
-                // 如果窗口尚未开始，启动窗口
-                if (!clicksWindowStart) clicksWindowStart = now;
-
-                // 如果窗口超过 17 秒，从当前点击重新开始计时
-                if ((now - clicksWindowStart) > 17000) {
-                    clicks = 0;
-                    clicksWindowStart = now;
-                }
-
-                clicks += 1;
-                lastClickTime = now;
-
-                // 重置 3 秒计时器
-                if (resetTimer) clearTimeout(resetTimer);
-                resetTimer = setTimeout(() => { clicks = 0; clicksWindowStart = 0; }, 3000);
-
-                flashShake();
-
-                if (clicks >= 17 && (now - clicksWindowStart) <= 17000) {
-                    // 达成 17 次连击（在 17 秒窗口内）
-                    clicks = 0;
-                    clicksWindowStart = 0;
-                    if (resetTimer) { clearTimeout(resetTimer); resetTimer = null; }
-                    activateEasterEgg(17);
-                }
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.opacity = '0'; card.style.filter = 'blur(15px)';
+                card.style.transition = 'opacity 1s cubic-bezier(0.19, 1, 0.22, 1), filter 1s ease';
+                observer.observe(card);
+                
+                // 仅监听 mouseenter，并在逻辑中锁定重复触发
+                card.addEventListener('mouseenter', () => {
+                    audio.init();
+                    audio.playFlipSound();
+                    
+                    if (!card.classList.contains('glitch-active')) {
+                        card.classList.add('glitch-active');
+                        setTimeout(() => card.classList.remove('glitch-active'), 120);
+                    }
+                });
             });
-
-            // 支持键盘 Enter/Space 激活（无障碍）
-            wrapper.setAttribute('tabindex', '0');
-            wrapper.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    wrapper.click();
-                }
-            });
-        })();
+        });
     </script>
-
 </body>
 </html>

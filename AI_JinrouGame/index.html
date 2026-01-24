@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI人狼ゲーム</title>
+    <title>AI_JINROU_GAME</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-      body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Sawarabi+Gothic&family=Unbounded:wght@400;700;900&display=swap');
+      
+      body { font-family: 'Sawarabi Gothic', sans-serif; background-color: #e5e5e5; color: #000; overflow: hidden; }
       .font-mono { font-family: 'JetBrains Mono', monospace; }
+      .font-unbounded { font-family: 'Unbounded', sans-serif; }
+      
       .scrollbar-hide::-webkit-scrollbar { display: none; }
       .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-      .model-checkbox:checked + div { background-color: #9333ea; border-color: #9333ea; color: white; }
       
-      .home-btn {
-          position: fixed; top: 16px; left: 16px; z-index: 60;
-          background: rgba(15, 23, 42, 0.9); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1);
-          padding: 8px 16px; border-radius: 9999px; font-weight: 600; font-size: 0.75rem;
-          text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-          backdrop-filter: blur(4px); transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      /* Glitch Effect Keyframes */
+      .glitch-active { animation: internalGlitch 0.12s steps(4) forwards; }
+      @keyframes internalGlitch { 
+        0% { clip-path: inset(0 0 0 0); filter: invert(0); } 
+        20% { clip-path: inset(45% 0 5% 0); background: #c5c5c5; } 
+        40% { filter: invert(1); } 
+        60% { clip-path: inset(10% 0 85% 0); } 
+        100% { clip-path: inset(0 0 0 0); filter: invert(0); } 
       }
-      .home-btn:hover { background: #7c3aed; color: white; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3); }
-      @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      .animate-spin-slow { animation: spin-slow 3s linear infinite; }
     </style>
 
     <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" crossorigin></script>
@@ -31,13 +32,93 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <a href="../index.html" class="home-btn">◀ Main Menu</a>
     <div id="root"></div>
 
     <script type="text/babel">
 
     /***********************************************************
-     * 1. CONSTANTS & CONFIG
+     * 0. ICONS (Inlined for standalone compatibility)
+     ***********************************************************/
+    const Icon = ({ path }) => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
+    const Icons = {
+        Terminal: () => <Icon path={<><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></>} />,
+        Refresh: () => <Icon path={<><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></>} />,
+        Send: () => <Icon path={<><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>} />,
+        Download: () => <Icon path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>} />,
+        Check: () => <Icon path={<polyline points="20 6 9 17 4 12"/>} />,
+        ArrowLeft: () => <Icon path={<><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></>} />
+    };
+
+    /***********************************************************
+     * 1. AUDIO & VISUAL ENGINES
+     ***********************************************************/
+    class AudioManager {
+        constructor() { this.ctx = null; this.initialized = false; }
+        init() {
+            if (this.initialized) return;
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const filter = this.ctx.createBiquadFilter();
+            osc.type = 'sine'; osc.frequency.value = 42; 
+            filter.type = 'lowpass'; filter.frequency.value = 55;
+            gain.gain.value = 0.03;
+            osc.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+            osc.start();
+            this.initialized = true;
+        }
+        playFlipSound() {
+            if (!this.ctx) return;
+            const bufferSize = this.ctx.sampleRate * 0.008; 
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+            const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 6200; filter.Q.value = 5.0;
+            const gain = this.ctx.createGain(); const now = this.ctx.currentTime;
+            gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
+            noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+            noise.start();
+        }
+    }
+    const audio = new AudioManager();
+
+    class TopographicEngine {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.numLines = 26; this.tick = 0;
+        }
+        resize() {
+            const dpr = window.devicePixelRatio || 1;
+            this.canvas.width = window.innerWidth * dpr;
+            this.canvas.height = window.innerHeight * dpr;
+            this.ctx.scale(dpr, dpr);
+        }
+        draw() {
+            this.tick += 0.003; 
+            const w = window.innerWidth; const h = window.innerHeight;
+            this.ctx.clearRect(0, 0, w, h);
+            for (let i = 0; i < this.numLines; i++) {
+                this.ctx.beginPath();
+                const distFromCenter = Math.abs(i - this.numLines/2) / (this.numLines/2);
+                const opacity = 0.04 + (1 - distFromCenter) * 0.12;
+                this.ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
+                this.ctx.lineWidth = 0.5 + (1 - distFromCenter) * 1.5;
+                for (let x = 0; x <= w; x += 30) {
+                    const wave1 = Math.sin(x * 0.0006 + this.tick + i * 0.5) * 80;
+                    const wave2 = Math.cos(x * 0.0003 - this.tick * 0.4 + i * 0.8) * 45;
+                    const yBase = (h / (this.numLines - 1)) * i;
+                    const y = yBase + wave1 + wave2;
+                    if (x === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
+                }
+                this.ctx.stroke();
+            }
+        }
+    }
+
+    /***********************************************************
+     * 2. LOGIC & CONSTANTS
      ***********************************************************/
     const { useState, useEffect, useRef } = React;
     const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -53,7 +134,13 @@
     const Role = { VILLAGER: 'Villager', WEREWOLF: 'Werewolf', SEER: 'Seer' };
     const ModelProvider = { GEMINI: 'gemini', SILICONFLOW: 'siliconflow', OFFLINE: 'offline' };
 
-    // Optimized Model List
+    const GEMINI_MODELS = [
+        { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', short: 'G-2.5-F' },
+        { id: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash', short: 'G-3.0-F' },
+        { id: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro', short: 'G-3.0-P' },
+        { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', short: 'G-2.5-P' }
+    ];
+
     const SILICON_MODELS = [
         { id: 'deepseek-ai/DeepSeek-V3', name: 'DeepSeek V3', short: 'DS-V3' },
         { id: 'deepseek-ai/DeepSeek-R1', name: 'DeepSeek R1', short: 'DS-R1' },
@@ -77,112 +164,105 @@
 
     const NAMES = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Lily"];
 
-    /***********************************************************
-     * 2. I18N
-     ***********************************************************/
     const UI_LABELS = {
       en: {
-        title: "AI Werewolf", subtitle: "Stable Models + Input Fixed",
-        playerCount: "Players (3-12)", maxRounds: "Rounds/Day", includeSeer: "Include Seer?",
-        playAsChar: "Play?", yes: "Yes", no: "No (Spectator)",
-        geminiPlaceholder: "Gemini Key (Optional)", siliconPlaceholder: "SiliconFlow Key (Required)",
-        siliconLabel: "Select Models (Randomly assigned):", devMode: "Dev Mode",
-        startGame: "Start Game", villageLog: "Village Log",
-        chatPlaceholder: "Type here... (Press Enter)", send: "Send",
-        day: "DAY", night: "NIGHT", dayCount: "Day {count}",
-        votePrompt: "CLICK TO VOTE", votingProgress: "VOTING IN PROGRESS...", 
-        killPrompt: "CHOOSE VICTIM", seerPrompt: "CHOOSE PLAYER TO INSPECT",
-        villagerWin: "VILLAGERS WIN", werewolfWin: "WEREWOLVES WIN", playAgain: "Play Again",
+        title: "AI_WOLF", subtitle: "STABLE_PROTOCOL_V4",
+        playerCount: "PLAYER_COUNT", maxRounds: "MAX_ROUNDS", includeSeer: "ENABLE_SEER",
+        playAsChar: "ENGAGE_DIRECTLY", yes: "YES", no: "NO (SPECTATE)",
+        geminiPlaceholder: "GEMINI_API_KEY", siliconPlaceholder: "SILICONFLOW_API_KEY",
+        siliconLabel: "SILICON MODELS:", geminiLabel: "GEMINI MODELS:", devMode: "DEBUG_CONSOLE",
+        testConnection: "TEST_LINK", testing: "LINKING...", connectionOk: "OK", connectionFail: "FAIL",
+        startGame: "INITIALIZE_GAME", villageLog: "ARCHIVE_LOG",
+        chatPlaceholder: "INPUT_DATA...", send: "EXECUTE", dayCount: "CYCLE_{count}",
+        votePrompt: "VOTE_TARGET", votingProgress: "VOTING_IN_PROGRESS", 
+        killPrompt: "CHOOSING_VICTIM", seerPrompt: "INSPECTING...",
+        villagerWin: "VILLAGERS_WIN", werewolfWin: "WEREWOLVES_WIN", playAgain: "REBOOT_SYSTEM",
         you: "YOU", [Role.VILLAGER]: "Villager", [Role.WEREWOLF]: "Werewolf", [Role.SEER]: "Seer",
-        gameStarted: "Game Started. Total: {total}. Wolves: {wolves}. Seer: {seer}.",
-        discussionEnd: "Discussion ended.", roundStart: "--- Round {round} / {total} ---",
-        executed: "{name} executed ({votes} votes).", foundDead: "{name} found dead.",
-        missingKeys: "No keys? Starting Offline Mode.", downloadLogs: "Download Logs",
-        devConsole: "Dev Console", offlineNotice: "Offline Mode.", speechError: "⚠️ Connection Error",
-        testConnection: "Test Keys", testing: "Testing...", connectionOk: "OK", connectionFail: "Fail",
-        voteSummary: "--- Voting Results ---",
-        rateLimitWarn: "⏳ Retrying...",
-        playerVoted: "{voter} voted for {target}",
-        roundDisplay: "Round {current}/{max}",
-        thinking: "Thinking...",
-        seerResult: "🔮 INSPECTION RESULT: {name} is a {role}.",
-        seerDay1Warn: "SYSTEM: It is Day 1. You have NOT inspected anyone yet.",
-        tieDetected: "⚖️ TIE: {names}. Entering Tie-Breaker.",
-        tieGlobal: "⚖️ DEADLOCK. Extra discussion rounds added.",
-        tieSpeech: "🎤 TIE DEFENSE", tieDiscussion: "🗣️ TIE DEBATE (Spectators Only)"
+        gameStarted: "PROTOCOL_START. TOTAL: {total}. WOLVES: {wolves}. SEER: {seer}.",
+        discussionEnd: "DISCUSSION_TERMINATED.", roundStart: "--- CYCLE {round} / {total} ---",
+        executed: "{name} TERMINATED ({votes} VOTES).", foundDead: "SIGNAL LOST: {name}.",
+        missingKeys: "NO_KEYS_DETECTED. STARTING_SIMULATION.", downloadLogs: "SAVE_LOG",
+        devConsole: "DEBUGGER", offlineNotice: "OFFLINE_MODE_ACTIVE.", speechError: "CONNECTION_LOST",
+        voteSummary: "--- VOTE_RESULTS ---",
+        rateLimitWarn: "RETRYING...",
+        playerVoted: "{voter} LOCKED_ON {target}",
+        roundDisplay: "R: {current}/{max}",
+        thinking: "PROCESSING...",
+        seerResult: "🔮 RESULT: {name} is {role}.",
+        seerDay1Warn: "SYSTEM: DAY_1_RESTRICTION.",
+        tieDetected: "⚖️ TIE: {names}. TIE_BREAKER_INIT.",
+        tieGlobal: "⚖️ DEADLOCK. EXTENDING_CYCLES.",
+        tieSpeech: "🎤 TIE_DEFENSE", tieDiscussion: "🗣️ JURY_DELIBERATION",
+        confirmVote: "CONFIRM_TARGET",
+        backHome: "EXIT_PROTOCOL"
       },
       zh: {
-        title: "AI 狼人杀", subtitle: "输入修复 + 稳定版",
-        playerCount: "玩家人数 (3-12)", maxRounds: "每日发言轮数",
-        includeSeer: "加入预言家职业?",
-        playAsChar: "亲自参战?", yes: "是", no: "否 (观战模式)",
-        geminiPlaceholder: "Gemini Key (选填)",
-        siliconPlaceholder: "硅基流动 (SiliconFlow) Key (推荐)",
-        siliconLabel: "选择 AI 模型 (开局随机分配):",
-        devMode: "开发者模式 (完整日志)",
-        startGame: "开始游戏", villageLog: "村庄日志",
-        chatPlaceholder: "在此输入... (按回车发送)", send: "发送",
-        day: "白天", night: "夜晚", dayCount: "第 {count} 天",
-        votePrompt: "点击玩家进行投票", votingProgress: "等待其他玩家投票中...", 
-        killPrompt: "选择猎杀目标", seerPrompt: "【预言家】选择查验目标",
-        villagerWin: "村民胜利", werewolfWin: "狼人胜利", playAgain: "再玩一次",
+        title: "AI狼人杀", subtitle: "STABLE_PROTOCOL_V4",
+        playerCount: "玩家人数", maxRounds: "讨论轮次", includeSeer: "启用预言家",
+        playAsChar: "亲自参战", yes: "是", no: "否 (观战)",
+        geminiPlaceholder: "Gemini Key (选填)", siliconPlaceholder: "SiliconFlow Key (推荐)",
+        siliconLabel: "SiliconFlow 模型:", geminiLabel: "Gemini 模型:", devMode: "开发者模式",
+        testConnection: "测试连接", testing: "链接中...", connectionOk: "正常", connectionFail: "失败",
+        startGame: "初始化协议", villageLog: "档案日志",
+        chatPlaceholder: "输入数据...", send: "执行", dayCount: "周期_{count}",
+        votePrompt: "选择投票目标", votingProgress: "等待投票数据...", 
+        killPrompt: "选择猎杀目标", seerPrompt: "选择查验目标",
+        villagerWin: "村庄胜利", werewolfWin: "狼人胜利", playAgain: "重启系统",
         you: "你", [Role.VILLAGER]: "村民", [Role.WEREWOLF]: "狼人", [Role.SEER]: "预言家",
-        gameStarted: "【游戏开始】共 {total} 人。狼人: {wolves}。预言家: {seer}。",
-        discussionEnd: "讨论结束，进入投票。", roundStart: "--- 第 {round} / {total} 轮 ---",
-        executed: "{name} 被高票处决 ({votes}票)。", foundDead: "天亮了，{name} 惨遭毒手。",
-        missingKeys: "未检测到 Key，将启动离线模拟模式。", downloadLogs: "下载日志 (TXT)",
-        devConsole: "后台日志", offlineNotice: "当前为离线模拟模式。", speechError: "⚠️ 连接中断",
-        testConnection: "测试连接", testing: "测试中...", connectionOk: "正常", connectionFail: "失败",
-        voteSummary: "--- 投票结果公示 ---",
-        rateLimitWarn: "⏳ 触发频率限制，正在自动重试...",
-        playerVoted: "{voter} 投给了 {target}",
-        roundDisplay: "第 {current} / {max} 轮发言",
-        thinking: "思考中...",
-        seerResult: "🔮 查验结果：{name} 的身份是 【{role}】。",
-        seerDay1Warn: "系统提示：今天是第一天，你昨晚还没有查验过任何人。",
-        tieDetected: "⚖️ 出现平票：{names}。进入PK决胜环节。",
-        tieGlobal: "⚖️ 全员僵局。加赛两轮讨论。",
-        tieSpeech: "🎤 PK台: 嫌疑人辩护", tieDiscussion: "🗣️ PK台: 围观者审判"
+        gameStarted: "协议已启动。总数: {total}。狼人: {wolves}。预言家: {seer}。",
+        discussionEnd: "讨论终止，进入裁决。", roundStart: "--- 周期 {round} / {total} ---",
+        executed: "{name} 已被终止 ({votes}票)。", foundDead: "信号丢失: {name}。",
+        missingKeys: "未检测到密钥。启动模拟模式。", downloadLogs: "保存日志",
+        devConsole: "后台日志", offlineNotice: "离线模拟模式。", speechError: "⚠️ 连接中断",
+        voteSummary: "--- 裁决结果 ---",
+        rateLimitWarn: "⏳ 重试中...",
+        playerVoted: "{voter} 锁定目标: {target}",
+        roundDisplay: "进度: {current}/{max}",
+        thinking: "计算中...",
+        seerResult: "🔮 扫描结果：{name} 身份为 【{role}】。",
+        seerDay1Warn: "系统警告：首日无数据。",
+        tieDetected: "⚖️ 平票侦测：{names}。进入决胜程序。",
+        tieGlobal: "⚖️ 全员僵局。加赛两轮。",
+        tieSpeech: "🎤 PK台: 辩护", tieDiscussion: "🗣️ PK台: 审判",
+        confirmVote: "确认处决",
+        backHome: "返回主页"
       },
       ja: {
-        title: "AI 人狼", subtitle: "入力バグ修正版",
-        playerCount: "人数 (3-12)", maxRounds: "議論ラウンド",
-        includeSeer: "預言者を追加しますか？",
-        playAsChar: "参加しますか？", yes: "はい", no: "いいえ (観戦)",
-        geminiPlaceholder: "Gemini Key (任意)",
-        siliconPlaceholder: "SiliconFlow Key (推奨)",
-        siliconLabel: "AIモデル選択:",
-        devMode: "開発モード",
-        startGame: "開始", villageLog: "ログ",
-        chatPlaceholder: "ここに入力... (Enterで送信)", send: "送信",
-        day: "昼", night: "夜", dayCount: "{count}日目",
-        votePrompt: "投票してください", votingProgress: "投票進行中...", 
-        killPrompt: "襲撃先を選択", seerPrompt: "占う相手を選択",
-        villagerWin: "村人の勝利", werewolfWin: "人狼の勝利", playAgain: "もう一度",
+        title: "AI人狼", subtitle: "STABLE_PROTOCOL_V4",
+        playerCount: "人数", maxRounds: "議論回数", includeSeer: "預言者有効",
+        playAsChar: "直接参加", yes: "はい", no: "観戦",
+        geminiPlaceholder: "Gemini Key", siliconPlaceholder: "SiliconFlow Key",
+        siliconLabel: "SFモデル:", geminiLabel: "Geminiモデル:", devMode: "開発モード",
+        testConnection: "接続テスト", testing: "テスト中...", connectionOk: "正常", connectionFail: "失敗",
+        startGame: "プロトコル開始", villageLog: "アーカイブ・ログ",
+        chatPlaceholder: "データを入力...", send: "送信", dayCount: "サイクル_{count}",
+        votePrompt: "投票先を選択", votingProgress: "投票データ受信中...", 
+        killPrompt: "排除対象を選択", seerPrompt: "スキャン対象を選択",
+        villagerWin: "村人勝利", werewolfWin: "人狼勝利", playAgain: "再起動",
         you: "あなた", [Role.VILLAGER]: "村人", [Role.WEREWOLF]: "人狼", [Role.SEER]: "預言者",
-        gameStarted: "開始。合計: {total}。人狼: {wolves}。預言者: {seer}。",
-        discussionEnd: "議論終了。", roundStart: "--- Round {round} / {total} ---",
-        executed: "{name} が処刑されました ({votes}票)。", foundDead: "{name} が無惨な姿で発見されました。",
-        missingKeys: "キーなし。オフラインモード。", downloadLogs: "ログ保存 (TXT)",
+        gameStarted: "プロトコル開始。合計: {total}。人狼: {wolves}。預言者: {seer}。",
+        discussionEnd: "議論終了。", roundStart: "--- Cycle {round} / {total} ---",
+        executed: "{name} を排除 ({votes}票)。", foundDead: "通信途絶: {name}。",
+        missingKeys: "キー未検出。オフラインモード起動。", downloadLogs: "ログ保存",
         devConsole: "デバッグ", offlineNotice: "オフラインモード。", speechError: "⚠️ エラー",
-        testConnection: "テスト", testing: "...", connectionOk: "OK", connectionFail: "失敗",
         voteSummary: "--- 投票結果 ---",
         rateLimitWarn: "⏳ 再試行中...",
-        playerVoted: "{voter} は {target} に投票しました",
+        playerVoted: "{voter} は {target} をロックオン",
         roundDisplay: "Round {current}/{max}",
-        thinking: "思考中...",
-        seerResult: "🔮 占い結果：{name} は 【{role}】 です。",
-        seerDay1Warn: "システム：初日です。まだ誰も占っていません。",
-        tieDetected: "⚖️ 同票: {names}。決選投票へ。",
+        thinking: "演算中...",
+        seerResult: "🔮 スキャン結果：{name} ＝ 【{role}】。",
+        seerDay1Warn: "システム：初日データなし。",
+        tieDetected: "⚖️ 同票検知: {names}。決戦プロトコル。",
         tieGlobal: "⚖️ 全員同票。議論延長。",
-        tieSpeech: "🎤 弁明", tieDiscussion: "🗣️ 陪審員議論"
+        tieSpeech: "🎤 弁明", tieDiscussion: "🗣️ 陪審員議論",
+        confirmVote: "投票確定",
+        backHome: "ホームへ"
       }
     };
 
     /***********************************************************
-     * 3. AI SERVICES (Header Auth & Post-Processing & Fallback)
+     * 3. AI SERVICES (FIXED)
      ***********************************************************/
-    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const cleanThink = (text) => text.replace(/<think>[\s\S]*?<\/think>/g, '').trim().replace(/^['"]|['"]$/g, '');
     const buildContext = (logs) => logs.slice(-25).map(l => {
@@ -196,7 +276,16 @@
             try {
                 const res = await fetch(url, options);
                 if (res.status === 429) throw new Error("429 Too Many Requests");
-                if (!res.ok) { const errText = await res.text(); throw new Error(`HTTP ${res.status}: ${errText}`); }
+                if (!res.ok) { 
+                    const errText = await res.text(); 
+                    let errMsg = `HTTP ${res.status}`;
+                    try {
+                        const errJson = JSON.parse(errText);
+                        if (errJson.error && errJson.error.message) errMsg += `: ${errJson.error.message}`;
+                        else errMsg += `: ${errText}`;
+                    } catch(e) { errMsg += `: ${errText}`; }
+                    throw new Error(errMsg); 
+                }
                 return res;
             } catch (err) {
                 if (i < retries - 1) { await delay(backoff); backoff *= 2; } else { throw err; }
@@ -204,22 +293,52 @@
         }
     };
 
-    const callApi = async (provider, apiKey, config, prompt, systemInfo) => {
+    // *** FIX: Added default config={} to prevent undefined access error ***
+    const callApi = async (provider, apiKey, config = {}, prompt, systemInfo) => {
         const performFetch = async (modelId) => {
             if (provider === ModelProvider.GEMINI) {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
-                const body = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: systemInfo }] } };
-                const res = await fetchWithRetry(url, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, 
-                    body: JSON.stringify(body) 
-                });
-                const data = await res.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                // *** FIX 1: DYNAMIC URL for Gemini based on modelId (Defaults to 2.5 Flash) ***
+                const targetModel = modelId || 'gemini-2.5-flash';
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey.trim()}`;
+                
+                const isPing = prompt === "Ping";
+                const body = { 
+                    contents: [{ parts: [{ text: prompt }] }]
+                };
+                
+                if (!isPing) {
+                    body.systemInstruction = { parts: [{ text: systemInfo || "" }] };
+                    body.safetySettings = [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                    ];
+                }
+
+                // *** FIX 2: Simplified headers. Removed 'credentials: omit' which some environments dislike. ***
+                try {
+                    const res = await fetchWithRetry(url, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(body)
+                    });
+                    const data = await res.json();
+                    
+                    if (!data.candidates || !data.candidates[0].content) {
+                        console.warn("Gemini Response Empty:", data);
+                        return "...";
+                    }
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                } catch (fetchErr) {
+                    // *** FIX 3: Explicit ALERT for errors to bypass system toast suppression ***
+                    if (isPing) alert(`GEMINI CONNECT ERROR:\n${fetchErr.message}\nModel: ${targetModel}`);
+                    throw fetchErr;
+                }
             } 
             else if (provider === ModelProvider.SILICONFLOW) {
                 const res = await fetchWithRetry("https://api.siliconflow.cn/v1/chat/completions", {
-                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey.trim()}` },
                     body: JSON.stringify({ model: modelId, messages: [{ role: "system", content: systemInfo }, { role: "user", content: prompt }], stream: false, max_tokens: 400, temperature: 0.8 })
                 });
                 const data = await res.json();
@@ -228,14 +347,11 @@
         };
 
         try {
-            return await performFetch(config.modelId);
+            return await performFetch(config?.modelId);
         } catch (e) {
-            console.warn(`[API FAIL] Model ${config.modelId} failed. Error: ${e}`);
+            console.warn(`[API FAIL] Model ${config?.modelId || 'Unknown'} failed. Error: ${e}`);
             if (provider === ModelProvider.SILICONFLOW && config.modelId !== FALLBACK_MODEL) {
-                console.log(`[API FALLBACK] Retrying with ${FALLBACK_MODEL}...`);
-                try {
-                    return await performFetch(FALLBACK_MODEL);
-                } catch (e2) { throw e2; }
+                try { return await performFetch(FALLBACK_MODEL); } catch (e2) { throw e2; }
             }
             throw e;
         }
@@ -244,7 +360,8 @@
     const LLMService = {
         testConnection: async (apiKey, provider, config) => {
              if (provider === ModelProvider.OFFLINE) return { success: true };
-             try { await callApi(provider, apiKey, config, "Ping", "Pong"); return { success: true }; } 
+             // *** FIX: Pass empty config to prevent undefined error ***
+             try { await callApi(provider, apiKey, config || {}, "Ping", "Pong"); return { success: true }; } 
              catch (e) { return { success: false, error: String(e) }; }
         },
         
@@ -252,147 +369,56 @@
             if (player.provider === ModelProvider.OFFLINE) {
                 await delay(500); return ["🤔 Hmm...", "😐 I am Villager.", "😠 Wolf is among us."][Math.floor(Math.random()*3)];
             }
-
             const context = buildContext(logs);
             const langName = { 'zh': 'Chinese (简体中文)', 'ja': 'Japanese (日本語)', 'en': 'English' }[language] || 'English';
-            const t = UI_LABELS[language];
             
-            let dayContext = "";
+            let dayContext = gameInfo.day === 1 ? `It is DAY 1. NO events happened last night. Players [${waitingPlayers.join(', ')}] have not spoken.` : `It is Day ${gameInfo.day}. Game continues.`;
             let specialPhaseInstr = "";
+            if (phaseType === GamePhase.TIE_SPEECH) specialPhaseInstr = `[URGENT]: You are TIED! Final Defense vs ${tiedPlayersNames}.`;
+            else if (phaseType === GamePhase.TIE_DISCUSSION) specialPhaseInstr = `[URGENT]: TIE between [${tiedPlayersNames}]. Discuss who to eliminate.`;
 
-            if (gameInfo.day === 1) {
-                const waitingNames = waitingPlayers.length > 0 ? waitingPlayers.join(', ') : "None";
-                dayContext = `It is DAY 1. NO events happened last night.
-[SYSTEM CONSTRAINT]: Players [${waitingNames}] have not spoken yet. DO NOT mention them.
-**STRICT**: Do NOT say "Last night was peaceful/safe" because there was no night. Do NOT mention "sleep".`;
-            } else {
-                dayContext = `It is Day ${gameInfo.day}.
-[CRITICAL LOGIC]: The game is still ongoing. There are ${gameInfo.wolves} TOTAL wolves in this game.
-Even if we killed one wolf yesterday, OTHER WOLVES REMAIN.
-Do NOT assume the executed player was innocent just because the game continues.
-The game only ends when ALL wolves are dead.`;
-            }
-
-            if (phaseType === GamePhase.TIE_SPEECH) {
-                specialPhaseInstr = `[URGENT]: You are TIED in the vote! This is your FINAL DEFENSE. Explain why you are Good and why the other tied player (${tiedPlayersNames}) is Bad.`;
-            } else if (phaseType === GamePhase.TIE_DISCUSSION) {
-                specialPhaseInstr = `[URGENT]: There is a TIE between [${tiedPlayersNames}]. They are SILENCED now. You (the Jury) must discuss which one of them to eliminate.`;
-            }
-
-            let roleInfo = "";
+            let roleInfo = `ROLE: ${player.role}.`;
             let privateContext = "";
-
-            if(player.role === Role.WEREWOLF) {
-                roleInfo = `ROLE: WEREWOLF. STRATEGY: Pretend to be Villager. Blame others.`;
-            } else if(player.role === Role.SEER) {
-                if (gameInfo.day === 1) {
-                    privateContext = `\n[PRIVATE MEMORY]: (Empty. No inspection yet because it is Day 1).\n`;
-                    roleInfo = `ROLE: SEER. STRATEGY: You have no info yet. Stay hidden unless attacked.`;
-                } else {
-                    roleInfo = `ROLE: SEER. STRATEGY: You MUST reveal your inspection results NOW! The village needs your info.`;
-                    if (privateMemory && privateMemory.length > 0) {
-                        privateContext = `\n[PAST INSPECTIONS LIST]:\n${privateMemory.join('\n')}\n[SYSTEM]: Speak your latest result clearly.`;
-                    }
-                }
-            } else {
-                roleInfo = `ROLE: VILLAGER. STRATEGY: Find Wolves. Be logical.`;
-            }
+            if(player.role === Role.SEER && privateMemory?.length) privateContext = `\n[PAST INSPECTIONS]:\n${privateMemory.join('\n')}`;
 
             const prompt = `
-            GAME SETUP: ${gameInfo.total} players. ${gameInfo.wolves} Wolves.
-            ${dayContext}
-            ${specialPhaseInstr}
-            Current Player: ${player.name}
-            
-            HISTORY:
-            ${context}
-            ${privateContext}
-            ${roleInfo}
-
-            TASK: Speak to village.
-            
-            CRITICAL REQUIREMENTS:
-            1. START with EMOTION EMOJI.
-            2. Speak ONLY in ${langName}.
-            3. Max 40 words.
-            4. **NO FILLER**: Do not say "I agree". Be logical.
-            5. REMEMBER: Your name is ${player.name}.
-
-            Response:`; 
+            GAME: ${gameInfo.total}p. ${gameInfo.wolves} Wolves. ${dayContext} ${specialPhaseInstr}
+            Me: ${player.name}. History: ${context} ${privateContext} ${roleInfo}
+            Task: Speak to village in ${langName}. Start with Emoji. Max 40 words. No filler.`; 
 
             try {
                 let apiKey = keys.silicon; let config = { modelId: player.modelId };
-                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
-                const systemInstruction = `You are a player in a Werewolf game. You are ${player.name}. Speak ONLY in ${langName}.`;
-                if(onDebug) onDebug(`${player.name} Prompt`, `Generating Speech`, prompt);
-                const res = await callApi(player.provider, apiKey, config, prompt, systemInstruction);
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = { modelId: player.modelId }; }
                 
-                let text = cleanThink(res);
+                // *** FIX: Added Debug Log ***
+                if(onDebug) onDebug(`${player.name} Prompt`, `Generating Speech`, prompt);
 
-                if (gameInfo.day === 1) {
-                    const hallucinationTriggers = ["昨晚", "平安夜", "睡得", "死人", "last night", "peaceful night"];
-                    const hasHallucination = hallucinationTriggers.some(trigger => text.includes(trigger));
-                    if (hasHallucination) {
-                        const safeOpeners = [
-                            "🤔 大家好，游戏开始了，我们互相认识一下吧。",
-                            "🙂 新的一天，希望大家坦诚相待。",
-                            "👋 大家好，我是村民，我们一起把狼人找出来。",
-                            "🧐 看起来大家都很冷静，我们开始分析局势吧。"
-                        ];
-                        text = safeOpeners[Math.floor(Math.random() * safeOpeners.length)];
-                        if(onDebug) onDebug(`${player.name} FILTER`, "Hallucination Detected", "Replaced with safe opener.");
-                    }
-                }
-
-                return text;
-            } catch (e) { return "🤐 ..."; }
+                const res = await callApi(player.provider, apiKey, config, prompt, `You are ${player.name}. Speak ${langName}.`);
+                return cleanThink(res);
+            } catch (e) { return "🤐 ... (CONNECTION_LOST)"; }
         },
 
         generateVote: async (player, allPlayers, logs, keys, language, gameInfo, privateMemory, tiedPlayers, onDebug) => {
-             // --- [Fix 2 & 3]: Restrict Candidates for PK Phase ---
              let candidates = [];
-             if (tiedPlayers && tiedPlayers.length > 0) {
-                 candidates = allPlayers.filter(p => tiedPlayers.includes(p.id) && p.id !== player.id);
-             } else {
-                 candidates = allPlayers.filter(p => p.isAlive && p.id !== player.id);
-             }
-             // ---------------------------------------------------
+             if (tiedPlayers && tiedPlayers.length > 0) candidates = allPlayers.filter(p => tiedPlayers.includes(p.id) && p.id !== player.id);
+             else candidates = allPlayers.filter(p => p.isAlive && p.id !== player.id);
 
              if (player.provider === ModelProvider.OFFLINE) { await delay(500); return { targetId: candidates[0]?.id, reason: "Sim" }; }
 
-             let privateContext = "";
-             if (privateMemory && privateMemory.length > 0) {
-                 privateContext = `[PRIVATE MEMORY]: ${privateMemory.join('; ')}`;
-             }
-
-             const logicContext = gameInfo.day > 1 ? "The game continues, meaning the Wolf is still alive. Yesterday's vote might have been wrong." : "";
-
-             const prompt = `
-             My Name: ${player.name}. Role: ${player.role}.
-             VALID CANDIDATES: ${candidates.map(p=>p.name).join(', ')}.
-             ${privateContext}
-             ${logicContext}
-             History: ${buildContext(logs)}
-             
-             Task: Vote to eliminate someone.
-             IMPORTANT: Vote for one of the VALID CANDIDATES.
-             Return JSON: { "targetName": "Name", "reason": "Short text in ${language}" }`;
+             const prompt = `My Name: ${player.name}. Role: ${player.role}. Valid Candidates: ${candidates.map(p=>p.name).join(', ')}. History: ${buildContext(logs)}. Return JSON: { "targetName": "Name", "reason": "Text" }`;
 
              try {
                 let apiKey = keys.silicon; let config = { modelId: player.modelId };
-                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
-                if(onDebug) onDebug(`${player.name} Vote Prompt`, "Voting", prompt);
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = { modelId: player.modelId }; }
+                
+                // *** FIX: Added Debug Log ***
+                if(onDebug) onDebug(`${player.name} Vote Prompt`, `Voting`, prompt);
+
                 const raw = await callApi(player.provider, apiKey, config, prompt, "JSON generator");
                 const clean = cleanThink(raw).replace(/```json/g, '').replace(/```/g, '').trim();
                 let parsed = JSON.parse(clean.match(/\{[\s\S]*\}/)?.[0] || "{}");
                 let target = candidates.find(c => c.name.includes(parsed.targetName));
-                
-                // --- [Fix 1]: Reset Reason on Fallback ---
-                if (!target) { 
-                    target = candidates[Math.floor(Math.random() * candidates.length)]; 
-                    parsed.reason = "Decided by system (Fallback)"; // Neutral reason
-                }
-                // -----------------------------------------
+                if (!target) { target = candidates[Math.floor(Math.random() * candidates.length)]; parsed.reason = "Fallback Decision"; }
                 return { targetId: target.id, reason: parsed.reason };
              } catch { return { targetId: candidates[0].id, reason: "Error" }; }
         },
@@ -401,11 +427,14 @@ The game only ends when ALL wolves are dead.`;
             const candidates = allPlayers.filter(p => p.isAlive && p.role !== Role.WEREWOLF);
             if (!candidates.length) return null;
             if (player.provider === ModelProvider.OFFLINE) return candidates[0].id;
-            
             const prompt = `Targets: ${candidates.map(p=>p.name).join(',')}. Pick one to KILL. Return JSON: { "targetName": "Name" }`;
             try {
                 let apiKey = keys.silicon; let config = { modelId: player.modelId };
-                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = { modelId: player.modelId }; }
+                
+                // *** FIX: Added Debug Log ***
+                if(onDebug) onDebug(`${player.name} Kill Prompt`, `Choosing victim`, prompt);
+
                 const raw = await callApi(player.provider, apiKey, config, prompt, "JSON generator");
                 const parsed = JSON.parse(cleanThink(raw).match(/\{[\s\S]*\}/)?.[0] || "{}");
                 const target = candidates.find(c => c.name.includes(parsed.targetName));
@@ -417,17 +446,14 @@ The game only ends when ALL wolves are dead.`;
             const candidates = allPlayers.filter(p => p.isAlive && p.id !== player.id && !inspectedHistory.includes(p.id));
             if (!candidates.length) return null; 
             if (player.provider === ModelProvider.OFFLINE) return candidates[0].id;
-
-            const prompt = `
-            You are the SEER. 
-            Candidates (Not yet inspected): ${candidates.map(p=>p.name).join(',')}.
-            Task: Pick one player to INSPECT (reveal true role).
-            Return JSON: { "targetName": "Name" }`;
-
+            const prompt = `You are SEER. Candidates: ${candidates.map(p=>p.name).join(',')}. Pick one to INSPECT. Return JSON: { "targetName": "Name" }`;
             try {
                 let apiKey = keys.silicon; let config = { modelId: player.modelId };
-                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = {}; }
-                if(onDebug) onDebug(`${player.name} Seer Prompt`, "Inspecting", prompt);
+                if (player.provider === ModelProvider.GEMINI) { apiKey = keys.gemini; config = { modelId: player.modelId }; }
+                
+                // *** FIX: Added Debug Log ***
+                if(onDebug) onDebug(`${player.name} Seer Prompt`, `Inspecting`, prompt);
+
                 const raw = await callApi(player.provider, apiKey, config, prompt, "JSON generator");
                 const parsed = JSON.parse(cleanThink(raw).match(/\{[\s\S]*\}/)?.[0] || "{}");
                 const target = candidates.find(c => c.name.includes(parsed.targetName));
@@ -437,103 +463,78 @@ The game only ends when ALL wolves are dead.`;
     };
 
     /***********************************************************
-     * 4. UI COMPONENTS
+     * 4. UI COMPONENTS (STYLED)
      ***********************************************************/
     
+    // *** FIX: Updated PlayerCard to Polaroid Style ***
     const PlayerCard = ({ player, isSpeaking, isThinking, revealRole, onClick, language }) => {
         const t = UI_LABELS[language];
-        const getBadge = (p) => {
-            if (p.provider === ModelProvider.GEMINI) return <span className="text-cyan-400">GEMINI</span>;
-            if (p.provider === ModelProvider.SILICONFLOW) return <span className="text-purple-400">{p.modelShort}</span>;
-            return <span className="text-gray-500">SIM</span>;
+        const [glitch, setGlitch] = useState(false);
+        const handleEnter = () => {
+            audio.playFlipSound();
+            if (Math.random() > 0.05) { setGlitch(true); setTimeout(() => setGlitch(false), 120); }
         };
-        let roleColor = 'bg-green-900/50 text-green-400';
-        if (player.role === Role.WEREWOLF) roleColor = 'bg-red-900/50 text-red-400';
-        if (player.role === Role.SEER) roleColor = 'bg-purple-900/50 text-purple-400';
 
         return (
-            <div onClick={onClick} className={`
-                relative p-2 md:p-3 rounded-xl border-2 transition-all duration-300 cursor-pointer flex flex-col items-center gap-1
-                ${player.isAlive ? 'bg-slate-800 border-slate-700' : 'bg-slate-900 border-slate-800 opacity-60 grayscale'}
-                ${isSpeaking ? 'ring-4 ring-yellow-400 border-yellow-400 scale-105 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : ''}
-                ${isThinking ? 'ring-2 ring-blue-500 border-blue-500 animate-pulse' : ''}
-                hover:bg-slate-750
-            `}>
-                <div className="relative">
-                    <img src={player.avatarUrl} alt={player.name} className={`w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 ${isSpeaking ? 'border-yellow-400' : isThinking ? 'border-blue-500' : 'border-slate-500'}`} />
-                    {!player.isAlive && <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full"><span className="text-xl">💀</span></div>}
-                    {player.isHuman && <div className="absolute -top-1 -right-1 bg-blue-500 text-[10px] text-white px-1.5 py-0.5 rounded-full border border-slate-900">{t.you}</div>}
-                    {isThinking && (<div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full"><div className="w-8 h-8 border-2 border-white/30 border-t-blue-400 rounded-full animate-spin"></div></div>)}
+            <div 
+                onClick={onClick} 
+                onMouseEnter={handleEnter} 
+                className={`relative bg-white p-3 pb-8 shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-all duration-300 flex flex-col items-center gap-2 cursor-pointer
+                ${!player.isAlive ? 'grayscale opacity-60' : ''}
+                ${isSpeaking ? 'z-20 scale-110 rotate-0 shadow-[0_20px_40px_rgba(0,0,0,0.3)]' : 'hover:scale-105 hover:rotate-0 hover:z-10'}
+                ${glitch ? 'glitch-active' : ''}
+                `}
+                style={{ 
+                    transform: isSpeaking ? 'scale(1.1) rotate(0deg)' : `rotate(${player.rotation || 0}deg)`
+                }}
+            >
+                {/* Polaroid Image Area */}
+                <div className="relative w-full aspect-square bg-gray-100 border border-gray-200 overflow-hidden">
+                    <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" />
+                    {!player.isAlive && <div className="absolute inset-0 bg-black/60 flex items-center justify-center font-black text-white text-3xl font-unbounded">LOST</div>}
+                    {isThinking && <div className="absolute inset-0 bg-black/10 flex items-center justify-center"><div className="w-8 h-8 border-4 border-black border-t-transparent animate-spin"></div></div>}
+                    {player.isHuman && <div className="absolute top-1 right-1 bg-black text-white text-[8px] px-2 py-0.5 font-unbounded font-bold">YOU</div>}
                 </div>
-                <div className="text-center w-full overflow-hidden">
-                    <div className="font-bold text-xs md:text-sm text-slate-200 truncate px-1">{player.name}</div>
-                    
-                    {!player.isHuman && (
-                        <div className="mt-1 flex flex-col items-center gap-1">
-                            <div className="inline-block px-1.5 py-0.5 bg-slate-900/80 rounded border border-slate-700/50">
-                                <span className="text-[9px] font-mono tracking-wider font-bold">{getBadge(player)}</span>
-                            </div>
-                            {isThinking && <span className="text-[9px] text-blue-400 animate-pulse font-mono tracking-tighter">{t.thinking}</span>}
-                        </div>
-                    )}
 
-                    {revealRole && (<div className={`mt-1 text-[10px] md:text-xs px-2 py-0.5 rounded-full font-bold ${roleColor}`}>{t[player.role]}</div>)}
+                {/* Polaroid Caption Area */}
+                <div className="text-center w-full mt-1">
+                    <div className="font-unbounded font-black text-[12px] uppercase truncate tracking-tighter text-black">{player.name}</div>
+                    <div className="text-[8px] font-unbounded opacity-60 uppercase text-gray-600">{!player.isHuman ? (player.modelShort || 'SIM') : 'USER'}</div>
+                    {revealRole && <div className={`mt-1 text-[8px] px-1 py-0.5 font-unbounded font-black uppercase inline-block ${player.role === Role.WEREWOLF ? 'bg-red-600 text-white' : player.role === Role.SEER ? 'bg-purple-600 text-white' : 'bg-green-600 text-white'}`}>{t[player.role]}</div>}
                 </div>
             </div>
         );
     };
 
-    const GameLog = ({ logs }) => {
-        const bottomRef = useRef(null);
-        useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [logs]);
-        return (
-            <div className="flex-1 bg-slate-900/50 rounded-xl p-4 overflow-y-auto scrollbar-hide h-[400px] md:h-full border border-slate-700/50 font-mono text-sm">
-                <div className="space-y-4">
-                    {logs.map((log) => (
-                        <div key={log.id} className={`flex flex-col ${log.type === 'vote_summary' ? 'items-center my-6' : log.type === 'system' ? 'items-center text-center opacity-70 my-2 text-xs' : log.type === 'narrative' ? 'items-start italic text-purple-300 bg-purple-900/20 p-2 rounded' : log.senderId === 'USER' ? 'items-end' : 'items-start'}`}>
-                            {log.type === 'speech' && <span className="text-[10px] text-slate-400 mb-1 ml-1">{log.senderName}</span>}
-                            {log.type === 'vote_summary' ? (
-                                <div className="bg-slate-800 border-2 border-slate-600 rounded-xl p-4 w-full max-w-sm">
-                                    <div className="text-center font-bold text-yellow-400 mb-2 border-b border-slate-600 pb-2">📊 VOTING RESULTS</div>
-                                    <div className="whitespace-pre-wrap text-xs text-slate-300 leading-relaxed">{log.text}</div>
-                                </div>
-                            ) : (
-                                <div className={`max-w-[90%] px-3 py-2 rounded-xl leading-relaxed whitespace-pre-wrap ${log.type === 'system' ? 'text-yellow-500 font-bold bg-yellow-900/10 px-4' : ''} ${log.type === 'speech' && log.senderId === 'USER' ? 'bg-blue-600 text-white rounded-tr-none' : ''} ${log.type === 'speech' && log.senderId !== 'USER' ? 'bg-slate-700 text-slate-200 rounded-tl-none' : ''} ${log.type === 'action' ? 'text-red-400 border border-red-900/50 p-2 bg-red-900/10 text-xs' : ''}`}>
-                                    {log.text}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                    <div ref={bottomRef} />
-                </div>
-            </div>
-        );
-    };
-
+    // *** FIX: Improved DevConsole with correct width and details element support ***
     const DevConsole = ({ logs, t }) => {
         const downloadLogs = () => {
-            const content = logs.map(l => `[${l.timestamp}] ${l.action}: ${l.explanation}\n${l.details||''}`).join('\n\n========================================\n\n');
+            const content = logs.map(l => `[${l.timestamp}] ${l.action}: ${l.explanation}\n${l.details||''}`).join('\n\n---\n\n');
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `werewolf_debug_${Date.now()}.txt`;
-            a.click();
+            const a = document.createElement('a'); a.href = url; a.download = `archive_log_${Date.now()}.txt`; a.click();
         };
         const bottomRef = useRef(null);
         useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [logs]);
         return (
-            <div className="flex-1 flex-col h-full bg-black/95 text-green-400 font-mono text-[10px] border-l border-slate-800 w-full md:w-64 shadow-2xl hidden md:flex">
-                <div className="p-2 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-                    <span className="font-bold">🖥️ {t.devConsole}</span>
-                    <button onClick={downloadLogs} className="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-[9px] text-white">⬇️ TXT</button>
+            <div className="w-80 bg-black text-[#0f0] font-mono text-[10px] border-l-4 border-black flex flex-col h-full z-50 shadow-[-10px_0_20px_rgba(0,0,0,0.2)]">
+                <div className="p-3 border-b border-[#0f0]/30 flex justify-between items-center bg-[#0f0]/10">
+                    <span className="font-unbounded font-black uppercase tracking-widest text-xs">DEBUG_STREAM</span>
+                    <button onClick={downloadLogs} className="hover:bg-[#0f0] hover:text-black px-2 py-1 transition-colors uppercase font-bold text-[9px] border border-[#0f0]">SAVE_LOG</button>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2 space-y-3 scrollbar-hide">
-                    {logs.map((log) => (
-                        <div key={log.id} className="border border-green-900/30 rounded bg-green-900/10 p-2 break-all">
-                            <div className="opacity-50 text-[10px] mb-1">{log.timestamp}</div>
-                            <div className="font-bold text-green-300 mb-1">[{log.action}]</div>
-                            <div className="text-slate-400 mb-1">{log.explanation}</div>
+                <div className="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-hide">
+                    {logs.map(log => (
+                        <div key={log.id} className="border border-[#0f0]/30 p-2 bg-[#0f0]/5">
+                            <div className="opacity-50 text-[8px] mb-1">{log.timestamp}</div>
+                            <div className="font-bold text-[#0f0] mb-1 text-[11px]">[{log.action}]</div>
+                            <div className="mb-2 opacity-90">{log.explanation}</div>
                             {log.details && (
-                                <details><summary className="cursor-pointer text-slate-500 hover:text-slate-300">Payload</summary><pre className="mt-1 text-green-600 whitespace-pre-wrap bg-black/50 p-1 rounded">{log.details}</pre></details>
+                                <details>
+                                    <summary className="cursor-pointer text-[#0f0]/70 hover:text-[#0f0] underline decoration-dotted">PAYLOAD_DATA</summary>
+                                    <div className="mt-2 border-t border-[#0f0]/20 pt-2 text-[#0f0]/80 whitespace-pre-wrap break-all bg-black/50 p-1">
+                                        {log.details}
+                                    </div>
+                                </details>
                             )}
                         </div>
                     ))}
@@ -548,9 +549,11 @@ The game only ends when ALL wolves are dead.`;
      ***********************************************************/
     const App = () => {
         const [config, setConfig] = useState({
-            playerCount: 6, maxRounds: 3, includeSeer: false,
-            geminiKey: '', siliconKey: '', siliconModels: ['deepseek-ai/DeepSeek-V3'],
-            humanPlayerId: null, language: 'zh', devMode: false
+            playerCount: 6, maxRounds: 3, includeSeer: true,
+            geminiKey: '', siliconKey: '', 
+            siliconModels: ['deepseek-ai/DeepSeek-V3'],
+            geminiModels: ['gemini-2.5-flash'],
+            humanPlayerId: 'yes', language: 'ja', devMode: false
         });
         const [phase, setPhase] = useState(GamePhase.SETUP);
         const [dayCount, setDayCount] = useState(1);
@@ -573,8 +576,20 @@ The game only ends when ALL wolves are dead.`;
         const [aiMemories, setAiMemories] = useState({}); 
         const [inspectedHistory, setInspectedHistory] = useState([]); 
 
+        const canvasRef = useRef(null);
+        const engineRef = useRef(null);
         const isProcessingTurn = useRef(false);
         const t = UI_LABELS[config.language];
+
+        useEffect(() => {
+            if (canvasRef.current) {
+                engineRef.current = new TopographicEngine(canvasRef.current);
+                engineRef.current.resize();
+                const animate = () => { engineRef.current.draw(); requestAnimationFrame(animate); };
+                animate();
+                window.addEventListener('resize', () => engineRef.current?.resize());
+            }
+        }, [phase === GamePhase.SETUP]);
 
         const addLog = (text, type, senderName='GM', senderId='GM') => setLogs(p => [...p, { id: generateId(), text, type, senderName, senderId }]);
         const addDevLog = (action, explanation, details='') => {
@@ -583,6 +598,7 @@ The game only ends when ALL wolves are dead.`;
             setDevLogs(p => [...p, { id: generateId(), timestamp: time, action, explanation, details }]);
         };
         const updateApiStatus = (status) => setApiStatus(status);
+        
         const toggleModel = (id) => {
             setConfig(prev => {
                 const newSet = new Set(prev.siliconModels);
@@ -591,20 +607,54 @@ The game only ends when ALL wolves are dead.`;
                 return { ...prev, siliconModels: Array.from(newSet) };
             });
         };
+        
+        const toggleGeminiModel = (id) => {
+            setConfig(prev => {
+                const newSet = new Set(prev.geminiModels);
+                if (newSet.has(id)) { if(newSet.size > 1) newSet.delete(id); } 
+                else newSet.add(id);
+                return { ...prev, geminiModels: Array.from(newSet) };
+            });
+        };
 
         const testConnection = async () => {
             setTestStatusMsg(t.testing);
             let results = [];
             const geminiKey = config.geminiKey.trim();
-            if(geminiKey) { const r = await LLMService.testConnection(geminiKey, ModelProvider.GEMINI); results.push(r.success?'Gemini OK':'Gemini Fail'); }
+            if(geminiKey) { 
+                // *** FIX: Use a selected model or default to 2.5 flash for test ***
+                const mId = config.geminiModels[0] || 'gemini-2.5-flash';
+                const r = await LLMService.testConnection(geminiKey, ModelProvider.GEMINI, { modelId: mId }); 
+                results.push(r.success ? 'Gemini OK' : `Gemini Fail [${r.error}]`); 
+            }
             if(config.siliconKey) { 
                 const r = await LLMService.testConnection(config.siliconKey, ModelProvider.SILICONFLOW, { modelId: config.siliconModels[0] }); 
-                results.push(r.success?'SiliconFlow OK':'SiliconFlow Fail'); 
+                results.push(r.success ? 'SiliconFlow OK' : `SiliconFlow Fail [${r.error}]`); 
             }
             setTestStatusMsg(results.length ? results.join(' | ') : t.missingKeys);
         };
 
+        // *** FIX: Restart Function to prevent Gray Screen/Crash ***
+        const restartGame = () => {
+            setPhase(GamePhase.SETUP);
+            setLogs([]);
+            setPlayers([]);
+            setDevLogs([]);
+            setWinner(null);
+            setDayCount(1);
+            setRoundCount(0);
+            setHumanInput('');
+            setIsHumanTurn(false);
+            setApiStatus('idle');
+            setTiedPlayers([]);
+            setAiMemories({});
+            setInspectedHistory([]);
+            setTestStatusMsg('');
+            // We do NOT reset config (API keys, etc.) so user doesn't have to re-enter them
+        };
+
         const startGame = () => {
+            audio.init();
             const hasApi = config.geminiKey.trim() || config.siliconKey;
             let useOffline = !hasApi;
             if(!hasApi && !confirm(t.missingKeys)) return;
@@ -612,16 +662,12 @@ The game only ends when ALL wolves are dead.`;
             isProcessingTurn.current=false; updateApiStatus('idle'); setDevLogs([]); setAiMemories({}); setInspectedHistory([]);
             
             let wc = 1;
-            if (config.playerCount >= 10) wc = 3;
-            else if (config.playerCount >= 7) wc = 2;
-            
+            if (config.playerCount >= 10) wc = 3; else if (config.playerCount >= 7) wc = 2;
             const roles = Array(wc).fill(Role.WEREWOLF);
             if(config.includeSeer) roles.push(Role.SEER);
-            const villagersNeeded = config.playerCount - roles.length;
-            for(let i=0; i<villagersNeeded; i++) roles.push(Role.VILLAGER);
+            while(roles.length < config.playerCount) roles.push(Role.VILLAGER);
             
             shuffleArray(roles);
-
             const avProviders = [];
             if(useOffline) avProviders.push(ModelProvider.OFFLINE);
             else {
@@ -631,30 +677,38 @@ The game only ends when ALL wolves are dead.`;
             
             const newPlayers = [];
             for(let i=0; i<config.playerCount; i++) {
-                const isHuman = config.humanPlayerId && i===0;
+                const isHuman = config.humanPlayerId === 'yes' && i===0;
                 let provider = isHuman ? null : avProviders[Math.floor(Math.random()*avProviders.length)];
                 newPlayers.push({ 
-                    id: generateId(), 
-                    // --- [Modified]: Keep name as "Alice" even if human, to fix AI dialogue ---
-                    name: NAMES[i], 
-                    // ------------------------------------------------------------------------
-                    role: roles[i], isHuman, isAlive: true, provider, 
-                    avatarUrl: `https://picsum.photos/seed/${NAMES[i]}/200`, modelId: null, modelShort: null
+                    id: generateId(), name: NAMES[i], role: roles[i], isHuman, isAlive: true, provider, 
+                    avatarUrl: `https://picsum.photos/seed/${NAMES[i]}/200`, modelId: null, modelShort: null,
+                    // *** FIX: Add Random Rotation for Polaroid Style ***
+                    rotation: (Math.random() * 6 - 3).toFixed(1)
                 });
             }
 
             const siliconPlayers = newPlayers.filter(p => !p.isHuman && p.provider === ModelProvider.SILICONFLOW);
             if (siliconPlayers.length > 0) {
                 let modelPool = [];
-                while (modelPool.length < siliconPlayers.length) {
-                    modelPool = [...modelPool, ...config.siliconModels];
-                }
+                while (modelPool.length < siliconPlayers.length) modelPool = [...modelPool, ...config.siliconModels];
                 shuffleArray(modelPool);
                 siliconPlayers.forEach((p, index) => {
                     const mId = modelPool[index];
                     const mObj = SILICON_MODELS.find(m => m.id === mId);
-                    p.modelId = mId;
-                    p.modelShort = mObj ? mObj.short : 'SF';
+                    p.modelId = mId; p.modelShort = mObj ? mObj.short : 'SF';
+                });
+            }
+
+            // *** FIX: Distribute GEMINI Models ***
+            const geminiPlayers = newPlayers.filter(p => !p.isHuman && p.provider === ModelProvider.GEMINI);
+            if (geminiPlayers.length > 0) {
+                let modelPool = [];
+                while (modelPool.length < geminiPlayers.length) modelPool = [...modelPool, ...config.geminiModels];
+                shuffleArray(modelPool);
+                geminiPlayers.forEach((p, index) => {
+                     const mId = modelPool[index];
+                     const mObj = GEMINI_MODELS.find(m => m.id === mId);
+                     p.modelId = mId; p.modelShort = mObj ? mObj.short : 'GEMINI';
                 });
             }
 
@@ -689,12 +743,9 @@ The game only ends when ALL wolves are dead.`;
                      if(nr > config.maxRounds) { setPhase(GamePhase.DAY_VOTE); addLog(t.discussionEnd, 'system'); return; }
                      setRoundCount(nr); addLog(t.roundStart.replace('{round}', nr).replace('{total}', config.maxRounds), 'system');
                  } else if (phase === GamePhase.TIE_SPEECH) {
-                     // Tie Speech finished -> enter discussion
-                     setPhase(GamePhase.TIE_DISCUSSION);
-                     setRoundCount(1);
+                     setPhase(GamePhase.TIE_DISCUSSION); setRoundCount(1);
                      addLog(t.tieDiscussion.replace('(Spectators Only)', ''), 'system'); 
-                     addLog(`[SYSTEM] The following players are TIED and CANNOT speak: ${tiedPlayers.map(id => players.find(p=>p.id===id)?.name).join(', ')}`, 'system');
-                     
+                     addLog(`[SYSTEM] TIED/SILENCED: ${tiedPlayers.map(id => players.find(p=>p.id===id)?.name).join(', ')}`, 'system');
                      let startIdx = 0;
                      while(startIdx < players.length) {
                          const p = players[startIdx];
@@ -705,11 +756,7 @@ The game only ends when ALL wolves are dead.`;
                      return;
                  } else if (phase === GamePhase.TIE_DISCUSSION) {
                      const nr = roundCount + 1;
-                     if (nr > 2) { 
-                         setPhase(GamePhase.DAY_VOTE); 
-                         addLog(t.discussionEnd, 'system'); 
-                         return; 
-                     }
+                     if (nr > 2) { setPhase(GamePhase.DAY_VOTE); addLog(t.discussionEnd, 'system'); return; }
                      setRoundCount(nr);
                  }
              }
@@ -728,15 +775,8 @@ The game only ends when ALL wolves are dead.`;
              
              const p = players[currentSpeakerIndex];
              if(!p?.isAlive) { advanceTurn(currentSpeakerIndex, players); return; }
-             
-             if (phase === GamePhase.TIE_DISCUSSION && tiedPlayers.includes(p.id)) {
-                 advanceTurn(currentSpeakerIndex, players); 
-                 return;
-             }
-             
-             if (phase === GamePhase.TIE_SPEECH && !tiedPlayers.includes(p.id)) {
-                 advanceTurn(currentSpeakerIndex, players); return; 
-             }
+             if (phase === GamePhase.TIE_DISCUSSION && tiedPlayers.includes(p.id)) { advanceTurn(currentSpeakerIndex, players); return; }
+             if (phase === GamePhase.TIE_SPEECH && !tiedPlayers.includes(p.id)) { advanceTurn(currentSpeakerIndex, players); return; }
              
              const run = async () => {
                  if(isProcessingTurn.current) return;
@@ -747,31 +787,24 @@ The game only ends when ALL wolves are dead.`;
                          setIsHumanTurn(false);
                          const isOnline = p.provider !== ModelProvider.OFFLINE;
                          setThinkingPlayerId(p.id);
-                         await delay(isOnline ? 4500 : 500); 
+                         await delay(isOnline ? 3000 : 500); 
                          updateApiStatus('working');
                          
                          const myMemory = aiMemories[p.id] || [];
-                         
                          let waiting = [];
                          if (phase === GamePhase.DAY_DISCUSSION) {
-                             for(let i=currentSpeakerIndex+1; i<players.length; i++) {
-                                 if(players[i].isAlive) waiting.push(players[i].name);
-                             }
+                             for(let i=currentSpeakerIndex+1; i<players.length; i++) if(players[i].isAlive) waiting.push(players[i].name);
                          }
-                         
                          const tiedNames = tiedPlayers.map(id => players.find(pl=>pl.id===id)?.name).join(', ');
-
                          const text = await LLMService.generateSpeech(p, players, logs, getKeys(), config.language, getGameInfo(), myMemory, waiting, phase, tiedNames, addDevLog);
                          
-                         setThinkingPlayerId(null);
-                         updateApiStatus('success');
+                         setThinkingPlayerId(null); updateApiStatus('success');
                          addLog(text, 'speech', p.name, p.id);
                          isProcessingTurn.current=false;
                          advanceTurn(currentSpeakerIndex, players);
                      }
                  } catch(e) {
-                     setThinkingPlayerId(null);
-                     updateApiStatus('error'); isProcessingTurn.current=false; advanceTurn(currentSpeakerIndex, players);
+                     setThinkingPlayerId(null); updateApiStatus('error'); isProcessingTurn.current=false; advanceTurn(currentSpeakerIndex, players);
                  }
              };
              run();
@@ -780,44 +813,30 @@ The game only ends when ALL wolves are dead.`;
         useEffect(() => {
              if(phase===GamePhase.DAY_VOTE) {
                  const humanAlive = players.some(p=>p.isHuman && p.isAlive);
-                 // If human is tied, they shouldn't vote in PK, so treat as auto/skip
                  const humanIsTied = humanAlive && tiedPlayers.includes(players.find(p=>p.isHuman).id);
-                 
                  if(!humanAlive || humanIsTied) handleVoteProcess("AUTO");
              }
         }, [phase]);
 
         const handleVoteProcess = async (humanVoteId) => {
              const votes = {};
-             
              if(humanVoteId!=="AUTO" && players.find(p=>p.isHuman)?.isAlive) {
-                 // --- [Fix 2]: Prevent Tied Players from Voting ---
                  const humanId = players.find(p=>p.isHuman).id;
                  if (!tiedPlayers.includes(humanId)) {
                      votes[humanVoteId]=1;
                      const targetName = players.find(p=>p.id===humanVoteId)?.name || "Unknown";
-                     // --- [Modified]: Use proper name for log ---
                      addLog(t.playerVoted.replace('{voter}', players.find(p=>p.isHuman)?.name).replace('{target}', targetName), 'system');
-                     // ------------------------------------------
                  }
              }
+             updateApiStatus('working'); setSelectedVoteTarget(null); 
              
-             updateApiStatus('working');
-             setSelectedVoteTarget(null); 
-             
-             // --- [Fix 2]: AI Loop - Exclude Tied Players ---
              const ais = players.filter(p=>!p.isHuman && p.isAlive && !tiedPlayers.includes(p.id));
-             
              for(const p of ais) {
                  const isOnline = p.provider !== ModelProvider.OFFLINE;
-                 setThinkingPlayerId(p.id);
-                 await delay(isOnline ? 4500 : 300); 
+                 setThinkingPlayerId(p.id); await delay(isOnline ? 3000 : 300); 
                  const myMemory = aiMemories[p.id] || [];
-                 
-                 // --- Pass tiedPlayers to restrict candidates ---
                  const dec = await LLMService.generateVote(p, players, logs, getKeys(), config.language, getGameInfo(), myMemory, tiedPlayers, addDevLog);
                  setThinkingPlayerId(null);
-
                  if(dec.targetId) {
                      votes[dec.targetId] = (votes[dec.targetId]||0)+1;
                      addDevLog(`${p.name} Vote`, `Voted for ${players.find(x=>x.id===dec.targetId)?.name}`, dec.reason);
@@ -843,7 +862,6 @@ The game only ends when ALL wolves are dead.`;
                  const nextP = players.map(p => p.id===winners[0]?{...p, isAlive:false}:p);
                  setPlayers(nextP);
                  if(checkWin(nextP)) return;
-                 
                  const seerAlive = nextP.some(p => p.isAlive && p.role === Role.SEER);
                  if (config.includeSeer && seerAlive) setPhase(GamePhase.NIGHT_SEER);
                  else setPhase(GamePhase.NIGHT_ACTION);
@@ -855,14 +873,11 @@ The game only ends when ALL wolves are dead.`;
                  
                  if (isGlobalTie) {
                      addLog(t.tieGlobal, 'system');
-                     setTiedPlayers([]); 
-                     setPhase(GamePhase.TIE_DISCUSSION);
-                     setRoundCount(1);
+                     setTiedPlayers([]); setPhase(GamePhase.TIE_DISCUSSION); setRoundCount(1);
                      const first = players.findIndex(p=>p.isAlive); setCurrentSpeakerIndex(first>-1?first:0);
                  } else {
                      addLog(t.tieDetected.replace('{names}', winnerNames), 'system');
-                     setTiedPlayers(winners);
-                     setPhase(GamePhase.TIE_SPEECH);
+                     setTiedPlayers(winners); setPhase(GamePhase.TIE_SPEECH);
                      let startIdx = 0;
                      while((!players[startIdx].isAlive || !winners.includes(players[startIdx].id)) && startIdx < players.length) startIdx++;
                      setCurrentSpeakerIndex(startIdx);
@@ -875,15 +890,11 @@ The game only ends when ALL wolves are dead.`;
                 addLog("Night falls. The Seer opens their eyes...", 'narrative');
                 const seer = players.find(p => p.isAlive && p.role === Role.SEER);
                 if (!seer) { setPhase(GamePhase.NIGHT_ACTION); return; }
-
-                if (seer.isHuman) {
-                    setIsHumanTurn(true); 
-                } else {
+                if (seer.isHuman) { setIsHumanTurn(true); } 
+                else {
                     const aiSeerAction = async () => {
-                        updateApiStatus('working'); setThinkingPlayerId(seer.id);
-                        await delay(2000);
+                        updateApiStatus('working'); setThinkingPlayerId(seer.id); await delay(2000);
                         const targetId = await LLMService.generateSeerAction(seer, players, logs, getKeys(), config.language, getGameInfo(), inspectedHistory, addDevLog);
-                        
                         const target = players.find(p => p.id === targetId);
                         if (target) {
                             const resultStr = `[NIGHT ${dayCount} CHECK]: Checked ${target.name} => ${target.role}`;
@@ -891,9 +902,7 @@ The game only ends when ALL wolves are dead.`;
                             setInspectedHistory(prev => [...prev, targetId]);
                             addDevLog("Seer Action", `Seer checked ${target.name} -> ${target.role}`);
                         }
-                        
-                        setThinkingPlayerId(null); updateApiStatus('success');
-                        setPhase(GamePhase.NIGHT_ACTION);
+                        setThinkingPlayerId(null); updateApiStatus('success'); setPhase(GamePhase.NIGHT_ACTION);
                     };
                     aiSeerAction();
                 }
@@ -916,7 +925,6 @@ The game only ends when ALL wolves are dead.`;
                  const wolves = players.filter(p=>p.isAlive && p.role===Role.WEREWOLF);
                  if(!wolves.length) { setPhase(GamePhase.DAY_DISCUSSION); return; }
                  if(wolves.some(w=>w.isHuman)) { setIsHumanTurn(true); addLog(t.killPrompt, 'system'); return; }
-                 
                  const aiKill = async () => {
                      updateApiStatus('working'); await delay(2000);
                      const id = await LLMService.generateNightAction(wolves[0], players, logs, getKeys(), config.language, getGameInfo(), addDevLog);
@@ -940,55 +948,130 @@ The game only ends when ALL wolves are dead.`;
             setPhase(GamePhase.DAY_DISCUSSION);
         };
 
-        const getRoundDisplay = () => {
-            if (phase === GamePhase.TIE_SPEECH) return t.tieSpeech;
-            if (phase === GamePhase.TIE_DISCUSSION) return `${t.tieDiscussion} (${roundCount}/2)`;
-            if (phase.includes('NIGHT')) return `🌙 ${t.night}`;
-            return t.roundDisplay.replace('{current}', roundCount).replace('{max}', config.maxRounds);
-        };
-
-        if(phase === GamePhase.SETUP) {
+        if (phase === GamePhase.SETUP) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100 p-4">
-                    <div className="max-w-xl w-full bg-slate-800 p-6 md:p-8 rounded-2xl border border-slate-700 shadow-2xl overflow-y-auto max-h-[90vh] scrollbar-hide">
-                        <h1 className="text-3xl font-bold text-center mb-1 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">{t.title}</h1>
-                        <p className="text-slate-400 text-center mb-6 text-xs font-mono">{t.subtitle}</p>
-                        <div className="flex justify-center gap-2 mb-6">{['zh','ja','en'].map(l=>(<button key={l} onClick={()=>setConfig({...config, language:l})} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${config.language===l?'bg-purple-600 text-white shadow-lg scale-105':'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}>{l.toUpperCase()}</button>))}</div>
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
-                                <div><label className="text-xs font-bold text-slate-400 uppercase">{t.playerCount}</label><input type="number" min="3" max="12" value={config.playerCount} onChange={e=>setConfig({...config, playerCount:parseInt(e.target.value)})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 mt-1 text-sm font-mono focus:border-purple-500 outline-none" /></div>
-                                <div><label className="text-xs font-bold text-slate-400 uppercase">{t.maxRounds}</label><input type="number" min="1" max="10" value={config.maxRounds} onChange={e=>setConfig({...config, maxRounds:parseInt(e.target.value)})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 mt-1 text-sm font-mono focus:border-purple-500 outline-none" /></div>
-                                <div className="col-span-2 flex items-center justify-between border-t border-slate-700/50 pt-3 mt-1"><span className="text-xs font-bold text-purple-400 uppercase">{t.includeSeer}</span><input type="checkbox" checked={config.includeSeer} onChange={e=>setConfig({...config, includeSeer:e.target.checked})} className="w-5 h-5 accent-purple-600" /></div>
-                                <div className="col-span-2 flex items-center justify-between border-t border-slate-700/50 pt-3 mt-1"><span className="text-xs font-bold text-slate-400 uppercase">{t.playAsChar}</span><div className="flex bg-slate-800 rounded p-1"><button onClick={()=>setConfig({...config, humanPlayerId:'yes'})} className={`px-4 py-1 rounded text-xs transition-all ${config.humanPlayerId?'bg-purple-600 text-white':'text-slate-400'}`}>{t.yes}</button><button onClick={()=>setConfig({...config, humanPlayerId:null})} className={`px-4 py-1 rounded text-xs transition-all ${!config.humanPlayerId?'bg-slate-600 text-white':'text-slate-400'}`}>{t.no}</button></div></div>
+                <div className="min-h-screen bg-[#e5e5e5] text-black flex items-center justify-center p-6 relative font-['Sawarabi_Gothic']">
+                    <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
+                    <div className="fixed inset-0 bg-[radial-gradient(#d1d1d1_1px,transparent_1px)] [background-size:40px_40px] opacity-40 z-0" />
+                    
+                    {/* *** FIX: Added Back to Home Button in Setup *** */}
+                    <a href="../index.html" className="fixed top-6 left-6 z-50 bg-black text-white px-6 py-3 font-unbounded font-bold text-xs hover:invert transition-all border-2 border-white shadow-[4px_4px_0px_rgba(0,0,0,0.5)] no-underline flex items-center gap-2">
+                        <Icons.ArrowLeft /> {t.backHome || "HOME"}
+                    </a>
+
+                    <div className="relative z-10 w-full max-w-5xl bg-white/70 backdrop-blur-xl border-4 border-black p-10 shadow-[24px_24px_0px_#000] overflow-y-auto max-h-[95vh] scrollbar-hide">
+                        <div className="border-b-8 border-black pb-6 mb-8 flex justify-between items-end">
+                            <div><h1 className="font-unbounded font-black text-6xl leading-[0.85] tracking-tighter uppercase">AI JINROU  GAME<br/>#New Version</h1></div>
+                            <div className="flex gap-2">{['zh','ja','en'].map(l=>(<button key={l} onClick={()=>setConfig({...config, language:l})} className={`px-4 py-1 font-unbounded font-black text-[10px] border-2 border-black transition-all ${config.language===l?'bg-black text-white':'hover:bg-black/5'}`}>{l.toUpperCase()}</button>))}</div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="space-y-8">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1"><label className="font-unbounded font-black text-[9px] opacity-40 uppercase">{t.playerCount}</label><input type="number" min="3" max="12" value={config.playerCount} onChange={e=>setConfig({...config, playerCount:parseInt(e.target.value)})} className="w-full border-4 border-black p-3 font-unbounded font-black text-xl" /></div>
+                                    <div className="space-y-1"><label className="font-unbounded font-black text-[9px] opacity-40 uppercase">{t.maxRounds}</label><input type="number" min="1" max="10" value={config.maxRounds} onChange={e=>setConfig({...config, maxRounds:parseInt(e.target.value)})} className="w-full border-4 border-black p-3 font-unbounded font-black text-xl" /></div>
+                                </div>
+                                <div className="flex justify-between items-center border-t-2 border-black pt-4"><span className="font-unbounded font-black text-xs uppercase tracking-widest">{t.includeSeer}</span><input type="checkbox" checked={config.includeSeer} onChange={e=>setConfig({...config, includeSeer:e.target.checked})} className="w-6 h-6 border-4 border-black accent-black" /></div>
+                                <div className="space-y-2"><label className="font-unbounded font-black text-[9px] opacity-40 uppercase">{t.playAsChar}</label><div className="flex border-4 border-black"><button onClick={()=>setConfig({...config, humanPlayerId:'yes'})} className={`flex-1 p-3 font-unbounded font-black text-xs ${config.humanPlayerId==='yes'?'bg-black text-white':'bg-transparent'}`}>{t.yes}</button><button onClick={()=>setConfig({...config, humanPlayerId:null})} className={`flex-1 p-3 font-unbounded font-black text-xs ${!config.humanPlayerId?'bg-black text-white':'bg-transparent'}`}>{t.no}</button></div></div>
+                                
+                                <div className="space-y-4 pt-4 border-t-2 border-black">
+                                     {/* Gemini Input Section */}
+                                    <div className="space-y-2">
+                                        <input type="password" placeholder={t.geminiPlaceholder} value={config.geminiKey} onChange={e=>setConfig({...config, geminiKey:e.target.value})} className="w-full border-4 border-black p-4 font-mono text-sm bg-white" />
+                                        
+                                        {/* *** FIX: Conditional Rendering for Gemini Models *** */}
+                                        {config.geminiKey.length > 5 && (
+                                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <label className="font-unbounded font-black text-[9px] opacity-40 uppercase tracking-widest block mb-2">{t.geminiLabel}</label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {GEMINI_MODELS.map(model => (
+                                                        <label key={model.id} className="flex items-center gap-2 cursor-pointer border border-black/10 p-2 hover:border-black transition-colors">
+                                                            <input type="checkbox" className="accent-black w-4 h-4" checked={config.geminiModels.includes(model.id)} onChange={() => toggleGeminiModel(model.id)} />
+                                                            <span className={`font-mono text-[9px] font-bold ${config.geminiModels.includes(model.id) ? '' : 'opacity-50'}`}>{model.name}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* SiliconFlow Input Section */}
+                                    <div className="pt-4 border-t border-black/20">
+                                        <input type="password" placeholder={t.siliconPlaceholder} value={config.siliconKey} onChange={e=>setConfig({...config, siliconKey:e.target.value})} className="w-full border-4 border-black p-4 font-mono text-sm bg-white" />
+                                        <div className="flex items-center justify-between mt-2"><button onClick={testConnection} className="bg-black text-white px-6 py-2 font-unbounded font-black text-[9px] hover:opacity-80 transition-opacity">{t.testConnection}</button><span className="font-mono text-xs font-bold uppercase">{testStatusMsg}</span></div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50"><label className="block text-xs font-bold text-purple-400 mb-2 uppercase tracking-wider">⚡ SiliconFlow</label><input type="password" placeholder={t.siliconPlaceholder} value={config.siliconKey} onChange={e=>setConfig({...config, siliconKey:e.target.value})} className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-sm font-mono mb-3 focus:border-purple-500 outline-none" /><p className="text-[10px] text-slate-400 mb-2">{t.siliconLabel}</p><div className="grid grid-cols-2 gap-2">{SILICON_MODELS.map(m => (<label key={m.id} className="cursor-pointer relative group"><input type="checkbox" className="sr-only model-checkbox" checked={config.siliconModels.includes(m.id)} onChange={()=>toggleModel(m.id)} /><div className="p-2 rounded border border-slate-700 bg-slate-800 text-[10px] text-center transition-all group-hover:border-slate-500 font-mono">{m.name}</div></label>))}</div></div>
-                                <div className="space-y-2"><input type="password" placeholder={t.geminiPlaceholder} value={config.geminiKey} onChange={e=>setConfig({...config, geminiKey:e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-sm" /></div>
+                                {/* *** FIX: Conditional Rendering for Silicon Models *** */}
+                                {config.siliconKey.length > 5 && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <label className="font-unbounded font-black text-[9px] opacity-40 uppercase tracking-widest">{t.siliconLabel}</label>
+                                        <div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide border-t border-black/10 pt-2">
+                                            {SILICON_MODELS.map(model => (
+                                                <label key={model.id} className="cursor-pointer group flex items-center justify-between border-2 border-black p-3 hover:border-dashed">
+                                                    <input type="checkbox" className="hidden" checked={config.siliconModels.includes(model.id)} onChange={() => toggleModel(model.id)} />
+                                                    <span className={`font-mono text-[11px] font-bold ${config.siliconModels.includes(model.id) ? 'line-through opacity-40' : ''}`}>{model.name}</span>
+                                                    {config.siliconModels.includes(model.id) ? <Icons.Check /> : <div className="w-4 h-4 border-2 border-black"/>}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2 opacity-50"><input type="checkbox" checked={config.devMode} onChange={e=>setConfig({...config, devMode:e.target.checked})} /><span className="text-[9px] font-unbounded font-black uppercase">{t.devMode}</span></div>
                             </div>
-                            <div className="flex justify-between items-center bg-slate-700/30 p-2 rounded"><button onClick={testConnection} className="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-white transition-colors">{t.testConnection}</button><span className={`text-xs font-mono ${testStatusMsg.includes('OK')?'text-green-400':'text-orange-400'}`}>{testStatusMsg}</span></div>
-                            <div className="flex items-center justify-between"><span className="text-xs text-slate-500">{t.devMode}</span><input type="checkbox" checked={config.devMode} onChange={e=>setConfig({...config, devMode:e.target.checked})} /></div>
-                            <button onClick={startGame} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-4 rounded-xl font-bold shadow-lg text-white hover:scale-[1.02] transition-transform">{t.startGame}</button>
                         </div>
+                        <button onClick={startGame} className="w-full mt-10 bg-black text-white p-8 font-unbounded font-black text-4xl hover:invert transition-all active:scale-[0.99] uppercase tracking-tighter shadow-[12px_12px_0px_rgba(0,0,0,0.1)]">{t.startGame}</button>
                     </div>
                 </div>
             );
         }
 
         return (
-            <div className="h-screen flex flex-col md:flex-row bg-slate-950 text-slate-200 overflow-hidden">
-                <div className={`w-full md:w-1/3 flex flex-col h-1/2 md:h-full border-r border-slate-800 transition-all ${config.devMode?'md:w-1/4':'md:w-1/3'}`}>
-                    <div className="p-3 bg-slate-900 border-b border-slate-800 flex justify-end items-center gap-4 pr-4"><h2 className="font-bold text-purple-400 text-sm tracking-wider">{t.villageLog}</h2><span className="text-xs bg-slate-800 px-2 py-1 rounded font-mono">{getRoundDisplay()}</span></div>
-                    <GameLog logs={logs} />
+            <div className="h-screen bg-[#e5e5e5] text-black overflow-hidden flex flex-col md:flex-row relative font-['Sawarabi_Gothic']">
+                <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
+                <div className="fixed inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.04)_50%)] [background-size:100%_4px] pointer-events-none z-[100]" />
+
+                <div className="w-full md:w-1/3 flex flex-col h-1/2 md:h-full border-r-4 border-black bg-white/40 backdrop-blur-md z-10 relative">
+                    <div className="p-5 bg-black text-white flex justify-between items-center font-unbounded font-black text-xs">
+                        <div className="flex items-center gap-3"><Icons.Terminal /><h2>{t.villageLog}</h2></div>
+                        <span className="bg-white text-black px-2 py-0.5">{t.dayCount.replace('{count}', dayCount)} / {roundCount}R</span>
+                    </div>
+                    
+                    {/* Log Area */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide font-mono text-xs">
+                        {logs.map(log => (
+                            <div key={log.id} className={`flex flex-col ${log.type === 'system' ? 'items-center opacity-40 border-y border-black/10 py-2' : log.type === 'vote_summary' ? 'items-center border-4 border-black p-4' : log.senderId === 'USER' ? 'items-end' : 'items-start'}`}>
+                                {log.type === 'speech' && <span className="font-unbounded font-black text-[9px] mb-1 opacity-60">[{log.senderName}]</span>}
+                                {log.type === 'vote_summary' ? (
+                                    <div className="text-center w-full">
+                                        <div className="font-unbounded font-black mb-2">{t.voteSummary}</div>
+                                        <div className="whitespace-pre-wrap">{log.text}</div>
+                                    </div>
+                                ) : (
+                                    <div className={`px-4 py-3 border-2 border-black ${log.senderId === 'USER' ? 'bg-black text-white' : log.type === 'system' ? 'bg-transparent border-0' : 'bg-white shadow-[6px_6px_0px_#000]'}`}>{log.text}</div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Chat Input */}
                     {(phase===GamePhase.DAY_DISCUSSION || phase===GamePhase.TIE_DISCUSSION || (phase===GamePhase.TIE_SPEECH && tiedPlayers.includes(players.find(p=>p.isHuman)?.id))) && isHumanTurn && players.find(p=>p.isHuman)?.isAlive && (
-                        <div className="p-3 bg-slate-900 border-t border-slate-800 flex gap-2"><input type="text" value={humanInput} autoFocus onChange={e=>setHumanInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&humanInput.trim()){addLog(humanInput,'speech',players.find(p=>p.isHuman)?.name,'USER'); setHumanInput(''); setIsHumanTurn(false); advanceTurn(currentSpeakerIndex, players);}}} placeholder={t.chatPlaceholder} className="flex-1 bg-slate-800 border-slate-700 rounded px-3 py-2 text-sm focus:border-purple-500 outline-none" /><button onClick={()=>{if(humanInput.trim()){addLog(humanInput,'speech',players.find(p=>p.isHuman)?.name,'USER'); setHumanInput(''); setIsHumanTurn(false); advanceTurn(currentSpeakerIndex, players);}}} className="bg-purple-600 px-4 rounded text-sm hover:bg-purple-500">{t.send}</button></div>
+                        <div className="p-4 border-t-4 border-black bg-white flex gap-3">
+                            <input type="text" value={humanInput} autoFocus onChange={e=>setHumanInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&humanInput.trim()){addLog(humanInput,'speech',players.find(p=>p.isHuman)?.name,'USER'); setHumanInput(''); setIsHumanTurn(false); advanceTurn(currentSpeakerIndex, players);}}} placeholder={t.chatPlaceholder} className="flex-1 p-3 border-2 border-black font-bold outline-none" />
+                            <button onClick={()=>{if(humanInput.trim()){addLog(humanInput,'speech',players.find(p=>p.isHuman)?.name,'USER'); setHumanInput(''); setIsHumanTurn(false); advanceTurn(currentSpeakerIndex, players);}}} className="bg-black text-white px-8 font-unbounded font-black text-xs hover:invert"><Icons.Send /></button>
+                        </div>
                     )}
                 </div>
-                <div className="flex-1 flex flex-col relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 to-slate-950">
-                    <div className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 backdrop-blur rounded-full px-3 py-1 border border-slate-700"><div className={`w-2 h-2 rounded-full ${apiStatus==='working'?'bg-yellow-400 animate-pulse':apiStatus==='error'?'bg-red-500':'bg-green-500'}`}></div><span className="text-[10px] font-mono text-slate-300 uppercase">{apiStatus}</span></div>
-                    <div className="absolute top-4 left-0 right-0 text-center pointer-events-none z-10"><div className="inline-block bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-xl"><span className="text-lg font-light tracking-widest text-slate-300 font-mono">{t.dayCount.replace('{count}', dayCount)} | {phase.includes('NIGHT') ? t.night : t.day}</span></div></div>
-                    <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-y-auto">
-                        <div className={`grid gap-4 md:gap-6 max-w-5xl w-full ${config.playerCount>8?'grid-cols-4':'grid-cols-3'}`}>
-                            {players.map(p => (
+
+                <div className="flex-1 flex flex-col relative p-12 z-10">
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black text-white px-10 py-3 font-unbounded font-black text-3xl shadow-[10px_10px_0px_rgba(0,0,0,0.1)]">
+                        {phase.includes('NIGHT') ? t.night : phase === GamePhase.DAY_VOTE ? 'VOTING_PHASE' : 'DATA_STREAM'}
+                    </div>
+                    
+                    <div className="flex-1 flex items-center justify-center overflow-y-auto">
+                        {/* *** FIX: Responsive Grid to prevent cropping *** */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 w-full max-w-7xl p-4">
+                            {players.map((p, idx) => (
                                 <PlayerCard 
                                     key={p.id} 
                                     player={p} 
@@ -998,9 +1081,7 @@ The game only ends when ALL wolves are dead.`;
                                     language={config.language} 
                                     onClick={() => { 
                                         if(phase===GamePhase.DAY_VOTE && players.find(u=>u.isHuman)?.isAlive && !p.isHuman) {
-                                            if (tiedPlayers.length === 0 || tiedPlayers.includes(p.id)) {
-                                                setSelectedVoteTarget(p.id); 
-                                            }
+                                            if (tiedPlayers.length === 0 || tiedPlayers.includes(p.id)) setSelectedVoteTarget(p.id); 
                                         }
                                         if(phase===GamePhase.NIGHT_SEER && isHumanTurn && p.role!==Role.SEER) handleSeerClick(p.id); 
                                         if(phase===GamePhase.NIGHT_ACTION && isHumanTurn && p.role!==Role.WEREWOLF && phase!==GamePhase.NIGHT_SEER) { setIsHumanTurn(false); resolveNight(p.id); }
@@ -1009,33 +1090,44 @@ The game only ends when ALL wolves are dead.`;
                             ))}
                         </div>
                     </div>
+
+                    {/* Interaction Bar (Voting / Actions) */}
                     {(phase===GamePhase.DAY_VOTE || (phase===GamePhase.NIGHT_ACTION && isHumanTurn) || (phase===GamePhase.NIGHT_SEER && isHumanTurn)) && (
-                        <div className="absolute bottom-10 left-0 right-0 flex justify-center animate-bounce z-20">
+                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
                             {phase === GamePhase.DAY_VOTE && players.find(p=>p.isHuman)?.isAlive && (!tiedPlayers.length || !tiedPlayers.includes(players.find(p=>p.isHuman).id)) ? (
                                 selectedVoteTarget ? (
-                                    <button 
-                                        onClick={() => handleVoteProcess(selectedVoteTarget)}
-                                        className="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-2xl tracking-widest border-2 border-white/20 cursor-pointer transition-all transform hover:scale-105"
-                                    >
-                                        ✅ {t.votePrompt}: {players.find(p=>p.id===selectedVoteTarget)?.name}
+                                    <button onClick={() => handleVoteProcess(selectedVoteTarget)} className="bg-black text-white border-4 border-white px-12 py-4 font-unbounded font-black text-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                                        {t.confirmVote}: {players.find(p=>p.id===selectedVoteTarget)?.name}
                                     </button>
                                 ) : (
-                                    <div className="bg-slate-600 text-slate-300 px-8 py-3 rounded-full font-bold shadow-2xl tracking-widest border-2 border-white/20">
+                                    <div className="bg-white text-black border-4 border-black px-12 py-4 font-unbounded font-black text-xl animate-pulse">
                                         {t.votePrompt}
                                     </div>
                                 )
                             ) : (
-                                <div className={`${phase===GamePhase.DAY_VOTE ? 'bg-slate-600' : phase===GamePhase.NIGHT_SEER ? 'bg-purple-600' : 'bg-red-600'} text-white px-8 py-3 rounded-full font-bold shadow-2xl tracking-widest border-2 border-white/20`}>
-                                    {phase===GamePhase.DAY_VOTE ? (tiedPlayers.includes(players.find(p=>p.isHuman)?.id) ? t.votingProgress : t.votingProgress) : phase===GamePhase.NIGHT_SEER ? t.seerPrompt : t.killPrompt}
+                                <div className="bg-black text-white px-12 py-4 font-unbounded font-black text-xl border-4 border-white">
+                                    {phase===GamePhase.DAY_VOTE ? t.votingProgress : phase===GamePhase.NIGHT_SEER ? t.seerPrompt : t.killPrompt}
                                 </div>
                             )}
                         </div>
                     )}
-                    {phase===GamePhase.GAME_OVER && winner && (
-                        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 flex-col backdrop-blur-sm"><h1 className={`text-6xl md:text-8xl font-black mb-6 tracking-tighter ${winner === Role.WEREWOLF ? 'text-red-600 drop-shadow-[0_0_25px_rgba(220,38,38,0.8)]' : 'text-green-500 drop-shadow-[0_0_25px_rgba(34,197,94,0.8)]'}`}>{winner === Role.WEREWOLF ? t.werewolfWin : t.villagerWin}</h1><button onClick={()=>window.location.reload()} className="bg-white text-black px-10 py-3 rounded-full font-bold hover:scale-110 transition-transform shadow-xl">{t.playAgain}</button></div>
-                    )}
+                    
+                    <div className="absolute top-8 right-12 bg-white border border-black px-4 py-1 font-unbounded font-black text-[9px] tracking-widest">BUILD_26.01.2026 // STABLE</div>
                 </div>
+
                 {config.devMode && <DevConsole logs={devLogs} t={t} />}
+
+                {phase === GamePhase.GAME_OVER && winner && (
+                    <div className="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-[200] backdrop-blur-xl">
+                        <h1 className={`font-unbounded font-black text-[8vw] mb-12 tracking-tighter leading-none text-center ${winner === Role.WEREWOLF ? 'text-red-600' : 'text-green-500'}`}>
+                            {winner === Role.WEREWOLF ? t.werewolfWin : t.villagerWin}
+                        </h1>
+                        {/* *** FIX: Use restartGame instead of reload *** */}
+                        <button onClick={restartGame} className="bg-white text-black px-20 py-8 font-unbounded font-black text-3xl hover:invert transition-all border-4 border-white">
+                            <Icons.Refresh /> {t.playAgain}
+                        </button>
+                    </div>
+                )}
             </div>
         );
     };
