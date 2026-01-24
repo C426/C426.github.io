@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRoid // AItuber</title>
+    
+    <!-- 字体引入：Unbounded (标题/数字) / Sawarabi Gothic (日文正文) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;900&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. 颜色与变量 --- */
+        :root {
+            --bg: #e5e5e5;
+            --fg: #000000;
+            --dot-bg: #d1d1d1;
+            --glitch-gray: #c5c5c5;
+        }
+
+        /* --- 2. 基础布局 --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'Sawarabi Gothic', sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+        }
+
+        /* --- 3. 背景层 --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .bg-dots {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(var(--dot-bg) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .bg-text-large {
+            position: fixed;
+            right: -50px;
+            bottom: -50px;
+            font-family: 'Unbounded';
+            font-size: 20vw;
+            font-weight: 900;
+            color: var(--fg);
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+            line-height: 1;
+        }
+
+        /* --- 4. 装饰支架 --- */
+        .corner {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--fg);
+            z-index: 100;
+            pointer-events: none;
+        }
+        .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .meta-info {
+            position: fixed;
+            font-size: 0.65rem;
+            font-family: 'Unbounded';
+            font-weight: 900;
+            background-color: var(--bg);
+            padding: 5px 15px;
+            z-index: 101;
+        }
+        .build-id { top: 35px; right: 35px; text-align: right; }
+        .sector-id { bottom: 35px; left: 35px; }
+
+        /* 【优化后的返回按钮】 */
+        .home-btn {
+            position: fixed;
+            top: 32px;
+            left: 55px; 
+            z-index: 102;
+            text-decoration: none;
+            color: var(--fg);
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 0.55rem; 
+            padding: 4px 10px;
+            border-left: 3px solid var(--fg); 
+            display: flex;
+            align-items: center;
+            letter-spacing: 2px;
+            background-color: transparent; /* 初始透明 */
+            transition: all 0.1s steps(1);
+        }
+
+        /* 确保按钮内的所有元素不干扰鼠标事件 */
+        .home-btn *, .btn * {
+            pointer-events: none;
+        }
+
+        .home-btn:hover {
+            background-color: var(--fg);
+            color: var(--bg);
+            /* 移除 padding 偏移，改为整体位移更稳定 */
+            transform: translateX(5px);
+        }
+
+        /* --- 5. 核心响应式网格 --- */
+        main {
+            display: grid;
+            grid-template-columns: auto auto; 
+            justify-content: center; 
+            align-content: center;
+            width: 100%;
+            height: 100vh;
+            padding: 40px;
+            gap: 120px;
+            position: relative;
+        }
+
+        /* --- 6. 左侧：图像区域 --- */
+        .photo-pane {
+            position: relative;
+            background: rgba(0,0,0,0.02);
+            border: 3px solid var(--fg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 75vh; 
+            aspect-ratio: 2 / 3;
+        }
+
+        .photo-container {
+            width: 90%;
+            height: 90%;
+            background: var(--glitch-gray);
+            position: relative;
+            border: 1px dashed var(--fg);
+            overflow: hidden;
+        }
+
+        .actual-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            z-index: 2;
+        }
+
+        /* --- 7. 右侧：信息面板 --- */
+        .info-pane {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 75vh; 
+            width: 550px; 
+        }
+
+        .category-tag {
+            font-family: 'Unbounded';
+            font-size: 0.8rem;
+            background: var(--fg);
+            color: var(--bg);
+            padding: 6px 15px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .main-title {
+            font-family: 'Unbounded';
+            font-size: 4rem; 
+            line-height: 0.85;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+            letter-spacing: -4px;
+        }
+
+        .character-header {
+            border-bottom: 2px solid var(--fg);
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+        }
+        .label-small {
+            font-family: 'Unbounded';
+            font-size: 0.7rem;
+            font-weight: 900;
+            opacity: 0.5;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .name-ja {
+            font-size: 2.8rem; 
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            line-height: 1;
+        }
+
+        .lore-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .lore-item {
+            border-left: 2px solid var(--fg);
+            padding-left: 15px;
+        }
+        .lore-label {
+            font-family: 'Unbounded';
+            font-size: 0.65rem;
+            opacity: 0.5;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .lore-content {
+            font-size: 0.9rem;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+
+        .lore-full {
+            grid-column: span 2;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .link-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: auto; 
+        }
+        .btn-wide { grid-column: span 2; }
+
+        /* 通用按钮样式 */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 25px;
+            border: 2px solid var(--fg);
+            text-decoration: none;
+            color: var(--fg);
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 0.75rem;
+            background-color: transparent;
+            transition: all 0.1s steps(1);
+        }
+        .btn:hover {
+            background-color: var(--fg);
+            color: var(--bg);
+        }
+
+        /* --- 8. 扫描线效果 --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        @keyframes glitch {
+            0% { clip-path: inset(0 0 0 0); opacity: 1; }
+            30% { clip-path: inset(10% 0 60% 0); opacity: 0.8; }
+            70% { clip-path: inset(50% 0 10% 0); opacity: 0.9; }
+            100% { clip-path: inset(0 0 0 0); opacity: 1; }
+        }
+        .glitch-active { animation: glitch 0.15s steps(3) forwards; }
+
+        /* --- 9. 移动端优化 --- */
+        @media (max-width: 1200px) {
+            main { gap: 60px; }
+            .info-pane { width: 450px; }
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+                padding: 40px 30px;
+                overflow-y: auto; 
+                height: auto;
+            }
+            .photo-pane { width: 100%; height: auto; margin: 0 auto 40px; }
+            .info-pane { width: 100%; height: auto; }
+            .lore-grid { grid-template-columns: 1fr; }
+            .lore-full { grid-column: span 1; }
+            .link-group { grid-template-columns: 1fr; }
+            .btn-wide { grid-column: span 1; }
+            .home-btn { top: 20px; left: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-dots"></div>
+    <div class="bg-text-large">SHIZU</div>
+
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+
+    <!-- 优化后的返回按钮 -->
+    <a href="../index.html" class="home-btn">
+        <span>[ BACK_TO_ROOT ]</span>
+    </a>
+
+    <div class="meta-info build-id">PROFILE_ID // MS_022<br>STABLE_ARCHIVE</div>
+    <div class="meta-info sector-id">SECTOR // DHGS_VRM_7920</div>
+
+    <div id="overlay"></div>
+
+    <main>
+        <!-- 左侧：图像展示 -->
+        <section class="photo-pane">
+            <div class="photo-container">
+                <img 
+                    src="./photo/VRM_PHOTO.png" 
+                    class="actual-photo" 
+                    alt="VRM_PHOTO"
+                    onerror="this.style.opacity='0';" 
+                >
+            </div>
+            <div style="position:absolute; bottom:20px; right:20px; font-size:12px; font-weight:900; opacity:0.8; font-family:'Unbounded'">
+                MINASE SHIZU
+            </div>
+        </section>
+
+        <!-- 右侧：信息面板 -->
+        <section class="info-pane">
+            <span class="category-tag">IDENTITY_LOG</span>
+            <h1 class="main-title">DATA SYNC<br>PROFILE</h1>
+
+            <div class="character-header">
+                <span class="label-small">SUBJECT_NAME_IDENTIFIED</span>
+                <div class="name-ja">水瀬 静 <span style="font-size: 1.2rem; font-weight: 400; opacity: 0.5;">(Minase Shizu)</span></div>
+            </div>
+
+            <div class="lore-grid">
+                <div class="lore-item">
+                    <span class="lore-label">OCCUPATION</span>
+                    <div class="lore-content">美大生 (舞台美術専攻)<br>& メイドカフェ店員</div>
+                </div>
+                <div class="lore-item">
+                    <span class="lore-label">TRAITS</span>
+                    <div class="lore-content">理系女子 / 冷静 / 知的<br>人見知り / ド近眼</div>
+                </div>
+                <div class="lore-full">
+                    <span class="lore-label">BACKGROUND_DATA</span>
+                    <p class="bio-text" style="font-size: 0.9rem;">
+                        一見すると眼鏡をかけた冷静で知的な理系女子ですが、中身は魔法のような世界を創ることを夢見る美大生です。
+                        クールに見えるのは極度の人見知りとド近眼のせいで、お仕事と紅茶に対しては誰よりも真剣に取り組んでいます。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="link-group">
+                <a href="https://hub.vroid.com/en/characters/2950606691818099948/models/7920155686494975990" target="_blank" class="btn btn-wide">
+                    <span>ACCESS VROID HUB_DATA</span>
+                    <span class="icon">↗</span>
+                </a>
+
+                <a href="https://youtu.be/JPW3A1XcOK0" target="_blank" class="btn">
+                    <span>VIDEO_LOG</span>
+                    <span class="icon">↗</span>
+                </a>
+
+                <a href="https://x.com/minaseshizu/status/2014036906942799915?s=20" target="_blank" class="btn">
+                    <span>X_STATUS</span>
+                    <span class="icon">↗</span>
+                </a>
+            </div>
+
+            <p style="margin-top: 30px; font-size: 0.65rem; line-height: 1.6; opacity: 0.4; font-family: 'Sawarabi Gothic';">
+                > IDENTITY_RECORD_LOADED // NO_ERRORS_FOUND<br>
+                > すべての外部プロトコルが正常にリンクされました。
+            </p>
+        </section>
+    </main>
+
+    <script>
+        /**
+         * 交互音效管理器
+         */
+        class AudioManager {
+            constructor() { this.ctx = null; this.initialized = false; }
+            init() {
+                if (this.initialized) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.initialized = true;
+            }
+            playFlipSound() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.012; 
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 4500;
+                const gain = this.ctx.createGain(); const now = this.ctx.currentTime;
+                gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
+                noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                noise.start();
+            }
+        }
+
+        /**
+         * Canvas 动态波纹背景
+         */
+        class TopographicWaves {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.numLines = 24; 
+                this.tick = 0;      
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
+            }
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+            }
+            draw() {
+                this.tick += 0.002; 
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                this.ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < this.numLines; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${0.015 + (i/this.numLines) * 0.04})`;
+                    this.ctx.lineWidth = 1;
+                    for (let x = 0; x <= w; x += 80) {
+                        const wave1 = Math.sin(x * 0.0003 + this.tick + i * 0.8) * 80;
+                        const yBase = (h / (this.numLines - 1)) * i;
+                        if (x === 0) this.ctx.moveTo(x, yBase + wave1);
+                        else this.ctx.lineTo(x, yBase + wave1);
+                    }
+                    this.ctx.stroke();
+                }
+                requestAnimationFrame(() => this.draw());
+            }
+        }
+
+        const audio = new AudioManager();
+        window.addEventListener('load', () => {
+            const waves = new TopographicWaves('bg-canvas');
+            waves.draw();
+            document.addEventListener('mousedown', () => audio.init(), { once: true });
+            
+            // 改进后的按钮交互逻辑
+            document.querySelectorAll('.btn, .home-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    audio.init();
+                    audio.playFlipSound(); 
+                    
+                    // 防重复锁：如果正在动画中，则不重新触发
+                    if (btn.classList.contains('glitch-active')) return;
+                    
+                    btn.classList.add('glitch-active');
+                    // 动画完成后移除类名
+                    setTimeout(() => {
+                        btn.classList.remove('glitch-active');
+                    }, 200); // 略长于 CSS 动画时长以确保稳定
+                });
+            });
+        });
+    </script>
+</body>
+</html>
