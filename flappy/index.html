@@ -1,196 +1,552 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird</title>
+    <title>SYS_FLIGHT // DHGSVR25_GAME_LOG</title>
+    
+    <!-- 字体引入：Unbounded, Sawarabi Gothic, Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;900&family=Unbounded:wght@400;900&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+    
     <style>
-        body {
+        :root {
+            --bg: #e5e5e5;          /* 页面背景 */
+            --fg: #000000;          /* 主色调 */
+            --dot-bg: #d1d1d1;      /* 点阵装饰 */
+            --glitch-gray: #c5c5c5; /* 占位灰色 */
+            --accent: #ff003c;      /* 警告/强调红 */
+        }
+
+        /* 中文环境下的字体优先设置 */
+        html[lang="zh"] body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'Sawarabi Gothic', sans-serif;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #282828;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            user-select: none;
         }
 
+        /* --- 背景装饰层 --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .bg-dots {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(var(--dot-bg) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* --- UI 框架装饰 --- */
+        .corner {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--fg);
+            z-index: 100;
+            pointer-events: none;
+        }
+        .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .meta-info {
+            position: fixed;
+            font-size: 0.65rem;
+            font-family: 'Unbounded';
+            font-weight: 900;
+            z-index: 101;
+        }
+        .build-id { top: 35px; right: 35px; text-align: right; }
+        .sector-id { bottom: 35px; left: 35px; }
+
+        /* 返回根目录按钮 */
+        .home-btn {
+            position: fixed;
+            top: 32px;
+            left: 55px; 
+            z-index: 102;
+            text-decoration: none;
+            color: var(--fg);
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 0.55rem; 
+            padding: 4px 10px;
+            border-left: 3px solid var(--fg); 
+            display: flex;
+            align-items: center;
+            letter-spacing: 2px;
+            transition: all 0.1s steps(1);
+        }
+        .home-btn:hover {
+            background-color: var(--fg);
+            color: var(--bg);
+            transform: translateX(5px);
+        }
+
+        /* --- 游戏容器 --- */
         #game-container {
             position: relative;
             width: 400px;
             height: 600px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border: 3px solid var(--fg);
+            background-color: transparent;
+            z-index: 10;
         }
 
         canvas {
-            border: 2px solid #fff;
-            background-color: #70c5ce; /* 经典的天空蓝背景 */
             display: block;
             width: 100%;
             height: 100%;
+            background-color: rgba(255, 255, 255, 0.4); 
         }
 
-        /* UI 覆盖层通用样式 */
+        /* UI 覆盖层样式 */
         .overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            z-index: 10;
+            background-color: var(--bg);
+            color: var(--fg);
+            z-index: 20;
+            padding: 40px;
+            text-align: center;
         }
 
         .hidden { display: none !important; }
 
-        h1 { font-size: 48px; margin-bottom: 20px; color: #f4d03f; text-shadow: 2px 2px 0 #000; }
-        h2 { font-size: 36px; margin-bottom: 20px; }
-        p { font-size: 18px; color: #fff; margin-bottom: 40px; text-shadow: 1px 1px 0 #000; }
+        h1 { font-family: 'Unbounded'; font-size: 2.2rem; line-height: 1; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; }
+        h2 { font-family: 'Unbounded'; font-size: 2rem; margin-bottom: 20px; text-transform: uppercase; }
+        p { font-size: 0.8rem; margin-bottom: 40px; opacity: 0.6; }
 
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            cursor: pointer;
-            background-color: #e74c3c;
-            color: white;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            transition: 0.2s;
-            margin: 10px;
-            min-width: 180px;
-            font-weight: bold;
+        /* 按钮设计 */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 25px;
+            border: 2px solid var(--fg);
+            text-decoration: none;
+            color: var(--fg);
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 0.75rem;
+            background-color: transparent;
+            transition: all 0.1s steps(1);
+            width: 100%;
+            margin-bottom: 10px;
         }
+        .btn:hover { background-color: var(--fg); color: var(--bg); }
+        .btn.secondary { border-width: 1px; font-size: 0.7rem; opacity: 0.7; }
 
-        button:hover { transform: scale(1.05); background-color: #c0392b; }
-
-        button.secondary { background-color: #555; }
-        button.secondary:hover { background-color: #777; }
-
-        /* 语言选择器样式 (和上一个游戏保持一致) */
-        #lang-container {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 20;
-        }
-
-        #lang-btn {
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 8px 15px;
-            font-size: 14px;
-            min-width: auto;
-            margin: 0;
-        }
-
-        #lang-menu {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-            width: 120px;
-            margin-bottom: 5px;
-            display: none;
-        }
-
-        #lang-menu.show { display: block; }
-
-        .lang-option {
-            padding: 10px;
-            color: white;
-            cursor: pointer;
-            border-bottom: 1px solid #444;
-            font-size: 14px;
-        }
-        .lang-option:hover { background-color: #444; }
-
-        /* 实时分数显示 */
+        /* 【核心修改】自适应分数显示：使用 mix-blend-mode 解决遮挡问题 */
         #score-display {
             position: absolute;
-            top: 50px;
+            top: 25px;
             width: 100%;
             text-align: center;
-            font-size: 40px;
-            color: white;
-            font-weight: bold;
-            text-shadow: 2px 2px 0 #000;
             pointer-events: none;
-            z-index: 5;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 差值模式：在浅色背景显黑，在黑色管道显白 */
+            mix-blend-mode: difference;
+            color: #ffffff; /* 差值模式下设为白色，背景为灰色时会呈现黑色 */
         }
         
-        /* 回到主页面的左上角按钮 */
-        #back-btn {
+        .score-val {
+            font-family: 'Unbounded';
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -3px;
+        }
+        
+        .score-label {
+            font-family: 'Unbounded';
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-top: -5px;
+        }
+
+        /* 扫描线效果 */
+        #scanline {
             position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 60;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(6px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 200;
         }
-        #back-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-1px);
+
+        /* 故障闪烁 */
+        @keyframes glitch {
+            0% { clip-path: inset(0 0 0 0); }
+            30% { clip-path: inset(10% 0 60% 0); }
+            70% { clip-path: inset(50% 0 10% 0); }
+            100% { clip-path: inset(0 0 0 0); }
         }
-        /* 居中游戏结束屏幕的操作按钮 */
-        #game-over-screen > div {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
+        .glitch-active { animation: glitch 0.15s steps(3) forwards; }
+
+        #lang-container { width: 100%; margin-top: 20px; position: relative; }
+        #lang-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%; left: 0; width: 100%;
+            background: var(--bg);
+            border: 2px solid var(--fg);
+            margin-bottom: 5px;
         }
+        #lang-menu.show { display: block; }
+        .lang-option { padding: 10px; font-family: 'Unbounded'; font-size: 0.7rem; cursor: pointer; border-bottom: 1px solid var(--dot-bg); }
+        .lang-option:hover { background: var(--fg); color: var(--bg); }
     </style>
-    
 </head>
 <body>
-    <a id="back-btn" href="../index.html">◀ホームページ</a>
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-dots"></div>
+    <div id="scanline"></div>
+
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    
+    <a href="../index.html" class="home-btn">
+        <span>[ BACK_TO_ROOT ]</span>
+    </a>
+
+    <div class="meta-info build-id">GAME_ID // FB_CORE_01<br>SYS_STABLE_V2.1</div>
+    <div class="meta-info sector-id">SECTOR // DATA_FLIGHT_LOG</div>
+
     <div id="game-container">
         <canvas id="gameCanvas" width="400" height="600"></canvas>
         
-        <div id="score-display" class="hidden">0</div>
+        <!-- 更新后的分数 HUD -->
+        <div id="score-display" class="hidden">
+            <span class="score-val" id="score-num">0</span>
+            <span class="score-label">SYNC_SCORE</span>
+        </div>
 
         <div id="title-screen" class="overlay">
-            <h1 id="ui-title">Flappy Bird</h1>
-            <p id="ui-instructions">空格键 / 点击 跳跃</p>
-            <button id="start-btn">开始游戏</button>
+            <span style="font-family: 'Unbounded'; font-size: 0.6rem; background: var(--fg); color: var(--bg); padding: 2px 8px; margin-bottom: 10px;">FLIGHT_SIM_REFINED</span>
+            <h1 id="ui-title">SYS_FLIGHT</h1>
+            <p id="ui-instructions">SPACE_KEY / CLICK TO JUMP</p>
             
-            <div id="lang-container">
-                <button id="lang-btn">🌐 Language</button>
-                <div id="lang-menu">
-                    <div class="lang-option" data-lang="zh">✓ 中文</div>
-                    <div class="lang-option" data-lang="ja">　日本語</div>
-                    <div class="lang-option" data-lang="en">　English</div>
+            <div style="width: 100%; max-width: 220px;">
+                <button id="start-btn" class="btn">START_SYNC</button>
+                
+                <div id="lang-container">
+                    <button id="lang-btn" class="btn secondary">🌐 LANGUAGE</button>
+                    <div id="lang-menu">
+                        <div class="lang-option" data-lang="zh">✓ 中文</div>
+                        <div class="lang-option" data-lang="ja">　日本語</div>
+                        <div class="lang-option" data-lang="en">　English</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="game-over-screen" class="overlay hidden">
-            <h2 id="end-title">游戏结束</h2>
-            <p id="end-score">得分: 0</p>
-            <div>
-                <button id="restart-btn">再试一次</button>
-                <button id="home-btn" class="secondary">返回主页</button>
+            <h2 id="end-title">LINK_LOST</h2>
+            <p id="end-score">SCORE_VAL: 0</p>
+            <div style="width: 100%; max-width: 220px;">
+                <button id="restart-btn" class="btn">RETRY_SYNC</button>
+                <button id="home-btn-internal" class="btn secondary">EXIT_ROOT</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        /**
+         * 1. 交互与游戏音效 (Web Audio API)
+         */
+        class AudioManager {
+            constructor() { this.ctx = null; this.initialized = false; }
+            init() {
+                if (this.initialized) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.initialized = true;
+            }
+            playGlitchSound() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.01;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 5000;
+                const gain = this.ctx.createGain(); const now = this.ctx.currentTime;
+                gain.gain.setValueAtTime(0.04, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
+                noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                noise.start();
+            }
+            playJumpSound() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+                gain.gain.setValueAtTime(0.03, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(now + 0.1);
+            }
+            playCrashSound() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.2;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'lowpass';
+                const now = this.ctx.currentTime;
+                filter.frequency.setValueAtTime(2000, now);
+                filter.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                noise.start();
+            }
+        }
+
+        class TopographicWaves {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.numLines = 24; this.tick = 0;
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
+            }
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+            }
+            draw() {
+                this.tick += 0.002;
+                const w = window.innerWidth; const h = window.innerHeight;
+                this.ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < this.numLines; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${0.01 + (i/this.numLines) * 0.03})`;
+                    this.ctx.lineWidth = 1;
+                    for (let x = 0; x <= w; x += 80) {
+                        const wave = Math.sin(x * 0.0004 + this.tick + i * 0.7) * 70;
+                        const yBase = (h / (this.numLines - 1)) * i;
+                        if (x === 0) this.ctx.moveTo(x, yBase + wave);
+                        else this.ctx.lineTo(x, yBase + wave);
+                    }
+                    this.ctx.stroke();
+                }
+                requestAnimationFrame(() => this.draw());
+            }
+        }
+
+        /**
+         * 2. 游戏核心逻辑
+         */
+        const gameCanvas = document.getElementById('gameCanvas');
+        const gctx = gameCanvas.getContext('2d');
+        const titleScreen = document.getElementById('title-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreNum = document.getElementById('score-num');
+        const uiTitle = document.getElementById('ui-title');
+        const uiInstructions = document.getElementById('ui-instructions');
+        const endTitle = document.getElementById('end-title');
+        const endScore = document.getElementById('end-score');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtnInternal = document.getElementById('home-btn-internal');
+        const langBtn = document.getElementById('lang-btn');
+        const langMenu = document.getElementById('lang-menu');
+
+        const translations = {
+            zh: { title: "SYS_飞行", instructions: "空格键 / 点击 跳跃", start: "同步开始", restart: "重新连接", home: "退出根目录", gameOver: "链路中断", score: "得分", win: "同步成功" },
+            ja: { title: "SYS_飛行", instructions: "スペース / クリックで跳躍", start: "同期開始", restart: "再試行", home: "ルートへ戻る", gameOver: "リンク喪失", score: "スコア", win: "同期完了" },
+            en: { title: "SYS_FLIGHT", instructions: "SPACE / CLICK TO JUMP", start: "START_SYNC", restart: "RETRY_SYNC", home: "EXIT_ROOT", gameOver: "LINK_LOST", score: "SCORE", win: "SYNC_OK" }
+        };
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.setAttribute('lang', lang);
+            const t = translations[lang];
+            uiTitle.textContent = t.title;
+            uiInstructions.textContent = t.instructions;
+            startBtn.textContent = t.start;
+            restartBtn.textContent = t.restart;
+            homeBtnInternal.textContent = t.home;
+        }
+
+        const bird = { x: 80, y: 300, size: 24, gravity: 0.45, jump: 8, velocity: 0, trail: [] };
+        let pipes = [];
+        const pipeWidth = 60;
+        const pipeGap = 160;
+        let score = 0;
+        let isGameRunning = false;
+        let isGameOver = false;
+        let frameCount = 0;
+        let animId;
+
+        function initGame() {
+            score = 0; bird.y = gameCanvas.height / 2; bird.velocity = 0; 
+            bird.trail = []; pipes = []; frameCount = 0; isGameOver = false;
+            scoreNum.textContent = score;
+        }
+
+        function startGame() {
+            initGame(); isGameRunning = true;
+            titleScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            scoreDisplay.classList.remove('hidden');
+            gameLoop();
+        }
+
+        function stopGame() {
+            if (!isGameRunning) return;
+            isGameRunning = false; isGameOver = true;
+            audio.playCrashSound();
+            const t = translations[currentLang];
+            endTitle.textContent = t.gameOver;
+            endScore.textContent = `${t.score}: ${score}`;
+            gameOverScreen.classList.remove('hidden');
+            cancelAnimationFrame(animId);
+        }
+
+        function update() {
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+            bird.trail.push({y: bird.y, alpha: 0.5});
+            if (bird.trail.length > 8) bird.trail.shift();
+            if (bird.y + bird.size/2 >= gameCanvas.height || bird.y - bird.size/2 <= 0) stopGame();
+
+            if (frameCount % 100 === 0) {
+                let topH = Math.random() * (gameCanvas.height - pipeGap - 120) + 60;
+                pipes.push({ x: gameCanvas.width, top: topH, scored: false });
+            }
+
+            pipes.forEach((p, i) => {
+                p.x -= 3;
+                if (bird.x + bird.size/2 > p.x && bird.x - bird.size/2 < p.x + pipeWidth &&
+                    (bird.y - bird.size/2 < p.top || bird.y + bird.size/2 > p.top + pipeGap)) stopGame();
+                if (!p.scored && p.x + pipeWidth < bird.x) { score++; p.scored = true; scoreNum.textContent = score; }
+                if (p.x + pipeWidth < 0) pipes.splice(i, 1);
+            });
+            frameCount++;
+        }
+
+        function draw() {
+            gctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            gctx.strokeStyle = 'rgba(0,0,0,0.05)';
+            gctx.setLineDash([5, 5]);
+            gctx.beginPath(); gctx.moveTo(bird.x, 0); gctx.lineTo(bird.x, gameCanvas.height); gctx.stroke();
+            gctx.setLineDash([]);
+
+            bird.trail.forEach((t, i) => {
+                const opacity = (i / bird.trail.length) * 0.2;
+                gctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
+                gctx.strokeRect(bird.x - bird.size/2 - (bird.trail.length - i) * 4, t.y - bird.size/2, bird.size, bird.size);
+            });
+
+            gctx.save();
+            gctx.translate(bird.x, bird.y);
+            gctx.rotate(Math.min(Math.PI/6, Math.max(-Math.PI/6, bird.velocity * 0.04)));
+            gctx.strokeStyle = 'black'; gctx.lineWidth = 2;
+            gctx.strokeRect(-bird.size/2, -bird.size/2, bird.size, bird.size);
+            gctx.beginPath(); gctx.moveTo(-bird.size/2, 0); gctx.lineTo(bird.size/2, 0); gctx.stroke();
+            gctx.beginPath(); gctx.moveTo(0, -bird.size/2); gctx.lineTo(0, bird.size/2); gctx.stroke();
+            gctx.restore();
+
+            pipes.forEach(p => {
+                gctx.fillStyle = 'black';
+                gctx.fillRect(p.x, 0, pipeWidth, p.top);
+                gctx.fillRect(p.x, p.top + pipeGap, pipeWidth, gameCanvas.height - (p.top + pipeGap));
+                gctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; gctx.setLineDash([4, 4]);
+                gctx.strokeRect(p.x, 0, pipeWidth, p.top);
+                gctx.strokeRect(p.x, p.top + pipeGap, pipeWidth, gameCanvas.height - (p.top + pipeGap));
+                gctx.setLineDash([]);
+            });
+        }
+
+        function gameLoop() {
+            if (isGameRunning) {
+                update(); draw();
+                animId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        const audio = new AudioManager();
+        window.onload = () => {
+            const waves = new TopographicWaves('bg-canvas');
+            waves.draw();
+            setLanguage('en');
+            document.addEventListener('mousedown', () => audio.init(), { once: true });
+            
+            document.querySelectorAll('.btn, .home-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    audio.init(); audio.playGlitchSound();
+                    if (btn.classList.contains('glitch-active')) return;
+                    btn.classList.add('glitch-active');
+                    setTimeout(() => btn.classList.remove('glitch-active'), 150);
+                });
+            });
+
+            startBtn.onclick = startGame;
+            restartBtn.onclick = startGame;
+            homeBtnInternal.onclick = () => window.location.href = '../index.html';
+            langBtn.onclick = (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); };
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.onclick = () => { setLanguage(opt.dataset.lang); langMenu.classList.remove('show'); };
+            });
+            window.onclick = () => langMenu.classList.remove('show');
+
+            const performJump = () => { if (isGameRunning) { bird.velocity = -bird.jump; audio.playJumpSound(); } };
+            window.onkeydown = (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (!isGameRunning && !isGameOver) startGame();
+                    else performJump();
+                }
+            };
+            gameCanvas.onmousedown = () => { if (isGameRunning) performJump(); };
+        };
+    </script>
 </body>
 </html>

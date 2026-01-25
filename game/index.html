@@ -1,178 +1,221 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Demo</title>
+    <title>DODGE_COLLECT // DHGSVR25_SEC_LOG</title>
+    
+    <!-- 字体引入 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;900&family=Unbounded:wght@400;900&family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #282828;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            user-select: none; /* 防止双击选中文本 */
+        :root {
+            --bg: #e5e5e5;
+            --fg: #000000;
+            --dot-bg: #d1d1d1;
+            --glitch-gray: #c5c5c5;
+            --accent: #ff003c;
+            --dash-active: #ffee00;
         }
-        
+
+        /* 强制中文环境下使用 Noto Sans SC */
+        html[lang="zh"] body { font-family: 'Noto Sans SC', sans-serif !important; }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            cursor: crosshair; user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'Sawarabi Gothic', sans-serif;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+
+        /* --- 背景装饰层 --- */
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; pointer-events: none;
+        }
+
+        .bg-dots {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(var(--dot-bg) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; opacity: 0.4;
+        }
+
+        /* --- 框架装饰 --- */
+        .corner {
+            position: fixed; width: 40px; height: 40px;
+            border: 2px solid var(--fg); z-index: 100; pointer-events: none;
+        }
+        .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .meta-info {
+            position: fixed; font-size: 0.65rem; font-family: 'Unbounded';
+            font-weight: 900; z-index: 101;
+        }
+        .build-id { top: 35px; right: 35px; text-align: right; }
+        .sector-id { bottom: 35px; left: 35px; }
+
+        .home-btn {
+            position: fixed; top: 32px; left: 55px; z-index: 102;
+            text-decoration: none; color: var(--fg);
+            font-family: 'Unbounded'; font-weight: 900; font-size: 0.55rem; 
+            padding: 4px 10px; border-left: 3px solid var(--fg); 
+            display: flex; align-items: center; letter-spacing: 2px;
+            transition: all 0.1s steps(1);
+        }
+        .home-btn:hover { background-color: var(--fg); color: var(--bg); transform: translateX(5px); }
+
+        /* --- 游戏主容器 --- */
         #game-container {
             position: relative;
             width: 800px;
             height: 600px;
-        }
-
-        canvas {
-            border: 2px solid #fff;
-            background-color: #000;
-            display: block;
-        }
-
-        /* UI 覆盖层通用样式 */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
+            border: 3px solid var(--fg);
+            background-color: transparent;
             z-index: 10;
         }
 
-        .hidden {
-            display: none !important;
+        canvas {
+            display: block; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.4); 
         }
 
-        h1 { font-size: 48px; margin-bottom: 20px; color: cyan; text-shadow: 0 0 10px cyan; }
-        h2 { font-size: 36px; margin-bottom: 20px; }
-        p { font-size: 18px; color: #ccc; margin-bottom: 40px; }
-
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: 0.3s;
-            margin: 10px;
-            min-width: 200px;
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background-color: var(--bg); color: var(--fg); z-index: 20;
+            padding: 40px; text-align: center;
         }
 
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
+        .hidden { display: none !important; }
 
-        button.secondary {
-            background-color: #555;
-        }
-        button.secondary:hover {
-            background-color: #777;
-        }
+        h1 { font-family: 'Unbounded'; font-size: 3rem; line-height: 1; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; }
+        h2 { font-family: 'Unbounded'; font-size: 2.5rem; margin-bottom: 20px; text-transform: uppercase; }
+        p { font-size: 0.9rem; margin-bottom: 40px; opacity: 0.6; }
 
-        /* --- 语言选择器样式 --- */
-        #lang-container {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 20; /* 确保在最上层 */
-            font-family: sans-serif;
+        .btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 15px 30px; border: 2px solid var(--fg);
+            text-decoration: none; color: var(--fg);
+            font-family: 'Unbounded'; font-weight: 900; font-size: 0.8rem;
+            background-color: transparent; transition: all 0.1s steps(1);
+            width: 100%; max-width: 250px; margin-bottom: 12px;
         }
+        .btn:hover { background-color: var(--fg); color: var(--bg); }
+        .btn.secondary { border-width: 1px; font-size: 0.7rem; opacity: 0.7; }
 
-        #lang-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            font-size: 16px;
-            min-width: auto;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        /* HUD：差值混合模式 */
+        #hud {
+            position: absolute; top: 0; left: 0; width: 100%; padding: 25px;
+            pointer-events: none; z-index: 15;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            mix-blend-mode: difference; color: #ffffff;
         }
         
-        #lang-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: none;
+        .hud-item { display: flex; flex-direction: column; }
+        .hud-val { font-family: 'Unbounded'; font-size: 2rem; font-weight: 900; line-height: 1; }
+        .hud-label { font-family: 'Unbounded'; font-size: 0.6rem; font-weight: 900; letter-spacing: 1px; opacity: 0.7; }
+        
+        #dash-hud {
+            position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center;
+            pointer-events: none;
+        }
+        #dash-status { font-family: 'Unbounded'; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; }
+        #dash-timer-bar { 
+            width: 120px; height: 3px; background: rgba(255,255,255,0.2); 
+            margin-top: 5px; position: relative; overflow: hidden;
+        }
+        #dash-timer-fill { 
+            position: absolute; top: 0; left: 0; height: 100%; 
+            width: 100%; background: #ffffff; transition: width 0.1s linear; 
         }
 
+        #scanline {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.03) 50%);
+            background-size: 100% 4px; pointer-events: none; z-index: 200;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes glitch {
+            0% { clip-path: inset(0 0 0 0); }
+            30% { clip-path: inset(10% 0 60% 0); }
+            70% { clip-path: inset(50% 0 10% 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+        .glitch-active { animation: glitch 0.15s steps(3) forwards; }
+
+        #lang-container { width: 100%; max-width: 250px; position: relative; }
         #lang-menu {
-            position: absolute;
-            bottom: 100%; /* 在按钮上方显示 */
-            left: 0;
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-            width: 150px;
-            margin-bottom: 5px;
-            display: none; /* 默认隐藏 */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            display: none; position: absolute; bottom: 100%; left: 0; width: 100%;
+            background: var(--bg); border: 2px solid var(--fg); margin-bottom: 5px;
         }
-
-        #lang-menu.show {
-            display: block;
-        }
-
-        .lang-option {
-            padding: 10px 15px;
-            color: white;
-            cursor: pointer;
-            border-bottom: 1px solid #444;
-            font-size: 14px;
-        }
-
-        .lang-option:last-child {
-            border-bottom: none;
-        }
-
-        .lang-option:hover {
-            background-color: #444;
-        }
-
-        /* 回到主页面的左上角按钮 */
-        #back-btn {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 60;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(6px);
-        }
-        #back-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-1px);
-        }
+        #lang-menu.show { display: block; }
+        .lang-option { padding: 10px; font-family: 'Unbounded'; font-size: 0.7rem; cursor: pointer; border-bottom: 1px solid var(--dot-bg); }
+        .lang-option:hover { background: var(--fg); color: var(--bg); }
     </style>
 </head>
 <body>
-    <a href="../index.html" id="back-btn" title="返回主页面">◀ホームページ</a>
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-dots"></div>
+    <div id="scanline"></div>
+
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    
+    <a href="../index.html" class="home-btn">
+        <span>[ BACK_TO_ROOT ]</span>
+    </a>
+
+    <div class="meta-info build-id">SYS_COLLECT // MS_DODGE_03<br>AUTH_STABLE_V2.6_MODIFIED</div>
+    <div class="meta-info sector-id">SECTOR // ENEMY_CHASE_LOG</div>
+
     <div id="game-container">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="hud" class="hidden">
+            <div class="hud-item">
+                <span class="hud-label">TIME_LOG</span>
+                <span class="hud-val" id="time-val">0.0</span>
+            </div>
+            
+            <div id="dash-hud">
+                <span id="dash-status">DASH_READY [L-CLICK]</span>
+                <div id="dash-timer-bar">
+                    <div id="dash-timer-fill"></div>
+                </div>
+            </div>
+
+            <div class="hud-item" style="text-align: right;">
+                <span class="hud-label">DATA_SYNC</span>
+                <span class="hud-val" id="score-val">0 / 20</span>
+            </div>
+        </div>
 
         <div id="title-screen" class="overlay">
-            <h1 id="ui-title">躲避与收集</h1>
-            <p id="ui-instructions">WASD 移动 | 鼠标左键 冲刺</p>
-            <button id="start-btn">开始游戏</button>
+            <span style="font-family: 'Unbounded'; font-size: 0.6rem; background: var(--fg); color: var(--bg); padding: 2px 8px; margin-bottom: 15px;">DODGE_AND_COLLECT_v2.6</span>
+            <h1 id="ui-title">SYS_DODGE</h1>
+            <p id="ui-instructions">WASD_MOVE / L_CLICK_DASH</p>
+            
+            <button id="start-btn" class="btn">START_SYNC</button>
             
             <div id="lang-container">
-                <button id="lang-btn">🌐 Language</button>
+                <button id="lang-btn" class="btn secondary">🌐 LANGUAGE</button>
                 <div id="lang-menu">
                     <div class="lang-option" data-lang="zh">✓ 中文</div>
                     <div class="lang-option" data-lang="ja">　日本語</div>
@@ -182,15 +225,435 @@
         </div>
 
         <div id="game-over-screen" class="overlay hidden">
-            <h2 id="end-title">游戏结束</h2>
-            <p id="end-reason">...</p>
-            <div>
-                <button id="restart-btn">重新开始游戏</button>
-                <button id="home-btn" class="secondary">返回主界面</button>
-            </div>
+            <h2 id="end-title">LINK_LOST</h2>
+            <p id="end-reason">DATA_CORRUPTED_BY_ENTITY</p>
+            <button id="restart-btn" class="btn">RETRY_SYNC</button>
+            <button id="home-btn-internal" class="btn secondary">EXIT_ROOT</button>
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <script>
+        /**
+         * 1. 增强音效管理器
+         */
+        class AudioManager {
+            constructor() { this.ctx = null; this.initialized = false; }
+            init() {
+                if (this.initialized) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.initialized = true;
+            }
+            playGlitch() {
+                if (!this.ctx) return;
+                const bufSize = this.ctx.sampleRate * 0.01;
+                const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for(let i=0; i<bufSize; i++) data[i] = Math.random()*2-1;
+                const src = this.ctx.createBufferSource(); src.buffer = buf;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 5000;
+                const gain = this.ctx.createGain(); const now = this.ctx.currentTime;
+                gain.gain.setValueAtTime(0.04, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.01);
+                src.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                src.start();
+            }
+            playCollect() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                osc.type = 'sine'; const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1600, now+0.05);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now+0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(now+0.1);
+            }
+            playDash() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+                osc.type = 'sawtooth'; const now = this.ctx.currentTime;
+                osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(800, now+0.2);
+                gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.001, now+0.2);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(now+0.2);
+            }
+            // 迷雾开始音效
+            playWhiteoutEntry() {
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.8);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(now + 0.8);
+            }
+            // 迷雾结束音效
+            playWhiteoutExit() {
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1000, now);
+                osc.frequency.setValueAtTime(1500, now + 0.05);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(now + 0.2);
+            }
+            playCrash() {
+                if (!this.ctx) return;
+                const bufSize = this.ctx.sampleRate * 0.3;
+                const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for(let i=0; i<bufSize; i++) data[i] = Math.random()*2-1;
+                const src = this.ctx.createBufferSource(); src.buffer = buf;
+                const filter = this.ctx.createBiquadFilter(); filter.type = 'lowpass';
+                const now = this.ctx.currentTime;
+                filter.frequency.setValueAtTime(2000, now); filter.frequency.exponentialRampToValueAtTime(50, now+0.3);
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.001, now+0.3);
+                src.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                src.start();
+            }
+        }
+
+        class TopographicWaves {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.numLines = 24; this.tick = 0;
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
+            }
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.ctx.scale(dpr, dpr);
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+            }
+            draw() {
+                this.tick += 0.002;
+                const w = window.innerWidth; const h = window.innerHeight;
+                this.ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < this.numLines; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${0.01 + (i/this.numLines) * 0.03})`;
+                    this.ctx.lineWidth = 1;
+                    for (let x = 0; x <= w; x += 80) {
+                        const wave = Math.sin(x * 0.0004 + this.tick + i * 0.7) * 70;
+                        const yBase = (h / (this.numLines - 1)) * i;
+                        if (x === 0) this.ctx.moveTo(x, yBase + wave);
+                        else this.ctx.lineTo(x, yBase + wave);
+                    }
+                    this.ctx.stroke();
+                }
+                requestAnimationFrame(() => this.draw());
+            }
+        }
+
+        /**
+         * 2. 核心逻辑实现
+         */
+        const gameCanvas = document.getElementById('gameCanvas');
+        const gctx = gameCanvas.getContext('2d');
+        const scanline = document.getElementById('scanline');
+        const titleScreen = document.getElementById('title-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const hud = document.getElementById('hud');
+        const timeVal = document.getElementById('time-val');
+        const scoreVal = document.getElementById('score-val');
+        const dashStatus = document.getElementById('dash-status');
+        const dashFill = document.getElementById('dash-timer-fill');
+        const uiTitle = document.getElementById('ui-title');
+        const uiInstructions = document.getElementById('ui-instructions');
+        const endTitle = document.getElementById('end-title');
+        const endReason = document.getElementById('end-reason');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtnInternal = document.getElementById('home-btn-internal');
+        const langBtn = document.getElementById('lang-btn');
+        const langMenu = document.getElementById('lang-menu');
+
+        const translations = {
+            zh: { title: "回避与收集", instructions: "WASD 移动 | 鼠标左键 冲刺", start: "同步开始", restart: "重新连接", home: "退出根目录", victory: "同步成功", gameOver: "链路中断", winReason: "恭喜！已收集所有数据块", loseReason: "警告：已被敌对实体拦截", time: "时间", coins: "金币", dashReady: "冲刺就绪 [左键]", dashCool: "冷却重装", dashActive: "数据加速中", danger: "危" },
+            ja: { title: "回避と収集", instructions: "WASD 移動 | 左クリック ダッシュ", start: "同期開始", restart: "再試行", home: "ルートへ戻る", victory: "同期完了", gameOver: "リンク喪失", winReason: "成功：全データディスクを回収", loseReason: "警告：敵対存在に捕捉されました", time: "タイム", coins: "コイン", dashReady: "ダッシュ可能 [左クリック]", dashCool: "リロード中", dashActive: "出力最大", danger: "危" },
+            en: { title: "SYS_DODGE", instructions: "WASD_MOVE | L_CLICK_DASH", start: "START_SYNC", restart: "RETRY_SYNC", home: "EXIT_ROOT", victory: "SYNC_OK", gameOver: "LINK_LOST", winReason: "SUCCESS: ALL DATA DISKS COLLECTED", loseReason: "WARNING: INTERCEPTED BY ENTITY", time: "TIME", coins: "DATA", dashReady: "DASH_READY [L-CLICK]", dashCool: "COOLDOWN", dashActive: "DASH_ACTIVE", danger: "RUN" }
+        };
+        let currentLang = 'zh';
+
+        function setLanguage(lang) {
+            currentLang = lang; document.documentElement.setAttribute('lang', lang);
+            const t = translations[lang];
+            uiTitle.textContent = t.title; uiInstructions.textContent = t.instructions;
+            startBtn.textContent = t.start; restartBtn.textContent = t.restart;
+            homeBtnInternal.textContent = t.home;
+        }
+
+        const MAX_COINS = 3; const WIN_SCORE = 20; const SAFE_TIME = 20;
+        const DASH_DURATION = 5; const DASH_COOLDOWN = 5;
+
+        let player, enemy, coins, collectedCoins, coinTimer;
+        let isChasePhase, isGameOver, isVictory, isGameRunning;
+        let startTime, isWhiteout, prevWhiteout, whiteoutTimer, whiteoutDuration, whiteoutCooldown, nextWhiteout;
+        let isDashActive, dashTimer, isDashCooldown, dashCooldownTimer;
+        let keys = { w: false, a: false, s: false, d: false };
+        let animId;
+
+        function initGame() {
+            player = { x: gameCanvas.width/2, y: gameCanvas.height/2, radius: 15, speed: 3.1, dashSpeed: 7.0, trail: [] };
+            enemy = null; coins = []; collectedCoins = 0; coinTimer = 7;
+            isChasePhase = false; isGameOver = false; isVictory = false; 
+            isWhiteout = false; prevWhiteout = false;
+            whiteoutTimer = 0; whiteoutDuration = 0; whiteoutCooldown = 0; nextWhiteout = 20 + Math.random()*10;
+            isDashActive = false; dashTimer = 0; isDashCooldown = false; dashCooldownTimer = 0;
+            startTime = Date.now();
+            scanline.style.opacity = "0.4";
+        }
+
+        function startGame() {
+            initGame(); isGameRunning = true;
+            titleScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden'); hud.classList.remove('hidden');
+            gameLoop();
+        }
+
+        function stopGame(victory) {
+            isGameRunning = false; isGameOver = true; isVictory = victory;
+            if(!victory) audio.playCrash();
+            const t = translations[currentLang];
+            endTitle.textContent = victory ? t.victory : t.gameOver;
+            endReason.textContent = victory ? t.winReason : `${t.loseReason} [DATA: ${collectedCoins}]`;
+            gameOverScreen.classList.remove('hidden');
+            cancelAnimationFrame(animId);
+        }
+
+        function update() {
+            const dt = 1/60; const now = (Date.now() - startTime)/1000;
+            let speed = player.speed;
+
+            const t = translations[currentLang];
+            if(isDashActive) {
+                dashTimer += dt; speed = player.dashSpeed;
+                const remaining = Math.max(0, DASH_DURATION - dashTimer);
+                dashStatus.textContent = `${t.dashActive} (${remaining.toFixed(1)}s)`;
+                dashFill.style.width = (remaining / DASH_DURATION * 100) + "%";
+                if(dashTimer > DASH_DURATION) { isDashActive = false; isDashCooldown = true; dashCooldownTimer = 0; }
+            } else if(isDashCooldown) {
+                dashCooldownTimer += dt;
+                const remaining = Math.max(0, DASH_COOLDOWN - dashCooldownTimer);
+                dashStatus.textContent = `${t.dashCool} (${remaining.toFixed(1)}s)`;
+                dashFill.style.width = (100 - (remaining / DASH_COOLDOWN * 100)) + "%";
+                if(dashCooldownTimer > DASH_COOLDOWN) isDashCooldown = false;
+            } else {
+                dashStatus.textContent = t.dashReady;
+                dashFill.style.width = "100%";
+            }
+
+            const moveX = (keys.d?1:0) - (keys.a?1:0); const moveY = (keys.s?1:0) - (keys.w?1:0);
+            if(moveX || moveY) {
+                const mag = Math.sqrt(moveX*moveX + moveY*moveY);
+                player.x = Math.max(player.radius, Math.min(gameCanvas.width - player.radius, player.x + (moveX/mag)*speed));
+                player.y = Math.max(player.radius, Math.min(gameCanvas.height - player.radius, player.y + (moveY/mag)*speed));
+                player.trail.push({x: player.x, y: player.y});
+                if(player.trail.length > 10) player.trail.shift();
+            } else { if(player.trail.length > 0) player.trail.shift(); }
+
+            if(!isChasePhase && now > SAFE_TIME) {
+                isChasePhase = true;
+                // 敌人初始化：加入旋转参数
+                enemy = { x: Math.random()<0.5?0:800, y: Math.random()*600, radius: 15, speed: 2.6, rot: 0, isStunned: false, stunTimer: 0 };
+            }
+
+            coinTimer += dt;
+            if(coinTimer >= 7 && coins.length < MAX_COINS) {
+                coins.push({ x: 50+Math.random()*700, y: 50+Math.random()*500, size: 20, angle: 0 });
+                coinTimer = 0;
+            }
+
+            for(let i=coins.length-1; i>=0; i--) {
+                const c = coins[i]; const dx = player.x - c.x; const dy = player.y - c.y;
+                if(Math.sqrt(dx*dx + dy*dy) < player.radius + c.size/2) {
+                    collectedCoins++; coins.splice(i, 1); audio.playCollect();
+                    if(collectedCoins >= WIN_SCORE) stopGame(true);
+                } else { c.angle += 0.05; }
+            }
+
+            if(isChasePhase && enemy) {
+                const dx = player.x - enemy.x; const dy = player.y - enemy.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                // 检测迷雾切换音效
+                if(isWhiteout && !prevWhiteout) audio.playWhiteoutEntry();
+                if(!isWhiteout && prevWhiteout) audio.playWhiteoutExit();
+                prevWhiteout = isWhiteout;
+
+                if(isWhiteout) {
+                    whiteoutTimer += dt;
+                    scanline.style.opacity = "1";
+                    if(whiteoutTimer > whiteoutDuration) {
+                        isWhiteout = false; scanline.style.opacity = "0.4";
+                        const ang = Math.random()*Math.PI*2;
+                        enemy.x = Math.max(20, Math.min(780, player.x + Math.cos(ang)*250));
+                        enemy.y = Math.max(20, Math.min(580, player.y + Math.sin(ang)*250));
+                        enemy.isStunned = true; enemy.stunTimer = 0;
+                    }
+                } else {
+                    whiteoutCooldown += dt;
+                    if(whiteoutCooldown > nextWhiteout) {
+                        isWhiteout = true; whiteoutTimer = 0; whiteoutDuration = 1.2 + Math.random();
+                        whiteoutCooldown = 0; nextWhiteout = 20 + Math.random()*10;
+                    }
+                }
+
+                if(!isWhiteout) {
+                    enemy.rot += 0.05; // 敌人常驻旋转
+                    if(enemy.isStunned) {
+                        enemy.stunTimer += dt; if(enemy.stunTimer > 0.5) enemy.isStunned = false;
+                    } else {
+                        let currentEnemySpeed = enemy.speed; 
+                        const proximityLimit = 150;
+                        if (dist < proximityLimit && !isDashActive) {
+                            currentEnemySpeed = player.speed; 
+                        }
+                        enemy.x += (dx/dist)*currentEnemySpeed;
+                        enemy.y += (dy/dist)*currentEnemySpeed;
+                    }
+                    if(dist < player.radius + enemy.radius) stopGame(false);
+                }
+            }
+
+            timeVal.textContent = now.toFixed(1);
+            scoreVal.textContent = `${collectedCoins} / ${WIN_SCORE}`;
+        }
+
+        function drawDigitalFog() {
+            gctx.fillStyle = '#ffffff';
+            gctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            const noiseDensity = 35;
+            for(let i=0; i<noiseDensity; i++) {
+                const x = Math.random() * gameCanvas.width;
+                const y = Math.random() * gameCanvas.height;
+                const w = Math.random() * 80 + 20;
+                const h = Math.random() * 4 + 1;
+                const gray = Math.random() * 50 + 200;
+                gctx.fillStyle = `rgba(${gray}, ${gray}, ${gray}, 0.6)`;
+                gctx.fillRect(x, y, w, h);
+            }
+            if(Math.random() > 0.7) {
+                gctx.fillStyle = 'rgba(0,0,0,0.05)';
+                gctx.fillRect(0, Math.random()*600, 800, Math.random()*20+5);
+            }
+        }
+
+        function draw() {
+            gctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            if(isWhiteout) { drawDigitalFog(); }
+
+            // 1. 玩家轨迹
+            player.trail.forEach((p, i) => {
+                const opacity = (i/player.trail.length) * 0.12;
+                gctx.strokeStyle = `rgba(0,0,0,${opacity})`;
+                gctx.strokeRect(p.x - player.radius, p.y - player.radius, player.radius * 2, player.radius * 2);
+            });
+
+            // 2. 玩家实体
+            gctx.save();
+            gctx.translate(player.x, player.y);
+            const moveX = (keys.d?1:0) - (keys.a?1:0);
+            gctx.rotate(moveX * 0.05);
+            gctx.strokeStyle = 'black'; gctx.lineWidth = 2.5;
+            gctx.strokeRect(-player.radius, -player.radius, player.radius * 2, player.radius * 2);
+            gctx.lineWidth = 1;
+            gctx.beginPath(); gctx.moveTo(-player.radius, 0); gctx.lineTo(player.radius, 0); gctx.stroke();
+            gctx.beginPath(); gctx.moveTo(0, -player.radius); gctx.lineTo(0, player.radius); gctx.stroke();
+            gctx.restore();
+
+            // 3. 危险范围提示
+            const dist = (enemy && !isWhiteout)? Math.sqrt(Math.pow(player.x-enemy.x,2)+Math.pow(player.y-enemy.y,2)) : 1000;
+            if(dist < 100) {
+                gctx.fillStyle = 'red'; gctx.font = '900 12px Unbounded'; gctx.textAlign = 'center';
+                gctx.fillText(translations[currentLang].danger, player.x, player.y - 25);
+            }
+
+            // 4. 数据块 (旋转方块)
+            coins.forEach(c => {
+                gctx.save(); gctx.translate(c.x, c.y); gctx.rotate(c.angle);
+                gctx.strokeStyle = 'black'; gctx.lineWidth = 1.5;
+                gctx.strokeRect(-c.size/2, -c.size/2, c.size, c.size);
+                gctx.fillStyle = 'black'; gctx.fillRect(-2, -2, 4, 4);
+                gctx.restore();
+            });
+
+            // 5. 增强版敌人实体 (Industrial Stalker Design)
+            if(isChasePhase && enemy && !isWhiteout) {
+                gctx.save();
+                gctx.translate(enemy.x, enemy.y);
+                
+                // 5.1 绘制呼吸红光
+                const glow = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
+                gctx.shadowBlur = 10 * glow;
+                gctx.shadowColor = "rgba(255, 0, 60, 0.8)";
+                
+                // 5.2 核心静止方块
+                gctx.fillStyle = 'black';
+                gctx.fillRect(-enemy.radius*0.6, -enemy.radius*0.6, enemy.radius*1.2, enemy.radius*1.2);
+                
+                // 5.3 旋转外部线框 (不带阴影)
+                gctx.shadowBlur = 0; 
+                gctx.rotate(enemy.rot);
+                gctx.strokeStyle = `rgba(255, 0, 60, ${glow})`;
+                gctx.lineWidth = 2;
+                gctx.strokeRect(-enemy.radius, -enemy.radius, enemy.radius*2, enemy.radius*2);
+                
+                // 5.4 工业扫描线装饰
+                if(Math.random() > 0.8) {
+                    gctx.fillStyle = 'rgba(255, 0, 60, 0.5)';
+                    gctx.fillRect(-enemy.radius*1.5, Math.random()*enemy.radius-enemy.radius/2, enemy.radius*3, 1);
+                }
+
+                gctx.restore();
+            }
+        }
+
+        function gameLoop() {
+            if(isGameRunning) { update(); draw(); animId = requestAnimationFrame(gameLoop); }
+        }
+
+        const audio = new AudioManager();
+        window.onload = () => {
+            new TopographicWaves('bg-canvas').draw();
+            setLanguage('zh');
+            document.addEventListener('mousedown', () => audio.init(), { once: true });
+            document.querySelectorAll('.btn, .home-btn').forEach(btn => {
+                btn.onmouseenter = () => {
+                    audio.init(); audio.playGlitch();
+                    if(btn.classList.contains('glitch-active')) return;
+                    btn.classList.add('glitch-active');
+                    setTimeout(() => btn.classList.remove('glitch-active'), 120);
+                };
+            });
+            startBtn.onclick = startGame;
+            restartBtn.onclick = startGame;
+            homeBtnInternal.onclick = () => window.location.href = '../index.html';
+            langBtn.onclick = (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); };
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.onclick = () => { setLanguage(opt.dataset.lang); langMenu.classList.remove('show'); };
+            });
+            window.onkeydown = (e) => {
+                const k = e.key.toLowerCase(); if(keys.hasOwnProperty(k)) keys[k] = true;
+            };
+            window.onkeyup = (e) => {
+                const k = e.key.toLowerCase(); if(keys.hasOwnProperty(k)) keys[k] = false;
+            };
+            gameCanvas.onmousedown = (e) => {
+                if(isGameRunning && !isDashActive && !isDashCooldown) {
+                    isDashActive = true; dashTimer = 0; audio.playDash();
+                }
+            };
+        };
+    </script>
 </body>
 </html>
