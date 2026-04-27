@@ -1,0 +1,1160 @@
+[meta]
+version = LOCAL_CASE_TXT_V1
+caseId = starfall-forgery
+defaultLang = zh
+caseTitle.zh = """
+星陨赝作
+"""
+caseTitle.ja = """
+スターフォール贋作事件
+"""
+caseTitle.en = """
+Starfall Forgery
+"""
+suspectEmoji = 
+heroEmoji = 
+heroPortraitPackId = 
+enemyPortraitPackId = 
+backgroundPackId = 
+suspectName.zh = """
+艺术商里奥
+"""
+suspectName.ja = """
+美術商レオ
+"""
+suspectName.en = """
+Art Dealer Leo
+"""
+
+[intro]
+narrative.zh = """
+雨夜法庭，名画《星陨》被判定为赝品。艺术商里奥是最后碰过装框的人，也是第一个急着把自己包装成无辜目击者的人。你要从时间、接触痕迹与分成动机三层壳里，把他的漂亮话一层层剥开。
+"""
+narrative.ja = """
+雨の法廷で名画『スターフォール』は贋作と断定された。最後に額装へ触れたのは美術商レオであり、彼は真っ先に自分を無垢な目撃者として飾り始めた。時間、接触痕跡、取り分の動機。その三層を順番に剥がしていく。
+"""
+narrative.en = """
+In a rain-soaked court, the masterpiece Starfall has been declared a forgery. Art dealer Leo was the last person to touch the framing and the first to dress himself up as an innocent witness. We need to peel away his timeline, his contact traces, and his motive over the split.
+"""
+systemMsg.zh = """
+未选择证据时点击破绽可进行调查；选择证据后再点击破绽，才会正式论破。
+"""
+systemMsg.ja = """
+証拠を選ばずに弱点を押すと調査、証拠を選んでから押すと論破になる。
+"""
+systemMsg.en = """
+Click a weak point without evidence to inspect it. Select evidence first if you want to rebut it.
+"""
+backgroundSlot = briefing
+enemyPortraitState = neutral_idle
+screenFilter = none
+transition = fade
+
+[evidence:ev-city-scan]
+startsInInventory = true
+aliases = 城门扫描|gate scan
+name.zh = """
+城门扫描记录
+"""
+name.ja = """
+市門スキャン記録
+"""
+name.en = """
+City Gate Scan
+"""
+detail.zh = """
+昨晚 21:17，里奥的访客通行码在东城门被刷入。系统附带的人脸抓拍与里奥本人完全一致。
+"""
+detail.ja = """
+昨夜 21:17、レオの訪問者パスが東門で読み取られた。顔認証の静止画も本人と一致している。
+"""
+detail.en = """
+At 21:17 last night, Leo's visitor pass was scanned at the east gate. The linked face capture matches him exactly.
+"""
+
+[evidence:ev-frame-print]
+startsInInventory = true
+aliases = 画框指纹|frame print
+name.zh = """
+外框指纹采样
+"""
+name.ja = """
+額縁の指紋採取
+"""
+name.en = """
+Frame Fingerprint Sample
+"""
+detail.zh = """
+法务鉴定在外框右下角提取到里奥的半枚指纹，覆盖在新鲜封蜡之上，形成时间不会早于案发前一小时。
+"""
+detail.ja = """
+法務鑑定は額縁右下からレオの半指紋を採取した。新しい封蝋の上に重なっており、形成時刻は事件一時間前より古くならない。
+"""
+detail.en = """
+Forensics recovered half of Leo’s fingerprint from the lower-right corner of the frame. It sits on top of fresh sealing wax and could not have been left earlier than one hour before the incident.
+"""
+
+[evidence:ev-chauffeur-call]
+startsInInventory = false
+aliases = 司机通话|call log
+name.zh = """
+司机加密通话记录
+"""
+name.ja = """
+運転手の暗号通話記録
+"""
+name.en = """
+Chauffeur Encrypted Call
+"""
+detail.zh = """
+21:22 到 21:26，里奥的私人终端与司机连通四分钟。录音里反复出现“北门”“样框”“不要走正门监控”三组关键词。
+"""
+detail.ja = """
+21:22 から 21:26 まで、レオの個人端末は運転手と四分間接続していた。録音には「北門」「サンプル額」「正面監視を避けろ」が繰り返し出る。
+"""
+detail.en = """
+From 21:22 to 21:26, Leo’s personal terminal connected to his driver for four minutes. The recording repeatedly mentions “north gate,” “sample frame,” and “avoid the front-door cameras.”
+"""
+
+[evidence:ev-solvent-report]
+startsInInventory = false
+aliases = 溶剂报告|solvent report
+name.zh = """
+星陨溶剂鉴定报告
+"""
+name.ja = """
+スターフォール溶剤鑑定書
+"""
+name.en = """
+Starfall Solvent Report
+"""
+detail.zh = """
+仓库边角采样出高浓度“星陨”溶剂残留。该溶剂只有里奥代理的修复工作室才会调配，而且挥发窗口不超过两小时。
+"""
+detail.ja = """
+倉庫の隅から高濃度の「スターフォール」溶剤残留が検出された。この溶剤を調合できるのはレオが代理する修復工房だけで、揮発時間は二時間以内だ。
+"""
+detail.en = """
+A heavy residue of Starfall solvent was found near the storage corner. Only the restoration studio represented by Leo mixes this solvent, and its active window lasts less than two hours.
+"""
+
+[evidence:ev-betrayal-mail]
+startsInInventory = false
+aliases = 分成邮件|draft mail
+name.zh = """
+分成协议草稿邮件
+"""
+name.ja = """
+取り分契約の下書きメール
+"""
+name.en = """
+Profit Split Draft Mail
+"""
+detail.zh = """
+馆长未发送的邮件草稿显示，他准备在发布会后单独和保险方签约，并把里奥的分成从四成压到一成。
+"""
+detail.ja = """
+館長の未送信メール草稿には、公開後に保険会社と単独契約し、レオの取り分を四割から一割へ落とす計画が記されていた。
+"""
+detail.en = """
+An unsent draft from the curator shows he planned to sign alone with the insurer after the unveiling and cut Leo's share from forty percent to ten.
+"""
+
+[turn:1]
+line.1.id = t1-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+先说清楚，我[[t1-wp-a::昨天一整天都不在城里]]。那场私人沙龙从午后一直拖到夜里，谁都能替我作证。
+"""
+line.1.ja = """
+先に言っておくが、私は[[t1-wp-a::昨日一日じゅう市内にいなかった]]。あの招待制サロンは午後から夜まで続いていた。
+"""
+line.1.en = """
+Let me be clear: [[t1-wp-a::I was out of the city all day yesterday]]. That invitation-only salon ran from afternoon until late night.
+"""
+line.2.id = t1-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+馆长昨晚那通通讯我根本没接；[[t1-wp-b::那通电话不可能和我有关]]，我连终端都关了。
+"""
+line.2.ja = """
+昨夜キュレーターからの通信には出ていない。[[t1-wp-b::あの電話は私と無関係だ]]。端末ごと切っていた。
+"""
+line.2.en = """
+I never answered the curator's call last night; [[t1-wp-b::that call had nothing to do with me]]. I had even shut my terminal down.
+"""
+line.3.id = t1-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+真要说怪，只能怪运输单写得丑。[[t1-fake-c::运输单的鬼画符什么也证明不了]]。
+"""
+line.3.ja = """
+気になるなら運送票の字が汚いことくらいだ。[[t1-fake-c::あの走り書きは何の証明にもならない]]。
+"""
+line.3.en = """
+If anything is odd, it is only the ugly shipping slip. [[t1-fake-c::That scribble on the shipping slip proves nothing]].
+"""
+line.4.id = t1-line-4
+line.4.hidden = true
+line.4.unlockMode = none
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-solvent-report
+line.4.zh = """
+被你追问运输单后，值班保安补充说：司机确实在北门卸过样框，箱角还沾着一股甜到发腻的化学味。
+"""
+line.4.ja = """
+運送票を追及すると、当直警備員は「運転手は北門で試作品の額を降ろした。箱の角には甘ったるい薬品臭が残っていた」と補足した。
+"""
+line.4.en = """
+Once pressed about the slip, the night guard adds that the driver did unload a sample frame at the north gate, and the crate corner carried an unusually sweet chemical smell.
+"""
+weakPoint.1.id = t1-wp-a
+weakPoint.1.lineId = t1-line-1
+weakPoint.1.evidenceId = ev-city-scan
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+昨天一整天都不在城里
+"""
+weakPoint.1.ja = """
+昨日一日じゅう市内にいなかった
+"""
+weakPoint.1.en = """
+I was out of the city all day yesterday
+"""
+weakPoint.2.id = t1-wp-b
+weakPoint.2.lineId = t1-line-2
+weakPoint.2.evidenceId = ev-chauffeur-call
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+那通电话不可能和我有关
+"""
+weakPoint.2.ja = """
+あの電話は私と無関係だ
+"""
+weakPoint.2.en = """
+That call had nothing to do with me
+"""
+weakPoint.3.id = t1-fake-c
+weakPoint.3.lineId = t1-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+运输单的鬼画符什么也证明不了
+"""
+weakPoint.3.ja = """
+あの走り書きは何の証明にもならない
+"""
+weakPoint.3.en = """
+That scribble on the shipping slip proves nothing
+"""
+query.1.zh = """
+先别急着信他那句“整天都不在城里”。绝对化的不在场最怕本地刷卡记录。
+"""
+query.1.ja = """
+まず「一日じゅう市内にいなかった」という絶対表現を疑え。こういう言い切りは入退場ログに弱い。
+"""
+query.1.en = """
+Do not buy the “out of the city all day” claim yet. Absolute alibis crack first against local access logs.
+"""
+query.2.zh = """
+他主动把运输单贬得一文不值，反而像在提醒你那张纸背后还有别的信息。
+"""
+query.2.ja = """
+彼は運送票をわざと軽く扱っている。むしろその紙の裏に別の情報があると示しているようだ。
+"""
+query.2.en = """
+He is too eager to dismiss the shipping slip. That usually means the paper hides something else worth checking.
+"""
+queryAvg.1.speaker = system
+queryAvg.1.zh = """
+审判庭回显：先核时间，再拆通讯。
+"""
+queryAvg.1.ja = """
+審判ログ：まず時間線、その次に通信だ。
+"""
+queryAvg.1.en = """
+Court log: pin down the timeline first, then break the call.
+"""
+queryAvg.2.speaker = hero
+queryAvg.2.zh = """
+他把两个谎话挤在同一口气里，是想让我们只盯其中一个。
+"""
+queryAvg.2.ja = """
+嘘を一息で二つ重ねている。片方だけ見せたいのだろう。
+"""
+queryAvg.2.en = """
+He stacked two lies into one breath. He wants us to look at only one of them.
+"""
+inspectOverride.1.weakPointId = t1-fake-c
+inspectOverride.1.grantEvidence = ev-chauffeur-call
+inspectOverride.1.revealLines = t1-line-4
+inspectOverride.1.narrative.zh = """
+你没有立刻出示证据，而是顺着运输单往下摸。里奥的语气第一次轻微发虚，像是担心你注意到北门那条回呼备注。
+"""
+inspectOverride.1.narrative.ja = """
+証拠を出さずに運送票を追うと、レオの声色が初めて揺れた。北門への折り返しメモを見られたくないらしい。
+"""
+inspectOverride.1.narrative.en = """
+Instead of firing back with evidence, you follow the shipping slip itself. Leo’s voice wavers for the first time, as if he does not want you seeing the callback note to the north gate.
+"""
+inspectOverride.1.avg.1.speaker = enemy
+inspectOverride.1.avg.1.zh = """
+别盯着那张废纸看了，真正的贵客从不靠运送单做生意。
+"""
+inspectOverride.1.avg.1.ja = """
+そんな紙切れを見るな。本当の客は運送票なんかで商売しない。
+"""
+inspectOverride.1.avg.1.en = """
+Stop staring at that scrap. Real clients do not conduct business through shipping slips.
+"""
+inspectOverride.1.avg.2.speaker = hero
+inspectOverride.1.avg.2.zh = """
+正因为你想把它说成废纸，我才更想知道它记录了谁的名字。
+"""
+inspectOverride.1.avg.2.ja = """
+紙切れだと言い張るからこそ、そこに誰の名前があるのか知りたくなる。
+"""
+inspectOverride.1.avg.2.en = """
+Exactly because you want to call it trash, I want to know whose name is on it.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+你撬开了里奥在第一轮外壳上的一道缝。
+"""
+successNarrative.ja = """
+レオの第一層の外殻に亀裂が入った。
+"""
+successNarrative.en = """
+You cracked open the first shell of Leo's story.
+"""
+successOverride.1.weakPointId = t1-wp-a
+successOverride.1.narrative.zh = """
+城门扫描把“整天都不在场”的包装当场撕碎。里奥昨夜不仅回了城，还回得相当从容。
+"""
+successOverride.1.narrative.ja = """
+市門スキャンが「一日不在」という包装をその場で引き裂いた。レオは昨夜、余裕を持って戻ってきていた。
+"""
+successOverride.1.narrative.en = """
+The city gate scan tears apart the “out all day” wrapper on the spot. Leo did return last night, and with plenty of margin.
+"""
+successOverride.1.avg.1.speaker = hero
+successOverride.1.avg.1.zh = """
+21:17，你刷脸回城。你的不在场证明不是疏漏，是伪造。
+"""
+successOverride.1.avg.1.ja = """
+21:17、あなたは顔認証で市内へ戻った。不在証明は穴ではなく偽装だ。
+"""
+successOverride.1.avg.1.en = """
+At 21:17 you passed facial scan back into the city. Your alibi is not sloppy. It is fabricated.
+"""
+successOverride.1.avg.2.speaker = enemy
+successOverride.1.avg.2.zh = """
+回城不等于杀人。我有一百种理由回来。
+"""
+successOverride.1.avg.2.ja = """
+戻ったからといって殺したことにはならない。戻る理由なら百通りある。
+"""
+successOverride.1.avg.2.en = """
+Coming back does not equal murder. I had a hundred reasons to return.
+"""
+successOverride.2.weakPointId = t1-wp-b
+successOverride.2.narrative.zh = """
+通讯记录把“与我无关”钉死成笑话。里奥不仅接了电话，还亲自指挥司机绕过正门监控。
+"""
+successOverride.2.narrative.ja = """
+通信記録は「無関係」という言葉を笑い話に変えた。レオは通話に出ただけでなく、運転手へ正面監視を避けろと指示している。
+"""
+successOverride.2.narrative.en = """
+The call log turns “nothing to do with me” into a joke. Leo not only took the call, he told the driver to avoid the front-door cameras.
+"""
+successOverride.2.avg.1.speaker = hero
+successOverride.2.avg.1.zh = """
+你在录音里亲口说“不要走正门监控”。这不是无关，这是调度。
+"""
+successOverride.2.avg.1.ja = """
+録音であなたは「正面監視を避けろ」と自分で言っている。無関係ではなく、采配だ。
+"""
+successOverride.2.avg.1.en = """
+On the recording you personally say, “Avoid the front-door cameras.” That is not unrelated. That is coordination.
+"""
+successOverride.2.avg.2.speaker = enemy
+successOverride.2.avg.2.zh = """
+……我只是怕贵客被拍到。
+"""
+successOverride.2.avg.2.ja = """
+……上客が撮られるのを嫌っただけだ。
+"""
+successOverride.2.avg.2.en = """
+...I only did not want a premium client on camera.
+"""
+useSeparateTurnClear = true
+turnClearNarrative.zh = """
+时间线与电话线一起绞紧，里奥被迫从“完全不在场”退到“只是回来处理小事”。第一层保护壳已经碎了。
+"""
+turnClearNarrative.ja = """
+時間線と通信線が同時に締まり、レオは「完全な不在」から「少し戻っただけ」へ後退した。第一の殻は砕けた。
+"""
+turnClearNarrative.en = """
+The timeline and the call log tighten together, forcing Leo to retreat from “complete absence” to “I only came back briefly.” The first shell is gone.
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+好吧，我是回来过。但那只代表我想保住发布会。
+"""
+turnClearAvg.1.ja = """
+いいだろう、戻りはした。だがそれは発表会を守りたかっただけだ。
+"""
+turnClearAvg.1.en = """
+Fine. I came back. That only means I wanted to protect the unveiling.
+"""
+turnClearAvg.2.speaker = hero
+turnClearAvg.2.zh = """
+你越强调“保护”，越像是在替自己预留一个能碰画框的理由。
+"""
+turnClearAvg.2.ja = """
+守ると強調するほど、自分が額に触れた理由を先回りして用意しているように見える。
+"""
+turnClearAvg.2.en = """
+The more you stress “protection,” the more it sounds like you are preloading an excuse for touching the frame.
+"""
+turnClearAvg.3.speaker = system
+turnClearAvg.3.zh = """
+系统提示：第二轮将转入接触痕迹与作案手法。
+"""
+turnClearAvg.3.ja = """
+システム提示：第二ラウンドは接触痕跡と手口へ移行する。
+"""
+turnClearAvg.3.en = """
+System prompt: Round two will shift to contact traces and method.
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+里奥抓住你攻势里的空档，继续把自己包装成只会谈生意的旁观者。
+"""
+failNarrative.wrongEvidence.ja = """
+レオは攻勢の隙を拾い、自分を商売人の傍観者として塗り直した。
+"""
+failNarrative.wrongEvidence.en = """
+Leo catches the gap in your push and repaints himself as a detached businessman.
+"""
+failNarrative.wrongStatement.zh = """
+里奥抓住你攻势里的空档，继续把自己包装成只会谈生意的旁观者。
+"""
+failNarrative.wrongStatement.ja = """
+レオは攻勢の隙を拾い、自分を商売人の傍観者として塗り直した。
+"""
+failNarrative.wrongStatement.en = """
+Leo catches the gap in your push and repaints himself as a detached businessman.
+"""
+failNarrative.bothWrong.zh = """
+里奥抓住你攻势里的空档，继续把自己包装成只会谈生意的旁观者。
+"""
+failNarrative.bothWrong.ja = """
+レオは攻勢の隙を拾い、自分を商売人の傍観者として塗り直した。
+"""
+failNarrative.bothWrong.en = """
+Leo catches the gap in your push and repaints himself as a detached businessman.
+"""
+logicExplanation.zh = """
+先拆时间，再拆通讯。只要证明里奥昨夜回城且主动调度司机，他“整天都不在场”的说法就整段站不住。
+"""
+logicExplanation.ja = """
+時間線と通信を連結すれば十分だ。昨夜戻ってきて運転手を自ら動かしたと示せば、「一日不在」は全体ごと崩れる。
+"""
+logicExplanation.en = """
+The logic is simple: break the timeline and the call chain together. Once Leo is shown returning to the city and directing the driver, his all-day alibi collapses as one block.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+漂亮的证词不值钱，能对上记录才值钱。
+"""
+successAvg.1.ja = """
+綺麗な証言は価値がない。記録と噛み合う証言だけが価値を持つ。
+"""
+successAvg.1.en = """
+A polished statement is worthless. Only one that matches the record has value.
+"""
+successAvg.2.speaker = enemy
+successAvg.2.zh = """
+你只是拆掉了门面。里头的骨架还没碰到。
+"""
+successAvg.2.ja = """
+壊したのは表面だけだ。中の骨格にはまだ触れていない。
+"""
+successAvg.2.en = """
+You've only cracked the storefront. You haven't touched the frame beneath it yet.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+这点火花不足以烧穿我的外壳。
+"""
+failAvg.wrongEvidence.1.ja = """
+その程度の火花で私の殻は焼けない。
+"""
+failAvg.wrongEvidence.1.en = """
+That spark is not enough to burn through my shell.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+这点火花不足以烧穿我的外壳。
+"""
+failAvg.wrongStatement.1.ja = """
+その程度の火花で私の殻は焼けない。
+"""
+failAvg.wrongStatement.1.en = """
+That spark is not enough to burn through my shell.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+这点火花不足以烧穿我的外壳。
+"""
+failAvg.bothWrong.1.ja = """
+その程度の火花で私の殻は焼けない。
+"""
+failAvg.bothWrong.1.en = """
+That spark is not enough to burn through my shell.
+"""
+
+[turn:2]
+line.1.id = t2-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+我承认回过城，但[[t2-wp-c::我根本没碰过画框]]。真正接触外框的人只会是修复师。
+"""
+line.1.ja = """
+戻ったことは認める。だが[[t2-wp-c::私は額縁に触れていない]]。外枠に触れたのは修復師だけだ。
+"""
+line.1.en = """
+I admit I came back, but [[t2-wp-c::I never touched the frame]]. The only person handling the outer frame would have been the restorer.
+"""
+line.2.id = t2-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+就算外框上有我的东西，那也是白天布展时留下的。[[t2-wp-d::昨晚根本没人动过那瓶星陨溶剂]]。
+"""
+line.2.ja = """
+仮に私の痕跡が残っていても、昼の設営時だ。[[t2-wp-d::昨夜は誰もあのスターフォール溶剤に触れていない]]。
+"""
+line.2.en = """
+Even if something of mine is on the frame, it would be from the daytime setup. [[t2-wp-d::No one touched that bottle of Starfall solvent last night]].
+"""
+line.3.id = t2-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+你们别把货梯监控想得太神。[[t2-fake-e::货梯的模糊影子说明不了任何人]]。
+"""
+line.3.ja = """
+貨物リフトの監視を神格化するな。[[t2-fake-e::貨物リフトのぼやけた影では誰も特定できない]]。
+"""
+line.3.en = """
+Do not deify the freight-lift footage. [[t2-fake-e::That blurry freight-lift shadow identifies no one]].
+"""
+line.4.id = t2-line-4
+line.4.hidden = true
+line.4.unlockMode = allTrueWeakPoints
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-betrayal-mail
+line.4.zh = """
+当两条真破绽都被击碎后，仓库抽屉里的未发送草稿被法警取出：馆长准备在发布会后把里奥的分成砍到只剩一成。
+"""
+line.4.ja = """
+二つの真の弱点が崩れると、倉庫の引き出しから未送信の草稿が押収される。館長は公開後、レオの取り分を一割まで削るつもりだった。
+"""
+line.4.en = """
+Once both true weak points are broken, the bailiff retrieves an unsent draft from the storage drawer: the curator planned to cut Leo down to ten percent after the unveiling.
+"""
+weakPoint.1.id = t2-wp-c
+weakPoint.1.lineId = t2-line-1
+weakPoint.1.evidenceId = ev-frame-print
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+我根本没碰过画框
+"""
+weakPoint.1.ja = """
+私は額縁に触れていない
+"""
+weakPoint.1.en = """
+I never touched the frame
+"""
+weakPoint.2.id = t2-wp-d
+weakPoint.2.lineId = t2-line-2
+weakPoint.2.evidenceId = ev-solvent-report
+weakPoint.2.consumeEvidenceOnUse = false
+weakPoint.2.zh = """
+昨晚根本没人动过那瓶星陨溶剂
+"""
+weakPoint.2.ja = """
+昨夜は誰もあのスターフォール溶剤に触れていない
+"""
+weakPoint.2.en = """
+No one touched that bottle of Starfall solvent last night
+"""
+weakPoint.3.id = t2-fake-e
+weakPoint.3.lineId = t2-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+货梯的模糊影子说明不了任何人
+"""
+weakPoint.3.ja = """
+貨物リフトのぼやけた影では誰も特定できない
+"""
+weakPoint.3.en = """
+That blurry freight-lift shadow identifies no one
+"""
+query.1.zh = """
+这一轮真正要拆的是“有没有亲手操作”。指纹和溶剂，一个锁动作，一个锁时间。
+"""
+query.1.ja = """
+このラウンドの焦点は「自分で手を出したか」だ。指紋は動作を、溶剤は時刻を固定する。
+"""
+query.1.en = """
+This round is about whether he physically handled it. The fingerprint locks the action. The solvent locks the time.
+"""
+query.2.zh = """
+他拿模糊监控转移视线，说明真正让他紧张的并不是影像，而是被影像掩住的化学痕迹。
+"""
+query.2.ja = """
+彼がぼやけた映像へ視線を逸らすのは、本当に怖いのが映像ではなく、その背後の化学痕跡だからだ。
+"""
+query.2.en = """
+He keeps pointing you at the blurry footage because what scares him is not the image. It is the chemical trace hidden behind it.
+"""
+queryAvg.1.speaker = system
+queryAvg.1.zh = """
+系统提示：动作证据与时间证据要一起闭合。
+"""
+queryAvg.1.ja = """
+システム提示：動作証拠と時間証拠を同時に閉じろ。
+"""
+queryAvg.1.en = """
+System prompt: close the action evidence and the timing evidence together.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+第二层防线裂了，里奥不得不承认自己不只是回来过，还亲手碰了那件赝作。
+"""
+successNarrative.ja = """
+第二の防壁が割れ、レオは「戻っただけ」では済まなくなった。彼自身が贋作へ手を出したと認めざるを得ない。
+"""
+successNarrative.en = """
+The second wall splits. Leo can no longer pretend he merely came back; he is forced toward admitting he touched the forgery himself.
+"""
+successOverride.1.weakPointId = t2-wp-d
+successOverride.1.narrative.zh = """
+溶剂报告让“昨晚没人碰过”这句证词瞬间老化。那股甜腻气味不是故事气氛，而是刚刚操作过赝作的化学回声。
+"""
+successOverride.1.narrative.ja = """
+溶剤鑑定が「昨夜は誰も触れていない」を一気に劣化させた。あの甘い匂いは雰囲気ではなく、さっきまで贋作をいじっていた化学の残響だ。
+"""
+successOverride.1.narrative.en = """
+The solvent report ages that line to dust. The sweet smell is not atmosphere; it is the chemical echo of recent work on the forgery.
+"""
+successOverride.1.avg.1.speaker = hero
+successOverride.1.avg.1.zh = """
+只有你代理的修复工房会调这批溶剂，而且挥发窗口不到两小时。
+"""
+successOverride.1.avg.1.ja = """
+この溶剤を調合できるのは、あなたが抱える修復工房だけだ。しかも揮発時間は二時間もない。
+"""
+successOverride.1.avg.1.en = """
+Only the restoration studio under your control mixes this solvent, and the active window is under two hours.
+"""
+successOverride.1.avg.2.speaker = enemy
+successOverride.1.avg.2.zh = """
+……那也只说明我让人处理过。
+"""
+successOverride.1.avg.2.ja = """
+……それでも私が誰かに触らせた可能性は残る。
+"""
+successOverride.1.avg.2.en = """
+...At best that proves I had someone else handle it.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+第二层防线裂了，里奥不得不承认自己不只是回来过，还亲手碰了那件赝作。
+"""
+turnClearNarrative.ja = """
+第二の防壁が割れ、レオは「戻っただけ」では済まなくなった。彼自身が贋作へ手を出したと認めざるを得ない。
+"""
+turnClearNarrative.en = """
+The second wall splits. Leo can no longer pretend he merely came back; he is forced toward admitting he touched the forgery himself.
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+你们只是在堆细节。没有动机，细节只是一地碎片。
+"""
+turnClearAvg.1.ja = """
+細部を積んでいるだけだ。動機がなければ、細部はただの破片にすぎない。
+"""
+turnClearAvg.1.en = """
+You are only stacking details. Without motive, details are just shards on the floor.
+"""
+turnClearAvg.2.speaker = hero
+turnClearAvg.2.zh = """
+谢谢提醒。下一轮我正好要拆你的动机。
+"""
+turnClearAvg.2.ja = """
+忠告どうも。次のラウンドで、その動機を剥がす。
+"""
+turnClearAvg.2.en = """
+Thanks for the reminder. The next round is exactly where your motive comes apart.
+"""
+useSeparateFailureReasons = true
+failNarrative.wrongEvidence.zh = """
+里奥冷笑着把错误证据推开，提醒全庭你还没有真正碰到他的动作链。
+"""
+failNarrative.wrongEvidence.ja = """
+レオは誤った証拠を鼻で笑って退け、自分の動作連鎖にはまだ触れていないと全庭に示した。
+"""
+failNarrative.wrongEvidence.en = """
+Leo pushes the wrong exhibit aside with a cold laugh, reminding the court that you still have not touched his action chain.
+"""
+failNarrative.wrongStatement.zh = """
+他抓住你点错的句子，把本来已经危险的气氛重新缝回成“只是误会”。
+"""
+failNarrative.wrongStatement.ja = """
+彼は選び違えた文を掴み、危うくなっていた空気を「ただの誤解」に縫い戻した。
+"""
+failNarrative.wrongStatement.en = """
+He seizes on the wrong sentence and stitches the dangerous mood back into “just a misunderstanding.”
+"""
+failNarrative.bothWrong.zh = """
+这次节奏完全被里奥拿回去，他甚至开始替你总结什么叫“真正的鉴定流程”。
+"""
+failNarrative.bothWrong.ja = """
+今回は完全に主導権を奪い返され、レオは本物の鑑定手順とは何かまで講釈し始めた。
+"""
+failNarrative.bothWrong.en = """
+Leo takes the rhythm back completely and even starts lecturing you on what “real authentication procedure” is supposed to mean.
+"""
+logicExplanation.zh = """
+这轮要同时钉死“接触”与“时效”。指纹说明他亲手碰过外框，溶剂报告说明那次接触就发生在案发窗口。
+"""
+logicExplanation.ja = """
+このラウンドは「接触」と「時間効力」を同時に固定する。指紋が接触を示し、溶剤鑑定がその接触が事件時間帯であることを示す。
+"""
+logicExplanation.en = """
+This round fixes both contact and timing. The fingerprint proves Leo touched the frame, and the solvent report proves that touch happened inside the incident window.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+你不是站在一旁看热闹，你是亲手把赝作推进了最后一步。
+"""
+successAvg.1.ja = """
+あなたは見物人ではない。贋作を最後の一歩まで押し込んだ当人だ。
+"""
+successAvg.1.en = """
+You were not watching from the side. You personally pushed the forgery through its final step.
+"""
+successAvg.2.speaker = enemy
+successAvg.2.zh = """
+证据会说话，不代表故事只有一种写法。
+"""
+successAvg.2.ja = """
+証拠が喋るからといって、物語の書き方が一つとは限らない。
+"""
+successAvg.2.en = """
+Evidence may speak, but that does not mean there is only one way to write the story.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+证据不咬证据，它只会咬住使用它的人。
+"""
+failAvg.wrongEvidence.1.ja = """
+証拠は証拠を噛まない。噛まれるのは使い手だ。
+"""
+failAvg.wrongEvidence.1.en = """
+Evidence does not bite evidence. It bites the hand that uses it.
+"""
+failOverride.wrongEvidence.1.weakPointId = t2-wp-d
+failOverride.wrongEvidence.1.narrative.zh = """
+里奥顺势把无关证据贬成情绪化表演，试图把化学问题重新拖回口水仗。
+"""
+failOverride.wrongEvidence.1.narrative.ja = """
+レオは無関係な証拠を感情的な演出だと切り捨て、化学の争点を口喧嘩へ引き戻そうとした。
+"""
+failOverride.wrongEvidence.1.narrative.en = """
+Leo dismisses the irrelevant exhibit as emotional theater, trying to drag the chemistry issue back into pure argument.
+"""
+failOverride.wrongEvidence.1.avg.1.speaker = enemy
+failOverride.wrongEvidence.1.avg.1.zh = """
+你拿错了东西，就别碰实验室的语言。
+"""
+failOverride.wrongEvidence.1.avg.1.ja = """
+物を取り違えたなら、実験室の言葉に触れるな。
+"""
+failOverride.wrongEvidence.1.avg.1.en = """
+If you brought the wrong item, stay out of laboratory language.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+先找准主句，再谈所谓的真相。
+"""
+failAvg.wrongStatement.1.ja = """
+まず主文を見つけろ。それから真実を語れ。
+"""
+failAvg.wrongStatement.1.en = """
+Find the core sentence before you talk about truth.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+这不是审判，是你在替我整理宣传词。
+"""
+failAvg.bothWrong.1.ja = """
+これは裁判ではない。君が私の宣伝文句を整理しているだけだ。
+"""
+failAvg.bothWrong.1.en = """
+This is not a trial. You're just polishing my publicity copy.
+"""
+
+[turn:3]
+line.1.id = t3-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+馆长从没想过甩开我。[[t3-wp-f::那份分成合同本来就是我们共同签的]]，我没有理由现在翻脸。
+"""
+line.1.ja = """
+館長が私を切るはずがない。[[t3-wp-f::あの分配契約はもともと共同署名だった]]。今さら裏切る理由はない。
+"""
+line.1.en = """
+The curator was never going to cut me out. [[t3-wp-f::That split contract was always meant to be signed by both of us]], so I had no reason to turn on him now.
+"""
+line.2.id = t3-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+至于赝作表层的快速老化，[[t3-wp-g::我今天才第一次见那瓶星陨溶剂]]。你们不能把每一种味道都算到我头上。
+"""
+line.2.ja = """
+贋作表面の急速老化については、[[t3-wp-g::私は今日初めてそのスターフォール溶剤を見た]]。匂いがあるたび私のせいにするな。
+"""
+line.2.en = """
+As for the rapid aging on the forgery's surface, [[t3-wp-g::today was the first time I ever saw that bottle of Starfall solvent]]. You cannot pin every chemical scent in this city on me.
+"""
+line.3.id = t3-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+账本上那些抖动的数字只是成本波动。[[t3-fake-h::账本里的数字波动只是正常营销成本]]。
+"""
+line.3.ja = """
+帳簿の数字の揺れはただのコスト変動だ。[[t3-fake-h::帳簿の数字の揺れは普通の宣伝費だ]]。
+"""
+line.3.en = """
+Those jumps in the ledger are only cost swings. [[t3-fake-h::The fluctuations in the ledger are just ordinary marketing costs]].
+"""
+weakPoint.1.id = t3-wp-f
+weakPoint.1.lineId = t3-line-1
+weakPoint.1.evidenceId = ev-betrayal-mail
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+那份分成合同本来就是我们共同签的
+"""
+weakPoint.1.ja = """
+あの分配契約はもともと共同署名だった
+"""
+weakPoint.1.en = """
+That split contract was always meant to be signed by both of us
+"""
+weakPoint.2.id = t3-wp-g
+weakPoint.2.lineId = t3-line-2
+weakPoint.2.evidenceId = ev-solvent-report
+weakPoint.2.consumeEvidenceOnUse = false
+weakPoint.2.zh = """
+我今天才第一次见那瓶星陨溶剂
+"""
+weakPoint.2.ja = """
+私は今日初めてそのスターフォール溶剤を見た
+"""
+weakPoint.2.en = """
+Today was the first time I ever saw that bottle of Starfall solvent
+"""
+weakPoint.3.id = t3-fake-h
+weakPoint.3.lineId = t3-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+账本里的数字波动只是正常营销成本
+"""
+weakPoint.3.ja = """
+帳簿の数字の揺れは普通の宣伝費だ
+"""
+weakPoint.3.en = """
+The fluctuations in the ledger are just ordinary marketing costs
+"""
+query.1.zh = """
+终局不再是“他可不可疑”，而是“动机与手法能否在同一时间闭合”。
+"""
+query.1.ja = """
+終局の問いは「怪しいか」ではなく、「動機と手口が同じ時間に閉じるか」だ。
+"""
+query.1.en = """
+The final question is no longer whether he looks suspicious. It is whether motive and method close at the same moment.
+"""
+query.2.zh = """
+如果分成草稿能证明他被踢出局，而溶剂报告又证明他亲手处理过赝作，那自白只剩一层皮。
+"""
+query.2.ja = """
+取り分草稿が切り捨てを示し、溶剤報告が贋作への直接処理を示せば、自白まで皮一枚だ。
+"""
+query.2.en = """
+If the draft proves he was being pushed out, and the solvent proves he handled the forgery himself, only a thin skin remains before confession.
+"""
+queryAvg.1.speaker = system
+queryAvg.1.zh = """
+执行核心：闭合动机、手法与时间。
+"""
+queryAvg.1.ja = """
+実行コア：動機・手口・時間を閉じろ。
+"""
+queryAvg.1.en = """
+Execution core: close motive, method, and timing.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+最后一层话术开始塌陷。
+"""
+successNarrative.ja = """
+最後の話術が崩れ始めた。
+"""
+successNarrative.en = """
+The last layer of rhetoric starts to collapse.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+最后一层话术开始塌陷。
+"""
+turnClearNarrative.ja = """
+最後の話術が崩れ始めた。
+"""
+turnClearNarrative.en = """
+The last layer of rhetoric starts to collapse.
+"""
+turnClearAvg.1.speaker = hero
+turnClearAvg.1.zh = """
+时间、接触、动机，三条链终于闭上了。
+"""
+turnClearAvg.1.ja = """
+時間、接触、動機。三本の鎖がようやく閉じた。
+"""
+turnClearAvg.1.en = """
+Timeline, contact, motive. The three chains finally close.
+"""
+turnClearAvg.2.speaker = enemy
+turnClearAvg.2.zh = """
+……
+"""
+turnClearAvg.2.ja = """
+……
+"""
+turnClearAvg.2.en = """
+...
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+里奥仍在用腔调拖延时间，试图把真正的终局晚一点降临。
+"""
+failNarrative.wrongEvidence.ja = """
+レオはまだ口調で時間を稼ぎ、本当の終幕を少しでも遅らせようとしている。
+"""
+failNarrative.wrongEvidence.en = """
+Leo is still buying time with style, trying to delay the real ending a little longer.
+"""
+failNarrative.wrongStatement.zh = """
+里奥仍在用腔调拖延时间，试图把真正的终局晚一点降临。
+"""
+failNarrative.wrongStatement.ja = """
+レオはまだ口調で時間を稼ぎ、本当の終幕を少しでも遅らせようとしている。
+"""
+failNarrative.wrongStatement.en = """
+Leo is still buying time with style, trying to delay the real ending a little longer.
+"""
+failNarrative.bothWrong.zh = """
+里奥仍在用腔调拖延时间，试图把真正的终局晚一点降临。
+"""
+failNarrative.bothWrong.ja = """
+レオはまだ口調で時間を稼ぎ、本当の終幕を少しでも遅らせようとしている。
+"""
+failNarrative.bothWrong.en = """
+Leo is still buying time with style, trying to delay the real ending a little longer.
+"""
+logicExplanation.zh = """
+终局要闭合三件事：馆长要砍他的分成，所以他有动机；星陨溶剂说明他亲手处理过赝作，所以他有手法；前两轮的时间线则说明他有机会。
+"""
+logicExplanation.ja = """
+終局では三つを閉じる。館長が取り分を削る予定だったから動機があり、スターフォール溶剤が本人の手口を示し、前二ラウンドの時間線が機会を示す。
+"""
+logicExplanation.en = """
+The ending closes three links: the curator planned to cut his share, so he had motive; the Starfall solvent proves his method; and the first two rounds already proved his opportunity.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+你不是被冤枉，而是被拆穿。
+"""
+successAvg.1.ja = """
+君は冤罪ではない。見抜かれたのだ。
+"""
+successAvg.1.en = """
+You were not framed. You were uncovered.
+"""
+successAvg.2.speaker = enemy
+successAvg.2.zh = """
+……你们总算把那幅画看懂了。
+"""
+successAvg.2.ja = """
+……ようやく君たちはあの絵を理解した。
+"""
+successAvg.2.en = """
+...So you finally learned how to read that painting.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+终局最怕的不是沉默，是提前宣判。
+"""
+failAvg.wrongEvidence.1.ja = """
+終局で怖いのは沈黙ではない。早すぎる断定だ。
+"""
+failAvg.wrongEvidence.1.en = """
+The final phase fears not silence, but a verdict delivered too early.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+终局最怕的不是沉默，是提前宣判。
+"""
+failAvg.wrongStatement.1.ja = """
+終局で怖いのは沈黙ではない。早すぎる断定だ。
+"""
+failAvg.wrongStatement.1.en = """
+The final phase fears not silence, but a verdict delivered too early.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+终局最怕的不是沉默，是提前宣判。
+"""
+failAvg.bothWrong.1.ja = """
+終局で怖いのは沈黙ではない。早すぎる断定だ。
+"""
+failAvg.bothWrong.1.en = """
+The final phase fears not silence, but a verdict delivered too early.
+"""
+interference.1.zh = """
+错误警报：估值线程被污染。
+"""
+interference.1.ja = """
+エラー警報：評価スレッド汚染。
+"""
+interference.1.en = """
+Error alert: valuation thread contaminated.
+"""
+interference.2.zh = """
+弹窗噪声：来源伪装成保险端口。
+"""
+interference.2.ja = """
+ポップアップノイズ：保険ポートを装った発信源。
+"""
+interference.2.en = """
+Popup noise: source masquerading as insurance port.
+"""
+interference.3.zh = """
+视觉干扰：赝作纹理缓存溢出。
+"""
+interference.3.ja = """
+視覚妨害：贋作テクスチャキャッシュ飽和。
+"""
+interference.3.en = """
+Visual interference: forged texture cache overflow.
+"""
+
+[victory]
+narrative.zh = """
+分成邮件切开了动机，溶剂报告钉死了手法，时间线证明了机会。里奥终于承认，他先把真迹调包为赝作，再杀死馆长，试图把所有责任推给修复团队与保险流程。
+"""
+narrative.ja = """
+取り分メールが動機を裂き、溶剤鑑定が手口を固定し、時間線が機会を示した。レオはついに、本物を贋作へすり替えた後に館長を殺し、責任を修復班と保険手続きへ押しつけようとしたと認める。
+"""
+narrative.en = """
+The draft mail cut open the motive, the solvent report fixed the method, and the timeline proved the opportunity. Leo finally admits he swapped the original for a forgery, then killed the curator and tried to dump the blame onto the restoration team and the insurance process.
+"""
+confession.zh = """
+是，我回城了。我碰过画框，也碰过那瓶溶剂。馆长想把我从局里踢出去，连最后那点分成都不肯留给我。我先把真迹换掉，再让他死在以为自己赢定了的那个夜晚。这样一来，赝作和死人都会替我守口如瓶。
+"""
+confession.ja = """
+ああ、戻ったよ。額にも触ったし、あの溶剤にも触った。館長は私を局から追い出し、最後の取り分さえ残す気がなかった。だから先に本物をすり替え、勝った気でいたあの夜に奴を殺した。贋作と死人なら、私の秘密を守ってくれると思ったんだ。
+"""
+confession.en = """
+Yes, I came back. I touched the frame, and I touched that solvent. The curator meant to cut me out and leave me nothing worth keeping. So I replaced the original first, and then I killed him on the night he believed he had already won. A forgery and a corpse keep secrets better than partners do.
+"""
+backgroundSlot = confession
+screenFilter = dim
+transition = fade
+avg.1.speaker = enemy
+avg.1.zh = """
+我以为只要把画换掉，所有人都会继续崇拜那个价格。
+"""
+avg.1.ja = """
+絵さえ入れ替えれば、皆が価格そのものを崇拝し続けると思った。
+"""
+avg.1.en = """
+I thought that if I replaced the painting, everyone would go on worshipping the price tag.
+"""
+avg.2.speaker = hero
+avg.2.zh = """
+可你忘了，价格不会说谎，痕迹会。
+"""
+avg.2.ja = """
+だが忘れたな。値札は嘘をつかなくても、痕跡はもっと雄弁だ。
+"""
+avg.2.en = """
+But you forgot something. Price tags do not testify. Traces do.
+"""
+avg.3.speaker = system
+avg.3.zh = """
+判定完成：有罪。案件归档至《星陨赝作》。
+"""
+avg.3.ja = """
+判定完了：有罪。案件は『スターフォール贋作事件』として保管される。
+"""
+avg.3.en = """
+Judgment complete: Guilty. Case archived as Starfall Forgery.
+"""

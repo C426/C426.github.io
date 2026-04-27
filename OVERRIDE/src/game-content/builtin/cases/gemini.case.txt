@@ -1,0 +1,1007 @@
+[meta]
+version = LOCAL_CASE_TXT_V1
+caseId = hollow-ward-protocol
+defaultLang = zh
+caseTitle.zh = """
+空病区协议
+"""
+caseTitle.ja = """
+ホロウ・ワード・プロトコル
+"""
+caseTitle.en = """
+Hollow Ward Protocol
+"""
+suspectEmoji = 
+heroEmoji = 
+heroPortraitPackId = 
+enemyPortraitPackId = 
+backgroundPackId = 
+suspectName.zh = """
+临床主任薇恩
+"""
+suspectName.ja = """
+臨床主任ヴェイン
+"""
+suspectName.en = """
+Clinical Director Vane
+"""
+
+[intro]
+narrative.zh = """
+封闭病区的主治研究员死在低温药柜前，所有监控都被剪成了“正常值班”的模样。临床主任薇恩面无表情地站在证词中央，声称自己一整夜都在遵守流程。你要拆开她的值班动线、接触痕迹，以及她替试验项目伪造过的每一枚签字。
+"""
+narrative.ja = """
+閉鎖病棟の主任研究員は低温薬庫の前で死亡し、監視映像はすべて「通常当直」に見えるよう切られていた。臨床主任ヴェインは無表情のまま、自分は一晩中手順を守っていただけだと語る。勤務動線、接触痕跡、そして試験計画の偽造署名を剥がしていく。
+"""
+narrative.en = """
+The lead researcher of the sealed ward died in front of the cryogenic medicine cabinet, and every camera feed was cut to look like routine duty. Clinical Director Vane claims she spent the entire night following protocol. We need to break apart her route, her contact traces, and the signatures she forged for the trial.
+"""
+systemMsg.zh = """
+调查分支既可以逼出隐藏台词，也可以掉落新证据。真正的推进仍然依赖把证据对准正确的破绽。
+"""
+systemMsg.ja = """
+調査分岐は隠し台詞も新証拠も引き出せる。ただし前進そのものは、証拠を正しい弱点へ合わせた時に起こる。
+"""
+systemMsg.en = """
+Inspection branches can pull out hidden lines and new evidence. Progress still depends on matching the right evidence to the right weak point.
+"""
+backgroundSlot = briefing
+enemyPortraitState = neutral_idle
+screenFilter = none
+transition = fade
+
+[evidence:ev-shift-roster]
+startsInInventory = true
+aliases = 值班表|roster
+name.zh = """
+夜班排班表
+"""
+name.ja = """
+夜勤シフト表
+"""
+name.en = """
+Night Shift Roster
+"""
+detail.zh = """
+值班表显示薇恩在 22:40 至 23:10 之间应在四层隔离站签字巡查，但她的签名栏是空白。
+"""
+detail.ja = """
+シフト表では、ヴェインは 22:40 から 23:10 まで四階隔離ステーションを巡回署名するはずだったが、その署名欄は空白だ。
+"""
+detail.en = """
+The shift roster shows Vane was supposed to sign her rounds on the fourth-floor isolation station from 22:40 to 23:10, but that signature field is blank.
+"""
+
+[evidence:ev-elevator-thermal]
+startsInInventory = true
+aliases = 电梯热图|thermal
+name.zh = """
+隔离电梯热成像
+"""
+name.ja = """
+隔離エレベーター熱画像
+"""
+name.en = """
+Isolation Lift Thermal Log
+"""
+detail.zh = """
+23:02，隔离电梯里留下单人热影，体型与薇恩一致，目的楼层为低温药柜所在的二层。
+"""
+detail.ja = """
+23:02、隔離エレベーターに単独の熱影が残り、体格はヴェインと一致する。目的階は低温薬庫のある二階だった。
+"""
+detail.en = """
+At 23:02, the isolation lift captured a single thermal silhouette matching Vane’s build. The destination floor was level two, where the cryogenic cabinet sits.
+"""
+
+[evidence:ev-voice-memo]
+startsInInventory = false
+aliases = 语音备忘|memo
+name.zh = """
+被删除的语音备忘
+"""
+name.ja = """
+削除された音声メモ
+"""
+name.en = """
+Deleted Voice Memo
+"""
+detail.zh = """
+恢复出的语音里，薇恩说：“把试验批次提到今晚之前，签字我来补。”死者在背景里明确反对。
+"""
+detail.ja = """
+復元された音声でヴェインは「試験ロットを今夜前倒しにして。署名は私が埋める」と言っており、被害者は背景で明確に反対している。
+"""
+detail.en = """
+In the recovered voice memo, Vane says, “Move the trial batch up to tonight. I’ll fill in the signature myself.” The victim objects clearly in the background.
+"""
+
+[evidence:ev-glove-trace]
+startsInInventory = false
+aliases = 手套痕|glove
+name.zh = """
+无菌手套树脂痕
+"""
+name.ja = """
+滅菌手袋の樹脂痕
+"""
+name.en = """
+Sterile Glove Resin Trace
+"""
+detail.zh = """
+药柜把手上的透明树脂与薇恩办公室专用无菌手套完全同批。树脂仍处在未完全固化状态，接触时间不超过一小时。
+"""
+detail.ja = """
+薬庫の取っ手に残る透明樹脂は、ヴェインの執務室専用の滅菌手袋と同ロットだった。樹脂はまだ完全硬化しておらず、接触は一時間以内だ。
+"""
+detail.en = """
+The clear resin on the cabinet handle comes from the same lot as the sterile gloves reserved for Vane’s office. The resin was still curing, placing the contact within one hour.
+"""
+
+[evidence:ev-trial-order]
+startsInInventory = false
+aliases = 试验单|order
+name.zh = """
+伪造试验指令单
+"""
+name.ja = """
+偽造試験指令書
+"""
+name.en = """
+Forged Trial Order
+"""
+detail.zh = """
+指令单把原本定在下周的试验批次提前到案发当晚，签名栏里死者的笔迹存在明显叠描。
+"""
+detail.ja = """
+指令書は来週予定だった試験ロットを事件当夜へ前倒ししており、被害者の署名欄には明らかななぞり書きがある。
+"""
+detail.en = """
+The order advances a trial batch originally scheduled for next week to the night of the incident, and the victim’s signature field shows obvious tracing.
+"""
+
+[evidence:ev-sponsor-transfer]
+startsInInventory = false
+aliases = 转账单|transfer
+name.zh = """
+赞助方转账回执
+"""
+name.ja = """
+スポンサー送金控え
+"""
+name.en = """
+Sponsor Transfer Receipt
+"""
+detail.zh = """
+赞助方在案发前两小时向薇恩个人账户打入一笔“紧急推进费”，备注为“批次提前确认”。
+"""
+detail.ja = """
+スポンサーは事件二時間前、ヴェイン個人口座へ「緊急前倒し費」を送金していた。備考は「ロット前倒し確認」。
+"""
+detail.en = """
+Two hours before the incident, the sponsor wired Vane’s personal account an “urgent acceleration fee,” annotated as “batch advancement confirmed.”
+"""
+
+[turn:1]
+line.1.id = t1-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+值班记录很清楚，[[t1-wp-a::我整晚都在三层护士站]]。
+"""
+line.1.ja = """
+当直記録は明白だ。[[t1-wp-a::私は一晩中三階ナースステーションにいた]]。
+"""
+line.1.en = """
+The duty record is perfectly clear: [[t1-wp-a::I spent the whole night at the third-floor nurse station]].
+"""
+line.2.id = t1-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+至于你们说的那段恢复语音，[[t1-wp-b::那段语音里的签字和我无关]]。
+"""
+line.2.ja = """
+復元された音声については、[[t1-wp-b::あの音声の署名の話は私と無関係だ]]。
+"""
+line.2.en = """
+As for that recovered audio, [[t1-wp-b::the signature mentioned in that audio has nothing to do with me]].
+"""
+line.3.id = t1-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+而且药柜区域今晚根本不会有人靠近。[[t1-fake-c::低温药柜今晚不会有人碰]]。
+"""
+line.3.ja = """
+それに今夜、薬庫区域へ誰も近づかない。[[t1-fake-c::今夜は誰も低温薬庫に触れない]]。
+"""
+line.3.en = """
+And no one was even supposed to approach the cabinet zone tonight. [[t1-fake-c::No one would touch the cryogenic cabinet tonight]].
+"""
+line.4.id = t1-line-4
+line.4.hidden = true
+line.4.unlockMode = none
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-glove-trace
+line.4.zh = """
+你顺着药柜问题往下查，恢复出的执勤语音和一袋被她偷偷丢掉的无菌手套同时浮出水面。
+"""
+line.4.ja = """
+薬庫の話を追うと、復元された当直音声と、彼女が密かに捨てた滅菌手袋の袋が同時に浮上した。
+"""
+line.4.en = """
+Following the cabinet angle surfaces both the recovered duty memo and a sterile glove pouch she tried to discard.
+"""
+weakPoint.1.id = t1-wp-a
+weakPoint.1.lineId = t1-line-1
+weakPoint.1.evidenceId = ev-shift-roster
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+我整晚都在三层护士站
+"""
+weakPoint.1.ja = """
+私は一晩中三階ナースステーションにいた
+"""
+weakPoint.1.en = """
+I spent the whole night at the third-floor nurse station
+"""
+weakPoint.2.id = t1-wp-b
+weakPoint.2.lineId = t1-line-2
+weakPoint.2.evidenceId = ev-voice-memo
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+那段语音里的签字和我无关
+"""
+weakPoint.2.ja = """
+あの音声の署名の話は私と無関係だ
+"""
+weakPoint.2.en = """
+The signature mentioned in that audio has nothing to do with me
+"""
+weakPoint.3.id = t1-fake-c
+weakPoint.3.lineId = t1-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+低温药柜今晚不会有人碰
+"""
+weakPoint.3.ja = """
+今夜は誰も低温薬庫に触れない
+"""
+weakPoint.3.en = """
+No one would touch the cryogenic cabinet tonight
+"""
+query.1.zh = """
+第一轮先打破她“整晚都在岗位上”的外壳。只要位置和语音同时脱轨，她的流程脸就会裂开。
+"""
+query.1.ja = """
+第一ラウンドは「一晩中定位置にいた」という殻を破る。位置と音声が同時に外れれば、手順の顔は割れる。
+"""
+query.1.en = """
+Round one breaks the shell of her “I stayed at my station all night” claim. Once location and audio drift apart together, her procedural mask cracks.
+"""
+query.2.zh = """
+她主动提“药柜不会有人碰”，像是在提前封你通往接触证据的路。
+"""
+query.2.ja = """
+彼女が自分から「薬庫には誰も触れない」と言うのは、接触証拠への道を先回りで塞ぎたいからだ。
+"""
+query.2.en = """
+The fact that she volunteers “no one would touch the cabinet” sounds like a preemptive wall against contact evidence.
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.zh = """
+她说话像写病历，每一句都想把风险埋成术语。
+"""
+queryAvg.1.ja = """
+彼女の話し方はカルテみたいだ。危険を全部用語に埋めようとしている。
+"""
+queryAvg.1.en = """
+She speaks like she writes charts, burying risk under terminology.
+"""
+inspectOverride.1.weakPointId = t1-fake-c
+inspectOverride.1.grantEvidence = ev-voice-memo
+inspectOverride.1.revealLines = t1-line-4
+inspectOverride.1.narrative.zh = """
+你把“不会有人碰药柜”这句话往下追，果然摸出一段被删除的工作语音。
+"""
+inspectOverride.1.narrative.ja = """
+「誰も薬庫に触れない」を追うと、削除された業務音声が出てきた。
+"""
+inspectOverride.1.narrative.en = """
+You push on “no one would touch the cabinet,” and a deleted work memo surfaces exactly where it should.
+"""
+inspectOverride.1.avg.1.speaker = system
+inspectOverride.1.avg.1.zh = """
+系统回收：删除语音已恢复。
+"""
+inspectOverride.1.avg.1.ja = """
+システム回収：削除音声を復元。
+"""
+inspectOverride.1.avg.1.en = """
+System recovery: deleted voice memo restored.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+薇恩“整夜守规”的第一层面具被掀开。
+"""
+successNarrative.ja = """
+ヴェインの「一晩中手順通り」の仮面、その第一層が剥がれた。
+"""
+successNarrative.en = """
+The first layer of Vane’s “I followed protocol all night” mask comes off.
+"""
+useSeparateTurnClear = true
+turnClearNarrative.zh = """
+位置与语音双双脱轨，薇恩不得不从“完全守规”退到“只是替项目补洞”。
+"""
+turnClearNarrative.ja = """
+位置も音声も外れ、ヴェインは「完全に手順通り」から「プロジェクトの穴埋めをしただけ」へ後退するしかなくなった。
+"""
+turnClearNarrative.en = """
+Both location and audio slip at once, forcing Vane to retreat from “perfect compliance” to “I merely patched a project gap.”
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+就算我补过签字，那也是为了不让项目停摆。
+"""
+turnClearAvg.1.ja = """
+仮に私が署名を埋めたとしても、プロジェクト停止を防ぐためだ。
+"""
+turnClearAvg.1.en = """
+Even if I did fill a signature, that was only to stop the project from stalling.
+"""
+turnClearAvg.2.speaker = hero
+turnClearAvg.2.zh = """
+很好，既然你承认“补”，下一轮就来看你补到了什么程度。
+"""
+turnClearAvg.2.ja = """
+いいだろう。「埋めた」と認めたなら、次はどこまで手を出したかを見る。
+"""
+turnClearAvg.2.en = """
+Good. Since you admit to “filling in,” the next round will show how far your hand actually went.
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+薇恩把你的失误重新压回术语堆里，让一切看上去仍像规章内的正常波动。
+"""
+failNarrative.wrongEvidence.ja = """
+ヴェインは君の失敗を用語の山へ押し戻し、すべてを規程内の揺れに見せかけた。
+"""
+failNarrative.wrongEvidence.en = """
+Vane presses your mistake back into a pile of terminology, making everything look like a routine variance inside protocol.
+"""
+failNarrative.wrongStatement.zh = """
+薇恩把你的失误重新压回术语堆里，让一切看上去仍像规章内的正常波动。
+"""
+failNarrative.wrongStatement.ja = """
+ヴェインは君の失敗を用語の山へ押し戻し、すべてを規程内の揺れに見せかけた。
+"""
+failNarrative.wrongStatement.en = """
+Vane presses your mistake back into a pile of terminology, making everything look like a routine variance inside protocol.
+"""
+failNarrative.bothWrong.zh = """
+薇恩把你的失误重新压回术语堆里，让一切看上去仍像规章内的正常波动。
+"""
+failNarrative.bothWrong.ja = """
+ヴェインは君の失敗を用語の山へ押し戻し、すべてを規程内の揺れに見せかけた。
+"""
+failNarrative.bothWrong.en = """
+Vane presses your mistake back into a pile of terminology, making everything look like a routine variance inside protocol.
+"""
+logicExplanation.zh = """
+只要值班表证明她不在原岗位，语音又证明她主动补签，第一轮就能把“我整夜都守规”的说法拆成谎话。
+"""
+logicExplanation.ja = """
+シフト表で定位置不在を示し、音声で署名補填を示せば、「一晩中手順通り」は嘘に分解できる。
+"""
+logicExplanation.en = """
+If the roster shows she was away from her station and the audio shows she filled the signature herself, then “I followed protocol all night” breaks into a lie.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+流程不会自己走路，签字也不会自己长出来。
+"""
+successAvg.1.ja = """
+手順は自分で歩かないし、署名も勝手には生えない。
+"""
+successAvg.1.en = """
+Procedure does not walk on its own, and signatures do not grow by themselves.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+如果你连术语都没拆开，就别想拆开我。
+"""
+failAvg.wrongEvidence.1.ja = """
+用語すら解けないなら、私を解体できるはずがない。
+"""
+failAvg.wrongEvidence.1.en = """
+If you cannot unpack the terminology, you will not unpack me.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+如果你连术语都没拆开，就别想拆开我。
+"""
+failAvg.wrongStatement.1.ja = """
+用語すら解けないなら、私を解体できるはずがない。
+"""
+failAvg.wrongStatement.1.en = """
+If you cannot unpack the terminology, you will not unpack me.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+如果你连术语都没拆开，就别想拆开我。
+"""
+failAvg.bothWrong.1.ja = """
+用語すら解けないなら、私を解体できるはずがない。
+"""
+failAvg.bothWrong.1.en = """
+If you cannot unpack the terminology, you will not unpack me.
+"""
+
+[turn:2]
+line.1.id = t2-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+你们现在想把我钉在药柜上？可笑。[[t2-wp-d::我没碰过那只低温药盒]]。
+"""
+line.1.ja = """
+私を薬庫に縫い付けたいの？滑稽ね。[[t2-wp-d::私はあの低温薬箱に触れていない]]。
+"""
+line.1.en = """
+You want to nail me to that cabinet now? Ridiculous. [[t2-wp-d::I never touched that cryogenic medicine case]].
+"""
+line.2.id = t2-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+况且昨夜的隔离电梯根本没载过我。[[t2-wp-e::隔离电梯昨晚没有载过我]]。
+"""
+line.2.ja = """
+それに昨夜の隔離エレベーターは私を運んでいない。[[t2-wp-e::隔離エレベーターは昨夜私を運んでいない]]。
+"""
+line.2.en = """
+Besides, the isolation lift did not carry me last night. [[t2-wp-e::The isolation lift did not carry me last night]].
+"""
+line.3.id = t2-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+你们若想把项目资金扯进来，那就更远了。[[t2-fake-f::赞助方今晚没有和我联系]]。
+"""
+line.3.ja = """
+資金の話まで持ち出すなら、なおさら見当違いよ。[[t2-fake-f::スポンサーは今夜私に接触していない]]。
+"""
+line.3.en = """
+If you want to drag funding into this, you are even further off. [[t2-fake-f::The sponsor did not contact me tonight]].
+"""
+line.4.id = t2-line-4
+line.4.hidden = true
+line.4.unlockMode = allTrueWeakPoints
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-trial-order
+line.4.zh = """
+两条真破绽被击碎后，检方当庭出示了她提前改写的试验指令单。
+"""
+line.4.ja = """
+二つの真の弱点が砕けると、検方は彼女が前倒しで書き換えた試験指令書を提示した。
+"""
+line.4.en = """
+After both true weak points are broken, the prosecution produces the trial order she rewrote in advance.
+"""
+weakPoint.1.id = t2-wp-d
+weakPoint.1.lineId = t2-line-1
+weakPoint.1.evidenceId = ev-glove-trace
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+我没碰过那只低温药盒
+"""
+weakPoint.1.ja = """
+私はあの低温薬箱に触れていない
+"""
+weakPoint.1.en = """
+I never touched that cryogenic medicine case
+"""
+weakPoint.2.id = t2-wp-e
+weakPoint.2.lineId = t2-line-2
+weakPoint.2.evidenceId = ev-elevator-thermal
+weakPoint.2.consumeEvidenceOnUse = false
+weakPoint.2.zh = """
+隔离电梯昨晚没有载过我
+"""
+weakPoint.2.ja = """
+隔離エレベーターは昨夜私を運んでいない
+"""
+weakPoint.2.en = """
+The isolation lift did not carry me last night
+"""
+weakPoint.3.id = t2-fake-f
+weakPoint.3.lineId = t2-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+赞助方今晚没有和我联系
+"""
+weakPoint.3.ja = """
+スポンサーは今夜私に接触していない
+"""
+weakPoint.3.en = """
+The sponsor did not contact me tonight
+"""
+query.1.zh = """
+第二轮要闭合“她到过现场”与“她亲手接触过药盒”。电梯热图给出路线，树脂痕给出接触。
+"""
+query.1.ja = """
+第二ラウンドは「現場へ行った」と「薬箱へ触れた」を閉じる。熱画像が経路を、樹脂痕が接触を示す。
+"""
+query.1.en = """
+Round two closes “she went to the scene” and “she physically handled the case.” The thermal log gives the route, and the resin trace gives the contact.
+"""
+query.2.zh = """
+她自己提起赞助方，反而像是在替真正的金流预先消毒。
+"""
+query.2.ja = """
+彼女が自分からスポンサーを持ち出すのは、本当の資金流を先に消毒したいからだ。
+"""
+query.2.en = """
+The fact that she brings up the sponsor on her own sounds like pre-emptive sterilization of the real money trail.
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.zh = """
+她越像医生，越把谎话写成“必要处理”。
+"""
+queryAvg.1.ja = """
+医師らしく見えるほど、嘘を「必要処置」に書き換えている。
+"""
+queryAvg.1.en = """
+The more she sounds like a doctor, the more she rewrites lies into “necessary interventions.”
+"""
+inspectOverride.1.weakPointId = t2-fake-f
+inspectOverride.1.grantEvidence = ev-sponsor-transfer
+inspectOverride.1.revealLines = 
+inspectOverride.1.narrative.zh = """
+你顺着赞助方追下去，很快摸到了那笔时间戳过于漂亮的私人转账。
+"""
+inspectOverride.1.narrative.ja = """
+スポンサーを追うと、タイムスタンプが出来すぎている個人口座送金に行き当たった。
+"""
+inspectOverride.1.narrative.en = """
+Following the sponsor leads you quickly to a personal transfer whose timestamp is a little too perfect.
+"""
+inspectOverride.1.avg.1.speaker = system
+inspectOverride.1.avg.1.zh = """
+系统回收：赞助方转账回执。
+"""
+inspectOverride.1.avg.1.ja = """
+システム回収：スポンサー送金控え。
+"""
+inspectOverride.1.avg.1.en = """
+System recovery: sponsor transfer receipt.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+她“只是补流程”的借口开始露出真正的项目意图。
+"""
+successNarrative.ja = """
+「手続きを補っただけ」という言い訳から、本当のプロジェクト意図が覗き始める。
+"""
+successNarrative.en = """
+Her excuse of “merely patching procedure” begins revealing the true intention behind the project.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+她“只是补流程”的借口开始露出真正的项目意图。
+"""
+turnClearNarrative.ja = """
+「手続きを補っただけ」という言い訳から、本当のプロジェクト意図が覗き始める。
+"""
+turnClearNarrative.en = """
+Her excuse of “merely patching procedure” begins revealing the true intention behind the project.
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+研究总要有人做脏事，我只是比死者更早承认这一点。
+"""
+turnClearAvg.1.ja = """
+研究には誰かが汚れ役をやるしかない。私は被害者より先にそれを認めただけ。
+"""
+turnClearAvg.1.en = """
+Research always requires someone to do the dirty work. I simply admitted that sooner than the victim did.
+"""
+useSeparateFailureReasons = true
+failNarrative.wrongEvidence.zh = """
+薇恩把不相干的证据当场切回“情绪推理”，并重新夺回话语节奏。
+"""
+failNarrative.wrongEvidence.ja = """
+ヴェインは無関係な証拠を「感情推理」へ切り戻し、発話の主導権を取り返した。
+"""
+failNarrative.wrongEvidence.en = """
+Vane cuts the irrelevant exhibit down as emotional reasoning and seizes back the rhythm of speech.
+"""
+failNarrative.wrongStatement.zh = """
+你点偏了主句，她便趁机把真正危险的接触证据藏回专业术语里。
+"""
+failNarrative.wrongStatement.ja = """
+主文を外した隙に、彼女は危険な接触証拠を再び専門用語へ隠した。
+"""
+failNarrative.wrongStatement.en = """
+You picked the wrong sentence, and she slips the dangerous contact evidence back into clinical jargon.
+"""
+failNarrative.bothWrong.zh = """
+这一轮完全被她重写成病例讨论，你的指控反而像不懂规程的外行插话。
+"""
+failNarrative.bothWrong.ja = """
+このラウンドは完全に症例検討へ書き換えられ、君の追及は規程を知らない外野の口出しに見えた。
+"""
+failNarrative.bothWrong.en = """
+She rewrites the whole round into a case conference, making your accusation sound like an outsider interrupting protocol.
+"""
+logicExplanation.zh = """
+第二轮靠两条硬证据闭合：电梯热图证明她确实去了二层，手套树脂证明她亲手碰过药盒。
+"""
+logicExplanation.ja = """
+第二ラウンドは二本の硬証拠で閉じる。熱画像が二階移動を示し、手袋樹脂が薬箱への接触を示す。
+"""
+logicExplanation.en = """
+Round two closes on two hard proofs: the lift thermal log puts her on level two, and the glove resin proves she touched the medicine case herself.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+你不是替流程缝补裂口，你是在把流程改写成凶器。
+"""
+successAvg.1.ja = """
+手順の裂け目を縫ったのではない。手順そのものを凶器へ書き換えたんだ。
+"""
+successAvg.1.en = """
+You were not repairing a tear in procedure. You were rewriting procedure itself into a weapon.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+如果你连器械都认错，就别碰临床。
+"""
+failAvg.wrongEvidence.1.ja = """
+器具すら取り違えるなら臨床に触るな。
+"""
+failAvg.wrongEvidence.1.en = """
+If you cannot even identify the instrument, stay out of the clinic.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+先抓住句子的脉，再来谈病灶。
+"""
+failAvg.wrongStatement.1.ja = """
+文の脈を掴んでから病巣を語れ。
+"""
+failAvg.wrongStatement.1.en = """
+Catch the pulse of the sentence before you diagnose the lesion.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+你想救人，却连病例都读不准。
+"""
+failAvg.bothWrong.1.ja = """
+人を救いたいなら、まず症例を読み違えるな。
+"""
+failAvg.bothWrong.1.en = """
+If you want to save anyone, start by reading the case correctly.
+"""
+
+[turn:3]
+line.1.id = t3-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+你们拿到的那张试验指令单有太多复写痕。[[t3-wp-g::试验指令不是我伪造的]]。
+"""
+line.1.ja = """
+君たちの持つ試験指令書は写し跡だらけだ。[[t3-wp-g::試験指令書を偽造したのは私ではない]]。
+"""
+line.1.en = """
+The trial order you recovered is full of overwriting marks. [[t3-wp-g::I did not forge the trial order]].
+"""
+line.2.id = t3-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+至于赞助方给我的那笔钱，不过是常规顾问费。[[t3-wp-h::赞助方转账只是常规咨询费]]。
+"""
+line.2.ja = """
+スポンサーからの送金は、ただの通常顧問料よ。[[t3-wp-h::スポンサー送金は通常の相談料だ]]。
+"""
+line.2.en = """
+As for the money the sponsor sent me, it was only routine consulting pay. [[t3-wp-h::The sponsor transfer was only a routine consulting fee]].
+"""
+weakPoint.1.id = t3-wp-g
+weakPoint.1.lineId = t3-line-1
+weakPoint.1.evidenceId = ev-trial-order
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+试验指令不是我伪造的
+"""
+weakPoint.1.ja = """
+試験指令書を偽造したのは私ではない
+"""
+weakPoint.1.en = """
+I did not forge the trial order
+"""
+weakPoint.2.id = t3-wp-h
+weakPoint.2.lineId = t3-line-2
+weakPoint.2.evidenceId = ev-sponsor-transfer
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+赞助方转账只是常规咨询费
+"""
+weakPoint.2.ja = """
+スポンサー送金は通常の相談料だ
+"""
+weakPoint.2.en = """
+The sponsor transfer was only a routine consulting fee
+"""
+query.1.zh = """
+终局要把“伪造签字”与“提前收钱”钉成同一个决定。
+"""
+query.1.ja = """
+終局では「署名偽造」と「先払い受領」を同じ決断として固定する。
+"""
+query.1.en = """
+The final round must pin forged authorization and advance payment into the same decision.
+"""
+query.2.zh = """
+如果指令单说明她动过排程，转账回执又说明她拿过钱，那死亡就不再是流程事故。
+"""
+query.2.ja = """
+指令書が予定改変を示し、送金控えが対価受領を示せば、死は手続き事故ではいられない。
+"""
+query.2.en = """
+If the order proves she altered the schedule and the transfer proves she took payment, then the death can no longer hide inside protocol.
+"""
+queryAvg.1.speaker = system
+queryAvg.1.zh = """
+终局监控：财务流与指令流同步比对。
+"""
+queryAvg.1.ja = """
+終局監視：資金流と指令流を同期照合。
+"""
+queryAvg.1.en = """
+Final monitor: syncing financial flow against command flow.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+薇恩的“必要处理”终于露出价码。
+"""
+successNarrative.ja = """
+ヴェインの「必要処置」が、ついに値札を見せた。
+"""
+successNarrative.en = """
+Vane's “necessary intervention” finally reveals its price tag.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+薇恩的“必要处理”终于露出价码。
+"""
+turnClearNarrative.ja = """
+ヴェインの「必要処置」が、ついに値札を見せた。
+"""
+turnClearNarrative.en = """
+Vane's “necessary intervention” finally reveals its price tag.
+"""
+turnClearAvg.1.speaker = hero
+turnClearAvg.1.zh = """
+你不是为了救项目签字，你是为了拿钱把人从项目里划掉。
+"""
+turnClearAvg.1.ja = """
+プロジェクトを救うための署名じゃない。金のために、人を計画から消したんだ。
+"""
+turnClearAvg.1.en = """
+You did not sign to save the project. You signed to erase a person from it for money.
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+离自白只差一步，薇恩却还在努力把金流和签字拆成两件互不相干的事。
+"""
+failNarrative.wrongEvidence.ja = """
+自白まであと一歩なのに、ヴェインはなお資金流と署名を別件へ切り離そうとしている。
+"""
+failNarrative.wrongEvidence.en = """
+Confession is one step away, yet Vane still tries to split the money trail from the signature as if they were unrelated.
+"""
+failNarrative.wrongStatement.zh = """
+离自白只差一步，薇恩却还在努力把金流和签字拆成两件互不相干的事。
+"""
+failNarrative.wrongStatement.ja = """
+自白まであと一歩なのに、ヴェインはなお資金流と署名を別件へ切り離そうとしている。
+"""
+failNarrative.wrongStatement.en = """
+Confession is one step away, yet Vane still tries to split the money trail from the signature as if they were unrelated.
+"""
+failNarrative.bothWrong.zh = """
+离自白只差一步，薇恩却还在努力把金流和签字拆成两件互不相干的事。
+"""
+failNarrative.bothWrong.ja = """
+自白まであと一歩なのに、ヴェインはなお資金流と署名を別件へ切り離そうとしている。
+"""
+failNarrative.bothWrong.en = """
+Confession is one step away, yet Vane still tries to split the money trail from the signature as if they were unrelated.
+"""
+logicExplanation.zh = """
+指令单证明她亲手提前了危险批次，转账回执证明她因此收钱。手法和利益在她身上闭合后，整起死亡不再可能是意外。
+"""
+logicExplanation.ja = """
+指令書が危険ロットの前倒しを示し、送金控えがその対価を示す。手口と利益が彼女の上で閉じれば、死はもはや事故ではない。
+"""
+logicExplanation.en = """
+The order proves she advanced the dangerous batch by hand, and the transfer proves she was paid for it. Once method and profit close on her, the death can no longer be an accident.
+"""
+successAvg.1.speaker = enemy
+successAvg.1.zh = """
+……如果那个项目停了，整栋楼都会失去资助。
+"""
+successAvg.1.ja = """
+……あのプロジェクトが止まれば、この棟全体が資金を失う。
+"""
+successAvg.1.en = """
+...If that project stopped, this entire building would have lost funding.
+"""
+successAvg.2.speaker = hero
+successAvg.2.zh = """
+所以你先让一个人失去明天。
+"""
+successAvg.2.ja = """
+だから先に、一人から明日を奪った。
+"""
+successAvg.2.en = """
+So you took tomorrow away from one person first.
+"""
+successAvg.3.speaker = system
+successAvg.3.zh = """
+终局确认：有罪路线已闭合。
+"""
+successAvg.3.ja = """
+終局確認：有罪ルート閉鎖。
+"""
+successAvg.3.en = """
+Final confirmation: guilty route closed.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+终局最怕的从来不是审判，而是审判来得太慢。
+"""
+failAvg.wrongEvidence.1.ja = """
+終局で怖いのは裁きではない。裁きが遅すぎることだ。
+"""
+failAvg.wrongEvidence.1.en = """
+The endgame does not fear judgment. It fears judgment arriving too late.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+终局最怕的从来不是审判，而是审判来得太慢。
+"""
+failAvg.wrongStatement.1.ja = """
+終局で怖いのは裁きではない。裁きが遅すぎることだ。
+"""
+failAvg.wrongStatement.1.en = """
+The endgame does not fear judgment. It fears judgment arriving too late.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+终局最怕的从来不是审判，而是审判来得太慢。
+"""
+failAvg.bothWrong.1.ja = """
+終局で怖いのは裁きではない。裁きが遅すぎることだ。
+"""
+failAvg.bothWrong.1.en = """
+The endgame does not fear judgment. It fears judgment arriving too late.
+"""
+interference.1.zh = """
+监护警报：生理曲线缓存回放。
+"""
+interference.1.ja = """
+監護警報：生体曲線キャッシュ再生。
+"""
+interference.1.en = """
+Care alarm: vital-curve cache replay.
+"""
+interference.2.zh = """
+权限噪声：临床终端尝试覆盖签名层。
+"""
+interference.2.ja = """
+権限ノイズ：臨床端末が署名レイヤーを上書きしようとしている。
+"""
+interference.2.en = """
+Privilege noise: clinical terminal attempting to overwrite signature layer.
+"""
+interference.3.zh = """
+记忆漂移：药柜门锁日志闪断。
+"""
+interference.3.ja = """
+記憶ドリフト：薬庫ロックログが断続。
+"""
+interference.3.en = """
+Memory drift: cabinet lock log flickering.
+"""
+
+[victory]
+narrative.zh = """
+值班表、语音备忘、手套树脂、伪造指令与赞助转账，五条链条在薇恩身上闭合。她承认自己为了让试验项目提前出结果，伪造指令、提前批次，并在争执中亲手把死者逼到药柜前再夺走了他的生路。
+"""
+narrative.ja = """
+シフト表、音声メモ、手袋樹脂、偽造指令、スポンサー送金。その五本の鎖がヴェインの上で閉じた。彼女は試験結果を前倒しするため、指令を偽造し、ロットを前倒しし、口論の末に被害者を薬庫前へ追い込み、その生路を奪ったと認める。
+"""
+narrative.en = """
+The roster, voice memo, glove resin, forged order, and sponsor transfer all close on Vane. She admits that to force early trial results, she forged the order, moved the batch up, and during the confrontation drove the victim to the cabinet and took away his way out.
+"""
+confession.zh = """
+是，我改了排程，也补了签字。赞助方只在乎结果，院方只在乎经费，死者却还想按原来的伦理程序拖下去。我不能让项目停，所以我把一切往前推，直到他倒在药柜前。那一刻我告诉自己，这只是一次必要处理。
+"""
+confession.ja = """
+ああ、私が予定を変え、署名も埋めた。スポンサーは結果しか見ず、病院は資金しか見ない。なのに被害者は古い倫理手順のまま止めようとした。プロジェクトを止められなかった。だからすべてを前へ押し出し、彼が薬庫前で倒れるまで進めた。その瞬間、自分に言い聞かせた。これは必要処置だと。
+"""
+confession.en = """
+Yes, I changed the schedule, and I filled the signature. The sponsor cared only about results, the hospital only about funding, and the victim still wanted to slow everything down under the old ethics procedure. I could not let the project stop. So I pushed everything forward until he fell in front of the cabinet. In that moment, I told myself it was only a necessary intervention.
+"""
+backgroundSlot = confession
+screenFilter = dim
+transition = fade
+avg.1.speaker = enemy
+avg.1.zh = """
+必要处理。多么干净的词。
+"""
+avg.1.ja = """
+必要処置。なんて綺麗な言葉。
+"""
+avg.1.en = """
+Necessary intervention. Such a clean phrase.
+"""
+avg.2.speaker = hero
+avg.2.zh = """
+干净的从来不是词，而是你想拿它洗掉的血。
+"""
+avg.2.ja = """
+綺麗なのは言葉じゃない。その言葉で洗い流したい血の方だ。
+"""
+avg.2.en = """
+It was never the phrase that was clean. It was the blood you wanted the phrase to wash away.
+"""
+avg.3.speaker = system
+avg.3.zh = """
+判定完成：有罪。案件归档至《空病区协议》。
+"""
+avg.3.ja = """
+判定完了：有罪。案件は『ホロウ・ワード・プロトコル』として保管される。
+"""
+avg.3.en = """
+Judgment complete: Guilty. Case archived as Hollow Ward Protocol.
+"""

@@ -1,0 +1,1996 @@
+[meta]
+version = LOCAL_CASE_TXT_V1
+caseId = ceshi
+defaultLang = zh
+caseTitle.zh = """
+纯测试回归剧本
+"""
+caseTitle.ja = """
+纯测试回归剧本
+"""
+caseTitle.en = """
+纯测试回归剧本
+"""
+suspectEmoji = 
+heroEmoji = 
+heroPortraitPackId = debug-hero-readout
+enemyPortraitPackId = test-enemy-girl
+backgroundPackId = debug-scene-readout
+suspectName.zh = """
+测试嫌疑人
+"""
+suspectName.ja = """
+测试嫌疑人
+"""
+suspectName.en = """
+测试嫌疑人
+"""
+
+[intro]
+narrative.zh = """
+这是一份纯测试文案剧本：所有证据与破绽按字母一一对应，用来验证调查、隐藏台词、掉证据、复用证据、AVG 表情推进和终局自白。
+"""
+narrative.ja = """
+这是一份纯测试文案剧本：所有证据与破绽按字母一一对应，用来验证调查、隐藏台词、掉证据、复用证据、AVG 表情推进和终局自白。
+"""
+narrative.en = """
+这是一份纯测试文案剧本：所有证据与破绽按字母一一对应，用来验证调查、隐藏台词、掉证据、复用证据、AVG 表情推进和终局自白。
+"""
+systemMsg.zh = """
+推荐顺序：证据A → 调查项B → 隐藏破绽D → 证据E / 证据F → 调查项G → 隐藏破绽H → 证据I → 证据J → 调查项K → 隐藏破绽K → 证据L。
+"""
+systemMsg.ja = """
+推荐顺序：证据A → 调查项B → 隐藏破绽D → 证据E / 证据F → 调查项G → 隐藏破绽H → 证据I → 证据J → 调查项K → 隐藏破绽K → 证据L。
+"""
+systemMsg.en = """
+推荐顺序：证据A → 调查项B → 隐藏破绽D → 证据E / 证据F → 调查项G → 隐藏破绽H → 证据I → 证据J → 调查项K → 隐藏破绽K → 证据L。
+"""
+backgroundSlot = briefing
+enemyPortraitState = neutral_idle
+screenFilter = scanline
+transition = fade
+
+[evidence:evidence-a]
+startsInInventory = true
+aliases = A
+name.zh = """
+证据A
+"""
+name.ja = """
+证据A
+"""
+name.en = """
+证据A
+"""
+detail.zh = """
+对应破绽A：我昨晚根本没离开主控台。
+"""
+detail.ja = """
+对应破绽A：我昨晚根本没离开主控台。
+"""
+detail.en = """
+对应破绽A：我昨晚根本没离开主控台。
+"""
+
+[evidence:evidence-d]
+startsInInventory = false
+aliases = D
+name.zh = """
+证据D
+"""
+name.ja = """
+证据D
+"""
+name.en = """
+证据D
+"""
+detail.zh = """
+调查项B成功后掉落，对应隐藏破绽D。
+"""
+detail.ja = """
+调查项B成功后掉落，对应隐藏破绽D。
+"""
+detail.en = """
+调查项B成功后掉落，对应隐藏破绽D。
+"""
+
+[evidence:evidence-e]
+startsInInventory = false
+aliases = E
+name.zh = """
+证据E
+"""
+name.ja = """
+证据E
+"""
+name.en = """
+证据E
+"""
+detail.zh = """
+对应破绽E：机柜门不是我开的。
+"""
+detail.ja = """
+对应破绽E：机柜门不是我开的。
+"""
+detail.en = """
+对应破绽E：机柜门不是我开的。
+"""
+
+[evidence:evidence-f]
+startsInInventory = true
+aliases = F
+name.zh = """
+证据F
+"""
+name.ja = """
+证据F
+"""
+name.en = """
+证据F
+"""
+detail.zh = """
+对应破绽F：那条指令不是我签发的。本证据会保留。
+"""
+detail.ja = """
+对应破绽F：那条指令不是我签发的。本证据会保留。
+"""
+detail.en = """
+对应破绽F：那条指令不是我签发的。本证据会保留。
+"""
+
+[evidence:evidence-h]
+startsInInventory = false
+aliases = H
+name.zh = """
+证据H
+"""
+name.ja = """
+证据H
+"""
+name.en = """
+证据H
+"""
+detail.zh = """
+调查项G成功后掉落，对应隐藏破绽H。
+"""
+detail.ja = """
+调查项G成功后掉落，对应隐藏破绽H。
+"""
+detail.en = """
+调查项G成功后掉落，对应隐藏破绽H。
+"""
+
+[evidence:evidence-i]
+startsInInventory = false
+aliases = I
+name.zh = """
+证据I
+"""
+name.ja = """
+证据I
+"""
+name.en = """
+证据I
+"""
+detail.zh = """
+第二轮真破绽全部击破后掉落，对应第三轮破绽I。
+"""
+detail.ja = """
+第二轮真破绽全部击破后掉落，对应第三轮破绽I。
+"""
+detail.en = """
+第二轮真破绽全部击破后掉落，对应第三轮破绽I。
+"""
+
+[evidence:evidence-j]
+startsInInventory = true
+aliases = J
+name.zh = """
+证据J
+"""
+name.ja = """
+证据J
+"""
+name.en = """
+证据J
+"""
+detail.zh = """
+对应破绽J：旧签章作废后谁都能伪造我的口令。
+"""
+detail.ja = """
+对应破绽J：旧签章作废后谁都能伪造我的口令。
+"""
+detail.en = """
+对应破绽J：旧签章作废后谁都能伪造我的口令。
+"""
+
+[evidence:evidence-k]
+startsInInventory = false
+aliases = K
+name.zh = """
+证据K
+"""
+name.ja = """
+证据K
+"""
+name.en = """
+证据K
+"""
+detail.zh = """
+调查项K成功后掉落，对应隐藏破绽K。
+"""
+detail.ja = """
+调查项K成功后掉落，对应隐藏破绽K。
+"""
+detail.en = """
+调查项K成功后掉落，对应隐藏破绽K。
+"""
+
+[evidence:evidence-l]
+startsInInventory = false
+aliases = L
+name.zh = """
+证据L
+"""
+name.ja = """
+证据L
+"""
+name.en = """
+证据L
+"""
+detail.zh = """
+第四轮真破绽全部击破后掉落，对应终局破绽L。
+"""
+detail.ja = """
+第四轮真破绽全部击破后掉落，对应终局破绽L。
+"""
+detail.en = """
+第四轮真破绽全部击破后掉落，对应终局破绽L。
+"""
+
+[turn:1]
+line.1.id = t1-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.portraitState = neutral_idle
+line.1.portraitMotion = none
+line.1.zh = """
+测试台词A：[[t1-wp-a::破绽A：我昨晚根本没离开主控台]]。
+"""
+line.1.ja = """
+测试台词A：[[t1-wp-a::破绽A：我昨晚根本没离开主控台]]。
+"""
+line.1.en = """
+测试台词A：[[t1-wp-a::破绽A：我昨晚根本没离开主控台]]。
+"""
+line.2.id = t1-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.portraitState = polite_smile
+line.2.portraitMotion = pop
+line.2.zh = """
+测试台词B：[[t1-fake-b::调查项B：恢复日志只是系统抖动]]。调查成功后应掉落证据D并揭示隐藏台词D。
+"""
+line.2.ja = """
+测试台词B：[[t1-fake-b::调查项B：恢复日志只是系统抖动]]。调查成功后应掉落证据D并揭示隐藏台词D。
+"""
+line.2.en = """
+测试台词B：[[t1-fake-b::调查项B：恢复日志只是系统抖动]]。调查成功后应掉落证据D并揭示隐藏台词D。
+"""
+line.3.id = t1-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.portraitState = thinking_hand_to_chin
+line.3.portraitMotion = shake_small
+line.3.zh = """
+测试台词C：[[t1-fake-c::调查项C：备份区的越权记录与我无关]]。这是额外调查用假破绽。
+"""
+line.3.ja = """
+测试台词C：[[t1-fake-c::调查项C：备份区的越权记录与我无关]]。这是额外调查用假破绽。
+"""
+line.3.en = """
+测试台词C：[[t1-fake-c::调查项C：备份区的越权记录与我无关]]。这是额外调查用假破绽。
+"""
+line.4.id = t1-line-4
+line.4.hidden = true
+line.4.unlockMode = none
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = evidence-e
+line.4.portraitState = surprise_small
+line.4.portraitMotion = slide_in
+line.4.zh = """
+隐藏台词D：[[t1-wp-d::隐藏破绽D：最后一道校验不是我覆写的]]。
+"""
+line.4.ja = """
+隐藏台词D：[[t1-wp-d::隐藏破绽D：最后一道校验不是我覆写的]]。
+"""
+line.4.en = """
+隐藏台词D：[[t1-wp-d::隐藏破绽D：最后一道校验不是我覆写的]]。
+"""
+weakPoint.1.id = t1-wp-a
+weakPoint.1.lineId = t1-line-1
+weakPoint.1.evidenceId = evidence-a
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+破绽A：我昨晚根本没离开主控台
+"""
+weakPoint.1.ja = """
+破绽A：我昨晚根本没离开主控台
+"""
+weakPoint.1.en = """
+破绽A：我昨晚根本没离开主控台
+"""
+weakPoint.2.id = t1-fake-b
+weakPoint.2.lineId = t1-line-2
+weakPoint.2.evidenceId = 
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+调查项B：恢复日志只是系统抖动
+"""
+weakPoint.2.ja = """
+调查项B：恢复日志只是系统抖动
+"""
+weakPoint.2.en = """
+调查项B：恢复日志只是系统抖动
+"""
+weakPoint.3.id = t1-fake-c
+weakPoint.3.lineId = t1-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+调查项C：备份区的越权记录与我无关
+"""
+weakPoint.3.ja = """
+调查项C：备份区的越权记录与我无关
+"""
+weakPoint.3.en = """
+调查项C：备份区的越权记录与我无关
+"""
+weakPoint.4.id = t1-wp-d
+weakPoint.4.lineId = t1-line-4
+weakPoint.4.evidenceId = evidence-d
+weakPoint.4.consumeEvidenceOnUse = true
+weakPoint.4.zh = """
+隐藏破绽D：最后一道校验不是我覆写的
+"""
+weakPoint.4.ja = """
+隐藏破绽D：最后一道校验不是我覆写的
+"""
+weakPoint.4.en = """
+隐藏破绽D：最后一道校验不是我覆写的
+"""
+query.1.zh = """
+第一轮调查反馈：优先调查 B，确认能否掉落证据D。
+"""
+query.1.ja = """
+第一轮调查反馈：优先调查 B，确认能否掉落证据D。
+"""
+query.1.en = """
+第一轮调查反馈：优先调查 B，确认能否掉落证据D。
+"""
+query.2.zh = """
+第一轮调查反馈：A 与隐藏 D 都应能独立击破。
+"""
+query.2.ja = """
+第一轮调查反馈：A 与隐藏 D 都应能独立击破。
+"""
+query.2.en = """
+第一轮调查反馈：A 与隐藏 D 都应能独立击破。
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.portraitState = serious_focus
+queryAvg.1.portraitMotion = slide_in
+queryAvg.1.zh = """
+第一轮 AVG：先打 A，再调查 B，最后打 D。
+"""
+queryAvg.1.ja = """
+第一轮 AVG：先打 A，再调查 B，最后打 D。
+"""
+queryAvg.1.en = """
+第一轮 AVG：先打 A，再调查 B，最后打 D。
+"""
+queryAvg.2.speaker = enemy
+queryAvg.2.portraitState = polite_smile
+queryAvg.2.portraitMotion = pop
+queryAvg.2.zh = """
+第一轮 AVG 表情：冷静到轻微警惕。
+"""
+queryAvg.2.ja = """
+第一轮 AVG 表情：冷静到轻微警惕。
+"""
+queryAvg.2.en = """
+第一轮 AVG 表情：冷静到轻微警惕。
+"""
+inspectOverride.1.weakPointId = t1-fake-b
+inspectOverride.1.grantEvidence = evidence-d
+inspectOverride.1.revealLines = t1-line-4
+inspectOverride.1.narrative.zh = """
+测试结果：调查项B成功，证据D掉落，隐藏台词D已揭示。
+"""
+inspectOverride.1.narrative.ja = """
+测试结果：调查项B成功，证据D掉落，隐藏台词D已揭示。
+"""
+inspectOverride.1.narrative.en = """
+测试结果：调查项B成功，证据D掉落，隐藏台词D已揭示。
+"""
+inspectOverride.1.avg.1.speaker = enemy
+inspectOverride.1.avg.1.portraitState = thinking_hand_to_chin
+inspectOverride.1.avg.1.portraitMotion = shake_small
+inspectOverride.1.avg.1.zh = """
+调查项B已命中，隐藏台词D现在应可见。
+"""
+inspectOverride.1.avg.1.ja = """
+调查项B已命中，隐藏台词D现在应可见。
+"""
+inspectOverride.1.avg.1.en = """
+调查项B已命中，隐藏台词D现在应可见。
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = pop
+screenFilter = scanline
+screenImpulse = none
+transition = fade
+successNarrative.zh = """
+第一轮成功反馈：本轮真破绽击破正常。
+"""
+successNarrative.ja = """
+第一轮成功反馈：本轮真破绽击破正常。
+"""
+successNarrative.en = """
+第一轮成功反馈：本轮真破绽击破正常。
+"""
+successOverride.1.weakPointId = t1-wp-a
+successOverride.1.narrative.zh = """
+测试结果：证据A对应破绽A，命中成功。
+"""
+successOverride.1.narrative.ja = """
+测试结果：证据A对应破绽A，命中成功。
+"""
+successOverride.1.narrative.en = """
+测试结果：证据A对应破绽A，命中成功。
+"""
+successOverride.1.avg.1.speaker = hero
+successOverride.1.avg.1.portraitState = angry_attack
+successOverride.1.avg.1.portraitMotion = pop
+successOverride.1.avg.1.screenImpulse = zoom_punch
+successOverride.1.avg.1.zh = """
+证据A → 破绽A：成功。
+"""
+successOverride.1.avg.1.ja = """
+证据A → 破绽A：成功。
+"""
+successOverride.1.avg.1.en = """
+证据A → 破绽A：成功。
+"""
+successOverride.2.weakPointId = t1-wp-d
+successOverride.2.narrative.zh = """
+测试结果：证据D对应隐藏破绽D，且证据D被消耗。
+"""
+successOverride.2.narrative.ja = """
+测试结果：证据D对应隐藏破绽D，且证据D被消耗。
+"""
+successOverride.2.narrative.en = """
+测试结果：证据D对应隐藏破绽D，且证据D被消耗。
+"""
+successOverride.2.avg.1.speaker = enemy
+successOverride.2.avg.1.portraitState = surprise_small
+successOverride.2.avg.1.portraitMotion = shake_small
+successOverride.2.avg.1.screenFilter = noise
+successOverride.2.avg.1.zh = """
+隐藏破绽D被击穿，表情应切到惊讶。
+"""
+successOverride.2.avg.1.ja = """
+隐藏破绽D被击穿，表情应切到惊讶。
+"""
+successOverride.2.avg.1.en = """
+隐藏破绽D被击穿，表情应切到惊讶。
+"""
+useSeparateTurnClear = true
+turnClearNarrative.zh = """
+第一轮回合结尾：进入第二轮双真破绽测试。
+"""
+turnClearNarrative.ja = """
+第一轮回合结尾：进入第二轮双真破绽测试。
+"""
+turnClearNarrative.en = """
+第一轮回合结尾：进入第二轮双真破绽测试。
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.portraitState = defensive_frown
+turnClearAvg.1.portraitMotion = slide_out
+turnClearAvg.1.zh = """
+第一轮结束：表情开始转为防御。
+"""
+turnClearAvg.1.ja = """
+第一轮结束：表情开始转为防御。
+"""
+turnClearAvg.1.en = """
+第一轮结束：表情开始转为防御。
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.wrongEvidence.ja = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.wrongEvidence.en = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.wrongStatement.zh = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.wrongStatement.ja = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.wrongStatement.en = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.bothWrong.zh = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.bothWrong.ja = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+failNarrative.bothWrong.en = """
+第一轮失败反馈：请检查 A、B、D 的对应关系。
+"""
+logicExplanation.zh = """
+第一轮测试点：基础论破 A、调查掉落 D、隐藏台词 D。
+"""
+logicExplanation.ja = """
+第一轮测试点：基础论破 A、调查掉落 D、隐藏台词 D。
+"""
+logicExplanation.en = """
+第一轮测试点：基础论破 A、调查掉落 D、隐藏台词 D。
+"""
+successAvg.1.speaker = hero
+successAvg.1.portraitState = serious_focus
+successAvg.1.portraitMotion = bounce
+successAvg.1.screenFilter = scanline
+successAvg.1.zh = """
+第一轮成功 AVG：基础动作与表情切换正常。
+"""
+successAvg.1.ja = """
+第一轮成功 AVG：基础动作与表情切换正常。
+"""
+successAvg.1.en = """
+第一轮成功 AVG：基础动作与表情切换正常。
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.portraitState = defensive_frown
+failAvg.wrongEvidence.1.portraitMotion = shake_small
+failAvg.wrongEvidence.1.screenFilter = scanline
+failAvg.wrongEvidence.1.zh = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.wrongEvidence.1.ja = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.wrongEvidence.1.en = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.portraitState = defensive_frown
+failAvg.wrongStatement.1.portraitMotion = shake_small
+failAvg.wrongStatement.1.screenFilter = scanline
+failAvg.wrongStatement.1.zh = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.wrongStatement.1.ja = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.wrongStatement.1.en = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.portraitState = defensive_frown
+failAvg.bothWrong.1.portraitMotion = shake_small
+failAvg.bothWrong.1.screenFilter = scanline
+failAvg.bothWrong.1.zh = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.bothWrong.1.ja = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+failAvg.bothWrong.1.en = """
+第一轮失败 AVG：保持基础防御表情。
+"""
+
+[turn:2]
+line.1.id = t2-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.portraitState = serious_focus
+line.1.portraitMotion = pop
+line.1.zh = """
+测试台词E/F：[[t2-wp-e::破绽E：机柜门不是我开的]]，并且[[t2-wp-f::破绽F：那条指令不是我签发的]]。
+"""
+line.1.ja = """
+测试台词E/F：[[t2-wp-e::破绽E：机柜门不是我开的]]，并且[[t2-wp-f::破绽F：那条指令不是我签发的]]。
+"""
+line.1.en = """
+测试台词E/F：[[t2-wp-e::破绽E：机柜门不是我开的]]，并且[[t2-wp-f::破绽F：那条指令不是我签发的]]。
+"""
+line.2.id = t2-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.portraitState = innocent_hand
+line.2.portraitMotion = bounce
+line.2.zh = """
+测试台词G：[[t2-fake-g::调查项G：外联报码只是例行测试]]。调查成功后应掉落证据H。
+"""
+line.2.ja = """
+测试台词G：[[t2-fake-g::调查项G：外联报码只是例行测试]]。调查成功后应掉落证据H。
+"""
+line.2.en = """
+测试台词G：[[t2-fake-g::调查项G：外联报码只是例行测试]]。调查成功后应掉落证据H。
+"""
+line.3.id = t2-line-3
+line.3.hidden = true
+line.3.unlockMode = allTrueWeakPoints
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = evidence-i
+line.3.portraitState = defensive_frown
+line.3.portraitMotion = shake_small
+line.3.zh = """
+隐藏台词H：[[t2-wp-h::隐藏破绽H：暗网回执里的确认码不是我发的]]。
+"""
+line.3.ja = """
+隐藏台词H：[[t2-wp-h::隐藏破绽H：暗网回执里的确认码不是我发的]]。
+"""
+line.3.en = """
+隐藏台词H：[[t2-wp-h::隐藏破绽H：暗网回执里的确认码不是我发的]]。
+"""
+weakPoint.1.id = t2-wp-e
+weakPoint.1.lineId = t2-line-1
+weakPoint.1.evidenceId = evidence-e
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+破绽E：机柜门不是我开的
+"""
+weakPoint.1.ja = """
+破绽E：机柜门不是我开的
+"""
+weakPoint.1.en = """
+破绽E：机柜门不是我开的
+"""
+weakPoint.2.id = t2-wp-f
+weakPoint.2.lineId = t2-line-1
+weakPoint.2.evidenceId = evidence-f
+weakPoint.2.consumeEvidenceOnUse = false
+weakPoint.2.zh = """
+破绽F：那条指令不是我签发的
+"""
+weakPoint.2.ja = """
+破绽F：那条指令不是我签发的
+"""
+weakPoint.2.en = """
+破绽F：那条指令不是我签发的
+"""
+weakPoint.3.id = t2-fake-g
+weakPoint.3.lineId = t2-line-2
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+调查项G：外联报码只是例行测试
+"""
+weakPoint.3.ja = """
+调查项G：外联报码只是例行测试
+"""
+weakPoint.3.en = """
+调查项G：外联报码只是例行测试
+"""
+weakPoint.4.id = t2-wp-h
+weakPoint.4.lineId = t2-line-3
+weakPoint.4.evidenceId = evidence-h
+weakPoint.4.consumeEvidenceOnUse = true
+weakPoint.4.zh = """
+隐藏破绽H：暗网回执里的确认码不是我发的
+"""
+weakPoint.4.ja = """
+隐藏破绽H：暗网回执里的确认码不是我发的
+"""
+weakPoint.4.en = """
+隐藏破绽H：暗网回执里的确认码不是我发的
+"""
+query.1.zh = """
+第二轮调查反馈：E 与 F 同行并存，需分别击破。
+"""
+query.1.ja = """
+第二轮调查反馈：E 与 F 同行并存，需分别击破。
+"""
+query.1.en = """
+第二轮调查反馈：E 与 F 同行并存，需分别击破。
+"""
+query.2.zh = """
+第二轮调查反馈：先调查 G，再击破隐藏 H。
+"""
+query.2.ja = """
+第二轮调查反馈：先调查 G，再击破隐藏 H。
+"""
+query.2.en = """
+第二轮调查反馈：先调查 G，再击破隐藏 H。
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.portraitState = thinking_hand_to_chin
+queryAvg.1.portraitMotion = slide_in
+queryAvg.1.zh = """
+第二轮 AVG：验证 E/F 双真破绽和 H 的掉证据链。
+"""
+queryAvg.1.ja = """
+第二轮 AVG：验证 E/F 双真破绽和 H 的掉证据链。
+"""
+queryAvg.1.en = """
+第二轮 AVG：验证 E/F 双真破绽和 H 的掉证据链。
+"""
+queryAvg.2.speaker = enemy
+queryAvg.2.portraitState = serious_focus
+queryAvg.2.portraitMotion = pop
+queryAvg.2.zh = """
+第二轮 AVG 表情：开始从严肃转向防御。
+"""
+queryAvg.2.ja = """
+第二轮 AVG 表情：开始从严肃转向防御。
+"""
+queryAvg.2.en = """
+第二轮 AVG 表情：开始从严肃转向防御。
+"""
+inspectOverride.1.weakPointId = t2-fake-g
+inspectOverride.1.grantEvidence = evidence-h
+inspectOverride.1.revealLines = 
+inspectOverride.1.narrative.zh = """
+测试结果：调查项G成功，证据H掉落。
+"""
+inspectOverride.1.narrative.ja = """
+测试结果：调查项G成功，证据H掉落。
+"""
+inspectOverride.1.narrative.en = """
+测试结果：调查项G成功，证据H掉落。
+"""
+inspectOverride.1.avg.1.speaker = enemy
+inspectOverride.1.avg.1.portraitState = innocent_hand
+inspectOverride.1.avg.1.portraitMotion = bounce
+inspectOverride.1.avg.1.screenFilter = noise
+inspectOverride.1.avg.1.zh = """
+调查项G已命中，接下来应能击破隐藏 H。
+"""
+inspectOverride.1.avg.1.ja = """
+调查项G已命中，接下来应能击破隐藏 H。
+"""
+inspectOverride.1.avg.1.en = """
+调查项G已命中，接下来应能击破隐藏 H。
+"""
+sceneBackgroundSlot = analysis
+enemyPortraitState = serious_focus
+enemyPortraitMotion = slide_in
+screenFilter = noise
+screenImpulse = zoom_punch
+transition = wipe
+successNarrative.zh = """
+第二轮成功反馈：E、F、H 的链路判定正常。
+"""
+successNarrative.ja = """
+第二轮成功反馈：E、F、H 的链路判定正常。
+"""
+successNarrative.en = """
+第二轮成功反馈：E、F、H 的链路判定正常。
+"""
+successOverride.1.weakPointId = t2-wp-e
+successOverride.1.narrative.zh = """
+测试结果：证据E对应破绽E，命中成功。
+"""
+successOverride.1.narrative.ja = """
+测试结果：证据E对应破绽E，命中成功。
+"""
+successOverride.1.narrative.en = """
+测试结果：证据E对应破绽E，命中成功。
+"""
+successOverride.1.avg.1.speaker = hero
+successOverride.1.avg.1.portraitState = angry_attack
+successOverride.1.avg.1.portraitMotion = shake_small
+successOverride.1.avg.1.screenImpulse = camera_shake
+successOverride.1.avg.1.zh = """
+证据E → 破绽E：成功。
+"""
+successOverride.1.avg.1.ja = """
+证据E → 破绽E：成功。
+"""
+successOverride.1.avg.1.en = """
+证据E → 破绽E：成功。
+"""
+successOverride.2.weakPointId = t2-wp-f
+successOverride.2.narrative.zh = """
+测试结果：证据F对应破绽F，且证据F不被消耗。
+"""
+successOverride.2.narrative.ja = """
+测试结果：证据F对应破绽F，且证据F不被消耗。
+"""
+successOverride.2.narrative.en = """
+测试结果：证据F对应破绽F，且证据F不被消耗。
+"""
+successOverride.2.avg.1.speaker = hero
+successOverride.2.avg.1.portraitState = serious_focus
+successOverride.2.avg.1.portraitMotion = bounce
+successOverride.2.avg.1.screenFilter = noise
+successOverride.2.avg.1.zh = """
+证据F → 破绽F：成功，证据保留。
+"""
+successOverride.2.avg.1.ja = """
+证据F → 破绽F：成功，证据保留。
+"""
+successOverride.2.avg.1.en = """
+证据F → 破绽F：成功，证据保留。
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+第二轮回合结尾：掉落证据I，进入第三轮高压测试。
+"""
+turnClearNarrative.ja = """
+第二轮回合结尾：掉落证据I，进入第三轮高压测试。
+"""
+turnClearNarrative.en = """
+第二轮回合结尾：掉落证据I，进入第三轮高压测试。
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.portraitState = defensive_frown
+turnClearAvg.1.portraitMotion = shake_small
+turnClearAvg.1.backgroundSlot = reveal
+turnClearAvg.1.transition = glitch
+turnClearAvg.1.zh = """
+第二轮结束：表情进入明显防御阶段。
+"""
+turnClearAvg.1.ja = """
+第二轮结束：表情进入明显防御阶段。
+"""
+turnClearAvg.1.en = """
+第二轮结束：表情进入明显防御阶段。
+"""
+useSeparateFailureReasons = true
+failNarrative.wrongEvidence.zh = """
+第二轮失败反馈：你选错了证据，请重新核对 E/F/H。
+"""
+failNarrative.wrongEvidence.ja = """
+第二轮失败反馈：你选错了证据，请重新核对 E/F/H。
+"""
+failNarrative.wrongEvidence.en = """
+第二轮失败反馈：你选错了证据，请重新核对 E/F/H。
+"""
+failNarrative.wrongStatement.zh = """
+第二轮失败反馈：你点错了台词，请重新核对 E/F/H。
+"""
+failNarrative.wrongStatement.ja = """
+第二轮失败反馈：你点错了台词，请重新核对 E/F/H。
+"""
+failNarrative.wrongStatement.en = """
+第二轮失败反馈：你点错了台词，请重新核对 E/F/H。
+"""
+failNarrative.bothWrong.zh = """
+第二轮失败反馈：证据和台词都不对。
+"""
+failNarrative.bothWrong.ja = """
+第二轮失败反馈：证据和台词都不对。
+"""
+failNarrative.bothWrong.en = """
+第二轮失败反馈：证据和台词都不对。
+"""
+logicExplanation.zh = """
+第二轮测试点：同一行双真破绽 E/F、调查项 G 掉落 H、证据F复用。
+"""
+logicExplanation.ja = """
+第二轮测试点：同一行双真破绽 E/F、调查项 G 掉落 H、证据F复用。
+"""
+logicExplanation.en = """
+第二轮测试点：同一行双真破绽 E/F、调查项 G 掉落 H、证据F复用。
+"""
+successAvg.1.speaker = hero
+successAvg.1.portraitState = serious_focus
+successAvg.1.portraitMotion = bounce
+successAvg.1.screenFilter = noise
+successAvg.1.zh = """
+第二轮成功 AVG：双真破绽与复用证据测试正常。
+"""
+successAvg.1.ja = """
+第二轮成功 AVG：双真破绽与复用证据测试正常。
+"""
+successAvg.1.en = """
+第二轮成功 AVG：双真破绽与复用证据测试正常。
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.portraitState = shock_big
+failAvg.wrongEvidence.1.portraitMotion = shake_big
+failAvg.wrongEvidence.1.screenFilter = noise
+failAvg.wrongEvidence.1.zh = """
+第二轮 wrongEvidence AVG：表情应切到惊愕。
+"""
+failAvg.wrongEvidence.1.ja = """
+第二轮 wrongEvidence AVG：表情应切到惊愕。
+"""
+failAvg.wrongEvidence.1.en = """
+第二轮 wrongEvidence AVG：表情应切到惊愕。
+"""
+failOverride.wrongEvidence.1.weakPointId = t2-wp-e
+failOverride.wrongEvidence.1.narrative.zh = """
+测试结果：你给破绽E用了错误证据。
+"""
+failOverride.wrongEvidence.1.narrative.ja = """
+测试结果：你给破绽E用了错误证据。
+"""
+failOverride.wrongEvidence.1.narrative.en = """
+测试结果：你给破绽E用了错误证据。
+"""
+failOverride.wrongEvidence.1.avg.1.speaker = enemy
+failOverride.wrongEvidence.1.avg.1.portraitState = shock_big
+failOverride.wrongEvidence.1.avg.1.portraitMotion = shake_small
+failOverride.wrongEvidence.1.avg.1.screenFilter = noise
+failOverride.wrongEvidence.1.avg.1.zh = """
+破绽E wrongEvidence：请重新选择证据E。
+"""
+failOverride.wrongEvidence.1.avg.1.ja = """
+破绽E wrongEvidence：请重新选择证据E。
+"""
+failOverride.wrongEvidence.1.avg.1.en = """
+破绽E wrongEvidence：请重新选择证据E。
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.portraitState = defensive_frown
+failAvg.wrongStatement.1.portraitMotion = shake_small
+failAvg.wrongStatement.1.screenFilter = noise
+failAvg.wrongStatement.1.zh = """
+第二轮 wrongStatement AVG：保持防御表情。
+"""
+failAvg.wrongStatement.1.ja = """
+第二轮 wrongStatement AVG：保持防御表情。
+"""
+failAvg.wrongStatement.1.en = """
+第二轮 wrongStatement AVG：保持防御表情。
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.portraitState = angry_attack
+failAvg.bothWrong.1.portraitMotion = shake_big
+failAvg.bothWrong.1.screenFilter = glitch
+failAvg.bothWrong.1.screenImpulse = flash
+failAvg.bothWrong.1.zh = """
+第二轮 bothWrong AVG：进入更强的攻击反应。
+"""
+failAvg.bothWrong.1.ja = """
+第二轮 bothWrong AVG：进入更强的攻击反应。
+"""
+failAvg.bothWrong.1.en = """
+第二轮 bothWrong AVG：进入更强的攻击反应。
+"""
+
+[turn:3]
+line.1.id = t3-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.portraitState = smug_tilt
+line.1.portraitMotion = pop
+line.1.zh = """
+测试台词I：[[t3-wp-i::破绽I：那份竞价副本不是我泄露出去的]]。
+"""
+line.1.ja = """
+测试台词I：[[t3-wp-i::破绽I：那份竞价副本不是我泄露出去的]]。
+"""
+line.1.en = """
+测试台词I：[[t3-wp-i::破绽I：那份竞价副本不是我泄露出去的]]。
+"""
+line.2.id = t3-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.portraitState = defensive_frown
+line.2.portraitMotion = shake_small
+line.2.zh = """
+测试台词X：[[t3-fake-j::调查项X：屋顶照片里的人影不可能是我]]。这是第三轮干扰调查项。
+"""
+line.2.ja = """
+测试台词X：[[t3-fake-j::调查项X：屋顶照片里的人影不可能是我]]。这是第三轮干扰调查项。
+"""
+line.2.en = """
+测试台词X：[[t3-fake-j::调查项X：屋顶照片里的人影不可能是我]]。这是第三轮干扰调查项。
+"""
+line.3.id = t3-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.portraitState = shock_big
+line.3.portraitMotion = bounce
+line.3.zh = """
+第三轮压力台词：用于测试 glitch、camera_shake 与高压表情。
+"""
+line.3.ja = """
+第三轮压力台词：用于测试 glitch、camera_shake 与高压表情。
+"""
+line.3.en = """
+第三轮压力台词：用于测试 glitch、camera_shake 与高压表情。
+"""
+weakPoint.1.id = t3-wp-i
+weakPoint.1.lineId = t3-line-1
+weakPoint.1.evidenceId = evidence-i
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+破绽I：那份竞价副本不是我泄露出去的
+"""
+weakPoint.1.ja = """
+破绽I：那份竞价副本不是我泄露出去的
+"""
+weakPoint.1.en = """
+破绽I：那份竞价副本不是我泄露出去的
+"""
+weakPoint.2.id = t3-fake-j
+weakPoint.2.lineId = t3-line-2
+weakPoint.2.evidenceId = 
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+调查项X：屋顶照片里的人影不可能是我
+"""
+weakPoint.2.ja = """
+调查项X：屋顶照片里的人影不可能是我
+"""
+weakPoint.2.en = """
+调查项X：屋顶照片里的人影不可能是我
+"""
+query.1.zh = """
+第三轮调查反馈：证据I应直接对应破绽I。
+"""
+query.1.ja = """
+第三轮调查反馈：证据I应直接对应破绽I。
+"""
+query.1.en = """
+第三轮调查反馈：证据I应直接对应破绽I。
+"""
+query.2.zh = """
+第三轮调查反馈：调查项X仅用于干扰，不会掉新证据。
+"""
+query.2.ja = """
+第三轮调查反馈：调查项X仅用于干扰，不会掉新证据。
+"""
+query.2.en = """
+第三轮调查反馈：调查项X仅用于干扰，不会掉新证据。
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.portraitState = serious_focus
+queryAvg.1.portraitMotion = slide_in
+queryAvg.1.screenFilter = glitch
+queryAvg.1.zh = """
+第三轮 AVG：检查高压特效下的点击稳定性。
+"""
+queryAvg.1.ja = """
+第三轮 AVG：检查高压特效下的点击稳定性。
+"""
+queryAvg.1.en = """
+第三轮 AVG：检查高压特效下的点击稳定性。
+"""
+queryAvg.2.speaker = enemy
+queryAvg.2.portraitState = defensive_frown
+queryAvg.2.portraitMotion = shake_small
+queryAvg.2.screenImpulse = camera_shake
+queryAvg.2.zh = """
+第三轮 AVG 表情：从防御进入明显受压。
+"""
+queryAvg.2.ja = """
+第三轮 AVG 表情：从防御进入明显受压。
+"""
+queryAvg.2.en = """
+第三轮 AVG 表情：从防御进入明显受压。
+"""
+sceneBackgroundSlot = reveal
+enemyPortraitState = defensive_frown
+enemyPortraitMotion = shake_small
+screenFilter = glitch
+screenImpulse = camera_shake
+transition = glitch
+successNarrative.zh = """
+第三轮成功反馈：证据I对应破绽I，判定正常。
+"""
+successNarrative.ja = """
+第三轮成功反馈：证据I对应破绽I，判定正常。
+"""
+successNarrative.en = """
+第三轮成功反馈：证据I对应破绽I，判定正常。
+"""
+successOverride.1.weakPointId = t3-wp-i
+successOverride.1.narrative.zh = """
+测试结果：证据I对应破绽I，命中成功。
+"""
+successOverride.1.narrative.ja = """
+测试结果：证据I对应破绽I，命中成功。
+"""
+successOverride.1.narrative.en = """
+测试结果：证据I对应破绽I，命中成功。
+"""
+successOverride.1.avg.1.speaker = enemy
+successOverride.1.avg.1.portraitState = shock_big
+successOverride.1.avg.1.portraitMotion = bounce
+successOverride.1.avg.1.screenFilter = glitch
+successOverride.1.avg.1.zh = """
+证据I命中后，表情应明显转向惊愕。
+"""
+successOverride.1.avg.1.ja = """
+证据I命中后，表情应明显转向惊愕。
+"""
+successOverride.1.avg.1.en = """
+证据I命中后，表情应明显转向惊愕。
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+第三轮回合结尾：进入第四轮隐藏链测试。
+"""
+turnClearNarrative.ja = """
+第三轮回合结尾：进入第四轮隐藏链测试。
+"""
+turnClearNarrative.en = """
+第三轮回合结尾：进入第四轮隐藏链测试。
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.portraitState = shock_big
+turnClearAvg.1.portraitMotion = slide_out
+turnClearAvg.1.backgroundSlot = hearing
+turnClearAvg.1.transition = fade
+turnClearAvg.1.zh = """
+第三轮结束：高压阶段已触发表情失稳。
+"""
+turnClearAvg.1.ja = """
+第三轮结束：高压阶段已触发表情失稳。
+"""
+turnClearAvg.1.en = """
+第三轮结束：高压阶段已触发表情失稳。
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.wrongEvidence.ja = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.wrongEvidence.en = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.wrongStatement.zh = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.wrongStatement.ja = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.wrongStatement.en = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.bothWrong.zh = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.bothWrong.ja = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+failNarrative.bothWrong.en = """
+第三轮失败反馈：请重新核对证据I与破绽I。
+"""
+logicExplanation.zh = """
+第三轮测试点：证据I直打破绽I，同时观察高压滤镜和惊愕表情。
+"""
+logicExplanation.ja = """
+第三轮测试点：证据I直打破绽I，同时观察高压滤镜和惊愕表情。
+"""
+logicExplanation.en = """
+第三轮测试点：证据I直打破绽I，同时观察高压滤镜和惊愕表情。
+"""
+successAvg.1.speaker = hero
+successAvg.1.portraitState = angry_attack
+successAvg.1.portraitMotion = shake_small
+successAvg.1.screenFilter = glitch
+successAvg.1.zh = """
+第三轮成功 AVG：高压阶段操作和表情切换正常。
+"""
+successAvg.1.ja = """
+第三轮成功 AVG：高压阶段操作和表情切换正常。
+"""
+successAvg.1.en = """
+第三轮成功 AVG：高压阶段操作和表情切换正常。
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.portraitState = shock_big
+failAvg.wrongEvidence.1.portraitMotion = shake_big
+failAvg.wrongEvidence.1.screenFilter = glitch
+failAvg.wrongEvidence.1.screenImpulse = flash
+failAvg.wrongEvidence.1.zh = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.wrongEvidence.1.ja = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.wrongEvidence.1.en = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.portraitState = shock_big
+failAvg.wrongStatement.1.portraitMotion = shake_big
+failAvg.wrongStatement.1.screenFilter = glitch
+failAvg.wrongStatement.1.screenImpulse = flash
+failAvg.wrongStatement.1.zh = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.wrongStatement.1.ja = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.wrongStatement.1.en = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.portraitState = shock_big
+failAvg.bothWrong.1.portraitMotion = shake_big
+failAvg.bothWrong.1.screenFilter = glitch
+failAvg.bothWrong.1.screenImpulse = flash
+failAvg.bothWrong.1.zh = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.bothWrong.1.ja = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+failAvg.bothWrong.1.en = """
+第三轮失败 AVG：维持惊愕并加强抖动。
+"""
+
+[turn:4]
+line.1.id = t4-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.portraitState = polite_smile
+line.1.portraitMotion = slide_in
+line.1.zh = """
+测试台词J：[[t4-wp-j::破绽J：旧签章作废后谁都能伪造我的口令]]。
+"""
+line.1.ja = """
+测试台词J：[[t4-wp-j::破绽J：旧签章作废后谁都能伪造我的口令]]。
+"""
+line.1.en = """
+测试台词J：[[t4-wp-j::破绽J：旧签章作废后谁都能伪造我的口令]]。
+"""
+line.2.id = t4-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.portraitState = innocent_hand
+line.2.portraitMotion = pop
+line.2.zh = """
+测试台词K：[[t4-fake-k::调查项K：备用口令只是留给值班组的保险]]。调查成功后应掉落证据K并揭示隐藏台词K。
+"""
+line.2.ja = """
+测试台词K：[[t4-fake-k::调查项K：备用口令只是留给值班组的保险]]。调查成功后应掉落证据K并揭示隐藏台词K。
+"""
+line.2.en = """
+测试台词K：[[t4-fake-k::调查项K：备用口令只是留给值班组的保险]]。调查成功后应掉落证据K并揭示隐藏台词K。
+"""
+line.3.id = t4-line-3
+line.3.hidden = true
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.portraitState = surprise_small
+line.3.portraitMotion = shake_small
+line.3.zh = """
+隐藏台词K：[[t4-wp-k::隐藏破绽K：封存镜像里的重写时间不是我的]]。
+"""
+line.3.ja = """
+隐藏台词K：[[t4-wp-k::隐藏破绽K：封存镜像里的重写时间不是我的]]。
+"""
+line.3.en = """
+隐藏台词K：[[t4-wp-k::隐藏破绽K：封存镜像里的重写时间不是我的]]。
+"""
+line.4.id = t4-line-4
+line.4.hidden = true
+line.4.unlockMode = allTrueWeakPoints
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = evidence-l
+line.4.portraitState = breakdown_unstable
+line.4.portraitMotion = shake_big
+line.4.zh = """
+第四轮自动掉落提示：真破绽全部击破后应自动掉落证据L。
+"""
+line.4.ja = """
+第四轮自动掉落提示：真破绽全部击破后应自动掉落证据L。
+"""
+line.4.en = """
+第四轮自动掉落提示：真破绽全部击破后应自动掉落证据L。
+"""
+weakPoint.1.id = t4-wp-j
+weakPoint.1.lineId = t4-line-1
+weakPoint.1.evidenceId = evidence-j
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+破绽J：旧签章作废后谁都能伪造我的口令
+"""
+weakPoint.1.ja = """
+破绽J：旧签章作废后谁都能伪造我的口令
+"""
+weakPoint.1.en = """
+破绽J：旧签章作废后谁都能伪造我的口令
+"""
+weakPoint.2.id = t4-fake-k
+weakPoint.2.lineId = t4-line-2
+weakPoint.2.evidenceId = 
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+调查项K：备用口令只是留给值班组的保险
+"""
+weakPoint.2.ja = """
+调查项K：备用口令只是留给值班组的保险
+"""
+weakPoint.2.en = """
+调查项K：备用口令只是留给值班组的保险
+"""
+weakPoint.3.id = t4-wp-k
+weakPoint.3.lineId = t4-line-3
+weakPoint.3.evidenceId = evidence-k
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+隐藏破绽K：封存镜像里的重写时间不是我的
+"""
+weakPoint.3.ja = """
+隐藏破绽K：封存镜像里的重写时间不是我的
+"""
+weakPoint.3.en = """
+隐藏破绽K：封存镜像里的重写时间不是我的
+"""
+query.1.zh = """
+第四轮调查反馈：先调查 K，再用证据K击破隐藏破绽K。
+"""
+query.1.ja = """
+第四轮调查反馈：先调查 K，再用证据K击破隐藏破绽K。
+"""
+query.1.en = """
+第四轮调查反馈：先调查 K，再用证据K击破隐藏破绽K。
+"""
+query.2.zh = """
+第四轮调查反馈：J 与隐藏 K 全部完成后，自动掉落证据L。
+"""
+query.2.ja = """
+第四轮调查反馈：J 与隐藏 K 全部完成后，自动掉落证据L。
+"""
+query.2.en = """
+第四轮调查反馈：J 与隐藏 K 全部完成后，自动掉落证据L。
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.portraitState = thinking_hand_to_chin
+queryAvg.1.portraitMotion = slide_in
+queryAvg.1.zh = """
+第四轮 AVG：这是隐藏链路测试。
+"""
+queryAvg.1.ja = """
+第四轮 AVG：这是隐藏链路测试。
+"""
+queryAvg.1.en = """
+第四轮 AVG：这是隐藏链路测试。
+"""
+queryAvg.2.speaker = enemy
+queryAvg.2.portraitState = polite_smile
+queryAvg.2.portraitMotion = slide_in
+queryAvg.2.zh = """
+第四轮 AVG 表情：伪装平静开始出现裂缝。
+"""
+queryAvg.2.ja = """
+第四轮 AVG 表情：伪装平静开始出现裂缝。
+"""
+queryAvg.2.en = """
+第四轮 AVG 表情：伪装平静开始出现裂缝。
+"""
+inspectOverride.1.weakPointId = t4-fake-k
+inspectOverride.1.grantEvidence = evidence-k
+inspectOverride.1.revealLines = t4-line-3
+inspectOverride.1.narrative.zh = """
+测试结果：调查项K成功，证据K掉落，隐藏台词K已揭示。
+"""
+inspectOverride.1.narrative.ja = """
+测试结果：调查项K成功，证据K掉落，隐藏台词K已揭示。
+"""
+inspectOverride.1.narrative.en = """
+测试结果：调查项K成功，证据K掉落，隐藏台词K已揭示。
+"""
+inspectOverride.1.avg.1.speaker = enemy
+inspectOverride.1.avg.1.portraitState = surprise_small
+inspectOverride.1.avg.1.portraitMotion = shake_small
+inspectOverride.1.avg.1.screenFilter = monochrome
+inspectOverride.1.avg.1.zh = """
+调查项K已命中，表情应转入明显动摇。
+"""
+inspectOverride.1.avg.1.ja = """
+调查项K已命中，表情应转入明显动摇。
+"""
+inspectOverride.1.avg.1.en = """
+调查项K已命中，表情应转入明显动摇。
+"""
+sceneBackgroundSlot = hearing
+enemyPortraitState = polite_smile
+enemyPortraitMotion = slide_in
+screenFilter = monochrome
+screenImpulse = none
+transition = fade
+successNarrative.zh = """
+第四轮成功反馈：J、隐藏K、自动掉L 的链路判定正常。
+"""
+successNarrative.ja = """
+第四轮成功反馈：J、隐藏K、自动掉L 的链路判定正常。
+"""
+successNarrative.en = """
+第四轮成功反馈：J、隐藏K、自动掉L 的链路判定正常。
+"""
+successOverride.1.weakPointId = t4-wp-j
+successOverride.1.narrative.zh = """
+测试结果：证据J对应破绽J，命中成功。
+"""
+successOverride.1.narrative.ja = """
+测试结果：证据J对应破绽J，命中成功。
+"""
+successOverride.1.narrative.en = """
+测试结果：证据J对应破绽J，命中成功。
+"""
+successOverride.1.avg.1.speaker = hero
+successOverride.1.avg.1.portraitState = serious_focus
+successOverride.1.avg.1.portraitMotion = pop
+successOverride.1.avg.1.zh = """
+证据J → 破绽J：成功。
+"""
+successOverride.1.avg.1.ja = """
+证据J → 破绽J：成功。
+"""
+successOverride.1.avg.1.en = """
+证据J → 破绽J：成功。
+"""
+successOverride.2.weakPointId = t4-wp-k
+successOverride.2.narrative.zh = """
+测试结果：证据K对应隐藏破绽K，且证据L应自动掉落。
+"""
+successOverride.2.narrative.ja = """
+测试结果：证据K对应隐藏破绽K，且证据L应自动掉落。
+"""
+successOverride.2.narrative.en = """
+测试结果：证据K对应隐藏破绽K，且证据L应自动掉落。
+"""
+successOverride.2.avg.1.speaker = enemy
+successOverride.2.avg.1.portraitState = breakdown_unstable
+successOverride.2.avg.1.portraitMotion = shake_big
+successOverride.2.avg.1.screenFilter = monochrome
+successOverride.2.avg.1.zh = """
+隐藏破绽K被击穿后，表情应进入破防阶段。
+"""
+successOverride.2.avg.1.ja = """
+隐藏破绽K被击穿后，表情应进入破防阶段。
+"""
+successOverride.2.avg.1.en = """
+隐藏破绽K被击穿后，表情应进入破防阶段。
+"""
+useSeparateTurnClear = true
+turnClearNarrative.zh = """
+第四轮回合结尾：证据L已就位，进入终局。
+"""
+turnClearNarrative.ja = """
+第四轮回合结尾：证据L已就位，进入终局。
+"""
+turnClearNarrative.en = """
+第四轮回合结尾：证据L已就位，进入终局。
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.portraitState = breakdown_unstable
+turnClearAvg.1.portraitMotion = slide_out
+turnClearAvg.1.transition = glitch
+turnClearAvg.1.zh = """
+第四轮结束：正式进入破防表情段。
+"""
+turnClearAvg.1.ja = """
+第四轮结束：正式进入破防表情段。
+"""
+turnClearAvg.1.en = """
+第四轮结束：正式进入破防表情段。
+"""
+useSeparateFailureReasons = true
+failNarrative.wrongEvidence.zh = """
+第四轮失败反馈：你选错了证据，请重新核对 J / K / L 链。
+"""
+failNarrative.wrongEvidence.ja = """
+第四轮失败反馈：你选错了证据，请重新核对 J / K / L 链。
+"""
+failNarrative.wrongEvidence.en = """
+第四轮失败反馈：你选错了证据，请重新核对 J / K / L 链。
+"""
+failNarrative.wrongStatement.zh = """
+第四轮失败反馈：你点错了台词，请重新核对 J / K / L 链。
+"""
+failNarrative.wrongStatement.ja = """
+第四轮失败反馈：你点错了台词，请重新核对 J / K / L 链。
+"""
+failNarrative.wrongStatement.en = """
+第四轮失败反馈：你点错了台词，请重新核对 J / K / L 链。
+"""
+failNarrative.bothWrong.zh = """
+第四轮失败反馈：证据和台词都不对。
+"""
+failNarrative.bothWrong.ja = """
+第四轮失败反馈：证据和台词都不对。
+"""
+failNarrative.bothWrong.en = """
+第四轮失败反馈：证据和台词都不对。
+"""
+logicExplanation.zh = """
+第四轮测试点：调查项K掉证据K、隐藏破绽K、自动掉证据L。
+"""
+logicExplanation.ja = """
+第四轮测试点：调查项K掉证据K、隐藏破绽K、自动掉证据L。
+"""
+logicExplanation.en = """
+第四轮测试点：调查项K掉证据K、隐藏破绽K、自动掉证据L。
+"""
+successAvg.1.speaker = hero
+successAvg.1.portraitState = thinking_hand_to_chin
+successAvg.1.portraitMotion = bounce
+successAvg.1.screenFilter = monochrome
+successAvg.1.zh = """
+第四轮成功 AVG：隐藏链路与破防表情切换正常。
+"""
+successAvg.1.ja = """
+第四轮成功 AVG：隐藏链路与破防表情切换正常。
+"""
+successAvg.1.en = """
+第四轮成功 AVG：隐藏链路与破防表情切换正常。
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.portraitState = defensive_frown
+failAvg.wrongEvidence.1.portraitMotion = shake_small
+failAvg.wrongEvidence.1.screenFilter = monochrome
+failAvg.wrongEvidence.1.zh = """
+第四轮 wrongEvidence AVG：仍处在防御到动摇之间。
+"""
+failAvg.wrongEvidence.1.ja = """
+第四轮 wrongEvidence AVG：仍处在防御到动摇之间。
+"""
+failAvg.wrongEvidence.1.en = """
+第四轮 wrongEvidence AVG：仍处在防御到动摇之间。
+"""
+failOverride.wrongEvidence.1.weakPointId = t4-wp-k
+failOverride.wrongEvidence.1.narrative.zh = """
+测试结果：隐藏破绽K使用了错误证据。
+"""
+failOverride.wrongEvidence.1.narrative.ja = """
+测试结果：隐藏破绽K使用了错误证据。
+"""
+failOverride.wrongEvidence.1.narrative.en = """
+测试结果：隐藏破绽K使用了错误证据。
+"""
+failOverride.wrongEvidence.1.avg.1.speaker = enemy
+failOverride.wrongEvidence.1.avg.1.portraitState = shock_big
+failOverride.wrongEvidence.1.avg.1.portraitMotion = shake_small
+failOverride.wrongEvidence.1.avg.1.screenFilter = monochrome
+failOverride.wrongEvidence.1.avg.1.zh = """
+隐藏破绽K wrongEvidence：请重新选择证据K。
+"""
+failOverride.wrongEvidence.1.avg.1.ja = """
+隐藏破绽K wrongEvidence：请重新选择证据K。
+"""
+failOverride.wrongEvidence.1.avg.1.en = """
+隐藏破绽K wrongEvidence：请重新选择证据K。
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.portraitState = shock_big
+failAvg.wrongStatement.1.portraitMotion = shake_big
+failAvg.wrongStatement.1.screenFilter = monochrome
+failAvg.wrongStatement.1.zh = """
+第四轮 wrongStatement AVG：切到惊愕表情。
+"""
+failAvg.wrongStatement.1.ja = """
+第四轮 wrongStatement AVG：切到惊愕表情。
+"""
+failAvg.wrongStatement.1.en = """
+第四轮 wrongStatement AVG：切到惊愕表情。
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.portraitState = angry_attack
+failAvg.bothWrong.1.portraitMotion = shake_big
+failAvg.bothWrong.1.screenFilter = glitch
+failAvg.bothWrong.1.screenImpulse = flash
+failAvg.bothWrong.1.zh = """
+第四轮 bothWrong AVG：进入激烈崩坏反应。
+"""
+failAvg.bothWrong.1.ja = """
+第四轮 bothWrong AVG：进入激烈崩坏反应。
+"""
+failAvg.bothWrong.1.en = """
+第四轮 bothWrong AVG：进入激烈崩坏反应。
+"""
+
+[turn:5]
+line.1.id = t5-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.portraitState = angry_attack
+line.1.portraitMotion = shake_big
+line.1.zh = """
+测试台词L：[[t5-wp-l::破绽L：最终授权不是为了掩盖事故]]。
+"""
+line.1.ja = """
+测试台词L：[[t5-wp-l::破绽L：最终授权不是为了掩盖事故]]。
+"""
+line.1.en = """
+测试台词L：[[t5-wp-l::破绽L：最终授权不是为了掩盖事故]]。
+"""
+line.2.id = t5-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.portraitState = breakdown_unstable
+line.2.portraitMotion = bounce
+line.2.zh = """
+测试台词M：[[t5-fake-m::调查项M：我改写记录只是为了保住项目]]。这是终局前的最后干扰项。
+"""
+line.2.ja = """
+测试台词M：[[t5-fake-m::调查项M：我改写记录只是为了保住项目]]。这是终局前的最后干扰项。
+"""
+line.2.en = """
+测试台词M：[[t5-fake-m::调查项M：我改写记录只是为了保住项目]]。这是终局前的最后干扰项。
+"""
+line.3.id = t5-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.portraitState = sad_confession
+line.3.portraitMotion = slide_in
+line.3.zh = """
+终局前置台词：下一次命中应直接进入自白。
+"""
+line.3.ja = """
+终局前置台词：下一次命中应直接进入自白。
+"""
+line.3.en = """
+终局前置台词：下一次命中应直接进入自白。
+"""
+weakPoint.1.id = t5-wp-l
+weakPoint.1.lineId = t5-line-1
+weakPoint.1.evidenceId = evidence-l
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+破绽L：最终授权不是为了掩盖事故
+"""
+weakPoint.1.ja = """
+破绽L：最终授权不是为了掩盖事故
+"""
+weakPoint.1.en = """
+破绽L：最终授权不是为了掩盖事故
+"""
+weakPoint.2.id = t5-fake-m
+weakPoint.2.lineId = t5-line-2
+weakPoint.2.evidenceId = 
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+调查项M：我改写记录只是为了保住项目
+"""
+weakPoint.2.ja = """
+调查项M：我改写记录只是为了保住项目
+"""
+weakPoint.2.en = """
+调查项M：我改写记录只是为了保住项目
+"""
+query.1.zh = """
+第五轮调查反馈：证据L应直接对应破绽L。
+"""
+query.1.ja = """
+第五轮调查反馈：证据L应直接对应破绽L。
+"""
+query.1.en = """
+第五轮调查反馈：证据L应直接对应破绽L。
+"""
+query.2.zh = """
+第五轮调查反馈：调查项M仅用于终局前干扰。
+"""
+query.2.ja = """
+第五轮调查反馈：调查项M仅用于终局前干扰。
+"""
+query.2.en = """
+第五轮调查反馈：调查项M仅用于终局前干扰。
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.portraitState = angry_attack
+queryAvg.1.portraitMotion = shake_big
+queryAvg.1.screenFilter = alert_red
+queryAvg.1.screenImpulse = flash
+queryAvg.1.zh = """
+第五轮 AVG：只验证 L 与终局自白。
+"""
+queryAvg.1.ja = """
+第五轮 AVG：只验证 L 与终局自白。
+"""
+queryAvg.1.en = """
+第五轮 AVG：只验证 L 与终局自白。
+"""
+queryAvg.2.speaker = enemy
+queryAvg.2.portraitState = breakdown_unstable
+queryAvg.2.portraitMotion = bounce
+queryAvg.2.zh = """
+第五轮 AVG 表情：从崩坏进入认罪前夕。
+"""
+queryAvg.2.ja = """
+第五轮 AVG 表情：从崩坏进入认罪前夕。
+"""
+queryAvg.2.en = """
+第五轮 AVG 表情：从崩坏进入认罪前夕。
+"""
+sceneBackgroundSlot = confession
+enemyPortraitState = breakdown_unstable
+enemyPortraitMotion = shake_big
+screenFilter = alert_red
+screenImpulse = flash
+transition = white_flash
+successNarrative.zh = """
+第五轮成功反馈：证据L对应破绽L，终局闭合。
+"""
+successNarrative.ja = """
+第五轮成功反馈：证据L对应破绽L，终局闭合。
+"""
+successNarrative.en = """
+第五轮成功反馈：证据L对应破绽L，终局闭合。
+"""
+successOverride.1.weakPointId = t5-wp-l
+successOverride.1.narrative.zh = """
+测试结果：证据L对应破绽L，接下来应直接进入自白。
+"""
+successOverride.1.narrative.ja = """
+测试结果：证据L对应破绽L，接下来应直接进入自白。
+"""
+successOverride.1.narrative.en = """
+测试结果：证据L对应破绽L，接下来应直接进入自白。
+"""
+successOverride.1.avg.1.speaker = enemy
+successOverride.1.avg.1.portraitState = sad_confession
+successOverride.1.avg.1.portraitMotion = slide_out
+successOverride.1.avg.1.screenFilter = alert_red
+successOverride.1.avg.1.transition = fade
+successOverride.1.avg.1.zh = """
+证据L命中后，表情应从崩坏收束到认罪。
+"""
+successOverride.1.avg.1.ja = """
+证据L命中后，表情应从崩坏收束到认罪。
+"""
+successOverride.1.avg.1.en = """
+证据L命中后，表情应从崩坏收束到认罪。
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+第五轮回合结尾：进入 victory。
+"""
+turnClearNarrative.ja = """
+第五轮回合结尾：进入 victory。
+"""
+turnClearNarrative.en = """
+第五轮回合结尾：进入 victory。
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.portraitState = sad_confession
+turnClearAvg.1.portraitMotion = none
+turnClearAvg.1.backgroundSlot = ending
+turnClearAvg.1.transition = fade
+turnClearAvg.1.zh = """
+第五轮结束：表情已进入认罪前静止。
+"""
+turnClearAvg.1.ja = """
+第五轮结束：表情已进入认罪前静止。
+"""
+turnClearAvg.1.en = """
+第五轮结束：表情已进入认罪前静止。
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.wrongEvidence.ja = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.wrongEvidence.en = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.wrongStatement.zh = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.wrongStatement.ja = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.wrongStatement.en = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.bothWrong.zh = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.bothWrong.ja = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+failNarrative.bothWrong.en = """
+第五轮失败反馈：请重新核对证据L与破绽L。
+"""
+logicExplanation.zh = """
+第五轮测试点：证据L直打破绽L，并直接进入终局自白。
+"""
+logicExplanation.ja = """
+第五轮测试点：证据L直打破绽L，并直接进入终局自白。
+"""
+logicExplanation.en = """
+第五轮测试点：证据L直打破绽L，并直接进入终局自白。
+"""
+successAvg.1.speaker = hero
+successAvg.1.portraitState = serious_focus
+successAvg.1.portraitMotion = slide_in
+successAvg.1.screenFilter = alert_red
+successAvg.1.zh = """
+第五轮成功 AVG：终局前的最后一次判定正常。
+"""
+successAvg.1.ja = """
+第五轮成功 AVG：终局前的最后一次判定正常。
+"""
+successAvg.1.en = """
+第五轮成功 AVG：终局前的最后一次判定正常。
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.portraitState = breakdown_unstable
+failAvg.wrongEvidence.1.portraitMotion = shake_big
+failAvg.wrongEvidence.1.screenFilter = alert_red
+failAvg.wrongEvidence.1.screenImpulse = flash
+failAvg.wrongEvidence.1.zh = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.wrongEvidence.1.ja = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.wrongEvidence.1.en = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.portraitState = breakdown_unstable
+failAvg.wrongStatement.1.portraitMotion = shake_big
+failAvg.wrongStatement.1.screenFilter = alert_red
+failAvg.wrongStatement.1.screenImpulse = flash
+failAvg.wrongStatement.1.zh = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.wrongStatement.1.ja = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.wrongStatement.1.en = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.portraitState = breakdown_unstable
+failAvg.bothWrong.1.portraitMotion = shake_big
+failAvg.bothWrong.1.screenFilter = alert_red
+failAvg.bothWrong.1.screenImpulse = flash
+failAvg.bothWrong.1.zh = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.bothWrong.1.ja = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+failAvg.bothWrong.1.en = """
+第五轮失败 AVG：保持崩坏表情并加强压迫。
+"""
+interference.1.zh = """
+终局干扰弹窗 1：SCANLINE JITTER
+"""
+interference.1.ja = """
+終局妨害ポップアップ1：SCANLINE JITTER
+"""
+interference.1.en = """
+Final interference popup 1: SCANLINE JITTER
+"""
+interference.2.zh = """
+终局干扰弹窗 2：SIGNAL ECHO
+"""
+interference.2.ja = """
+終局妨害ポップアップ2：SIGNAL ECHO
+"""
+interference.2.en = """
+Final interference popup 2: SIGNAL ECHO
+"""
+interference.3.zh = """
+终局干扰弹窗 3：FRAME DESYNC
+"""
+interference.3.ja = """
+終局妨害ポップアップ3：FRAME DESYNC
+"""
+interference.3.en = """
+Final interference popup 3: FRAME DESYNC
+"""
+interference.4.zh = """
+终局干扰弹窗 4：NOISE BURST
+"""
+interference.4.ja = """
+終局妨害ポップアップ4：NOISE BURST
+"""
+interference.4.en = """
+Final interference popup 4: NOISE BURST
+"""
+
+[victory]
+narrative.zh = """
+纯测试结果：证据A 到 证据L 的链路全部闭合，所有测试回合通过。
+"""
+narrative.ja = """
+纯测试结果：证据A 到 证据L 的链路全部闭合，所有测试回合通过。
+"""
+narrative.en = """
+纯测试结果：证据A 到 证据L 的链路全部闭合，所有测试回合通过。
+"""
+confession.zh = """
+测试自白：我承认，A 到 L 的全部链路都已经被你们完整跑通。现在应播放终局自白表情与收束演出。
+"""
+confession.ja = """
+测试自白：我承认，A 到 L 的全部链路都已经被你们完整跑通。现在应播放终局自白表情与收束演出。
+"""
+confession.en = """
+测试自白：我承认，A 到 L 的全部链路都已经被你们完整跑通。现在应播放终局自白表情与收束演出。
+"""
+backgroundSlot = ending
+screenFilter = dim
+transition = fade
+avg.1.speaker = enemy
+avg.1.portraitState = breakdown_unstable
+avg.1.portraitMotion = shake_small
+avg.1.screenFilter = dim
+avg.1.zh = """
+终局 AVG 1：破防表情保持。
+"""
+avg.1.ja = """
+终局 AVG 1：破防表情保持。
+"""
+avg.1.en = """
+终局 AVG 1：破防表情保持。
+"""
+avg.2.speaker = enemy
+avg.2.portraitState = sad_confession
+avg.2.portraitMotion = slide_out
+avg.2.screenFilter = dim
+avg.2.zh = """
+终局 AVG 2：切换到认罪表情。
+"""
+avg.2.ja = """
+终局 AVG 2：切换到认罪表情。
+"""
+avg.2.en = """
+终局 AVG 2：切换到认罪表情。
+"""
+avg.3.speaker = hero
+avg.3.portraitState = serious_focus
+avg.3.zh = """
+终局 AVG 3：主角表情回到严肃确认。
+"""
+avg.3.ja = """
+终局 AVG 3：主角表情回到严肃确认。
+"""
+avg.3.en = """
+终局 AVG 3：主角表情回到严肃确认。
+"""
+avg.4.speaker = system
+avg.4.screenFilter = dim
+avg.4.zh = """
+纯测试闭合：调查、隐藏线、掉证据、复用证据、AVG 表情推进、终局自白全部通过。
+"""
+avg.4.ja = """
+纯测试闭合：调查、隐藏线、掉证据、复用证据、AVG 表情推进、终局自白全部通过。
+"""
+avg.4.en = """
+纯测试闭合：调查、隐藏线、掉证据、复用证据、AVG 表情推进、终局自白全部通过。
+"""

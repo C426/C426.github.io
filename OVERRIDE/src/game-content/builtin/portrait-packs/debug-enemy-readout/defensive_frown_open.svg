@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800">
+  <rect width="100%" height="100%" fill="transparent"/>
+  <rect x="2" y="2" width="1396" height="1796" fill="none" stroke="#ffb84d" stroke-width="4"/>
+  <rect x="84" y="96" width="1232" height="1608" rx="28" fill="#131018" stroke="#ffb84d" stroke-width="8"/>
+  <rect x="124" y="136" width="1152" height="208" fill="none" stroke="#ffb84d" stroke-width="4"/>
+  <rect x="124" y="392" width="1152" height="944" fill="none" stroke="#ffb84d" stroke-width="4"/>
+  <rect x="124" y="1384" width="1152" height="280" fill="none" stroke="#ffb84d" stroke-width="4"/>
+  <text x="152" y="172" font-family="monospace" font-size="28" fill="#ffb84d" opacity="0.82">FILE // defensive_frown_open.svg</text>
+  <text x="152" y="214" font-family="monospace" font-size="64" fill="#ffb84d">嫌犯立绘 / 容疑者立ち絵 / ENEMY PORTRAIT</text>
+  <text x="152" y="286" font-family="monospace" font-size="42" fill="#ffb84d" opacity="0.85">调试嫌犯立绘包 / デバッグ容疑者立ち絵パック / Debug Enemy Portrait Pack</text>
+  <text x="700" y="676" text-anchor="middle" font-family="monospace" font-size="78" fill="#ffb84d">防御皱眉</text>
+  <text x="700" y="768" text-anchor="middle" font-family="monospace" font-size="72" fill="#ffb84d">防御的なしかめ面</text>
+  <text x="700" y="860" text-anchor="middle" font-family="monospace" font-size="76" fill="#ffb84d">DEFENSIVE FROWN</text>
+  <text x="700" y="1012" text-anchor="middle" font-family="monospace" font-size="46" fill="#ffb84d" opacity="0.82">张嘴说话 / 口開き / OPEN</text>
+  <text x="152" y="1466" font-family="monospace" font-size="42" fill="#ffb84d">PACK // debug-enemy-readout</text>
+  <text x="152" y="1534" font-family="monospace" font-size="36" fill="#ffb84d" opacity="0.82">STATE // defensive_frown</text>
+  <text x="152" y="1602" font-family="monospace" font-size="36" fill="#ffb84d" opacity="0.82">MOUTH // open</text>
+  <text x="152" y="1670" font-family="monospace" font-size="36" fill="#ffb84d" opacity="0.82">SIZE // 1400 x 1800px</text>
+</svg>

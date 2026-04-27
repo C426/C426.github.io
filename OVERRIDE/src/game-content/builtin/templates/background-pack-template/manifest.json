@@ -1,0 +1,26 @@
+{
+  "version": "background_pack_v1",
+  "id": "your-background-pack-id",
+  "displayName": {
+    "zh": "你的背景包名称",
+    "ja": "あなたの背景パック名",
+    "en": "Your Background Pack Name"
+  },
+  "thumbnail": "thumbnail.png",
+  "slots": {
+    "boot": "boot.png",
+    "briefing": "briefing.png",
+    "hearing": "hearing.png",
+    "cross_exam": "cross_exam.png",
+    "analysis": "analysis.png",
+    "reveal": "reveal.png",
+    "confession": "confession.png",
+    "ending": "ending.png"
+  },
+  "overlays": {
+    "cross_exam": "overlay.png",
+    "analysis": "overlay.png",
+    "reveal": "overlay.png",
+    "confession": "overlay.png"
+  }
+}

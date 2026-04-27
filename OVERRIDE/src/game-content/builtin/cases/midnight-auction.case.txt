@@ -1,0 +1,997 @@
+[meta]
+version = LOCAL_CASE_TXT_V1
+caseId = midnight-auction
+defaultLang = zh
+caseTitle.zh = """
+午夜密拍
+"""
+caseTitle.ja = """
+ミッドナイト・オークション
+"""
+caseTitle.en = """
+Midnight Auction
+"""
+suspectEmoji = 
+heroEmoji = 
+heroPortraitPackId = 
+enemyPortraitPackId = 
+backgroundPackId = 
+suspectName.zh = """
+档案经理卡伊
+"""
+suspectName.ja = """
+アーカイブ管理者カイ
+"""
+suspectName.en = """
+Archive Manager Kai
+"""
+
+[intro]
+narrative.zh = """
+卫星档案馆的密级目录在拍卖前夜被提前泄露。档案经理卡伊嘴上说自己只是在“守护流程”，可黑市买家的报价已经先一步流进城里。你要拆开他接触终端、传递情报与最终交付三段动作链。
+"""
+narrative.ja = """
+衛星アーカイブ館の機密目録は競売前夜に漏洩した。管理者カイは「手続きの保護」を口にするが、闇市場の買い手の見積もりは先に街へ流れ込んでいた。端末接触、情報伝達、最終受け渡しの三段連鎖を解体していく。
+"""
+narrative.en = """
+The classified catalog of the satellite archive leaked the night before auction. Archive manager Kai insists he was only “protecting procedure,” yet black-market bids were already flowing into the city. We need to tear apart his chain of terminal access, information transfer, and final delivery.
+"""
+systemMsg.zh = """
+调查分支更适合用来逼出隐藏台词和掉落证据；真正推进回合，仍要靠出示证据论破真破绽。
+"""
+systemMsg.ja = """
+調査分岐は隠し台詞や証拠の回収に向く。本当にラウンドを進めるのは、証拠を出して真の弱点を論破する時だ。
+"""
+systemMsg.en = """
+Use inspection branches to pry out hidden lines and bonus evidence. To truly advance the round, you still need to rebut real weak points with evidence.
+"""
+backgroundSlot = briefing
+enemyPortraitState = neutral_idle
+screenFilter = none
+transition = fade
+
+[evidence:ev-terminal-log]
+startsInInventory = true
+aliases = 终端日志|terminal
+name.zh = """
+密档终端日志
+"""
+name.ja = """
+機密端末ログ
+"""
+name.en = """
+Secure Terminal Log
+"""
+detail.zh = """
+23:11，卡伊使用管理员身份打开了拍卖目录的最高级权限页，并下载了两份加密打包文件。
+"""
+detail.ja = """
+23:11、カイは管理者権限で競売目録の最上位ページを開き、暗号化パックを二つ取得した。
+"""
+detail.en = """
+At 23:11, Kai opened the top-level auction catalog page under administrator authority and downloaded two encrypted bundles.
+"""
+
+[evidence:ev-admin-badge]
+startsInInventory = true
+aliases = 门禁卡|badge
+name.zh = """
+冷库门禁刷卡记录
+"""
+name.ja = """
+冷蔵庫バッジ記録
+"""
+name.en = """
+Cold Vault Badge Log
+"""
+detail.zh = """
+00:18，只有卡伊的管理员胸卡刷开过冷库内门。访客与保洁卡在同一分钟全部失效。
+"""
+detail.ja = """
+00:18、冷蔵庫の内扉を開いたのはカイの管理者バッジだけだった。訪問者と清掃カードは同時刻すべて無効化されている。
+"""
+detail.en = """
+At 00:18, only Kai's administrator badge opened the inner vault door. Visitor and maintenance cards were all disabled at that minute.
+"""
+
+[evidence:ev-call-record]
+startsInInventory = false
+aliases = 通话录音|call
+name.zh = """
+屋外加密通话录音
+"""
+name.ja = """
+屋外暗号通話録音
+"""
+name.en = """
+Outdoor Encrypted Call
+"""
+detail.zh = """
+录音里，卡伊把两项密档编号逐个念给买家，并要求对方准备“零点三十分的屋顶接驳灯”。
+"""
+detail.ja = """
+録音では、カイが二つの機密番号を順に読み上げ、相手へ「零時三十分の屋上受け渡し灯」を準備しろと告げている。
+"""
+detail.en = """
+In the recording, Kai reads out two classified lot numbers and tells the buyer to prepare the rooftop relay light for 00:30.
+"""
+
+[evidence:ev-carbon-fiber]
+startsInInventory = false
+aliases = 碳纤维粉|fiber
+name.zh = """
+数据匣碳纤维碎屑
+"""
+name.ja = """
+データカセット炭素繊維片
+"""
+name.en = """
+Data Cassette Carbon Fiber
+"""
+detail.zh = """
+数据匣边缘掉落的碳纤维碎屑，和卡伊外套袖口缝线使用的是同一批稀有织材。
+"""
+detail.ja = """
+データカセット端部の炭素繊維片は、カイのコート袖口の縫い糸と同じ希少素材だ。
+"""
+detail.en = """
+The carbon-fiber flakes from the data cassette edge match the rare weave used in the seam at Kai’s coat cuff.
+"""
+
+[evidence:ev-bid-copy]
+startsInInventory = false
+aliases = 竞价副本|bid copy
+name.zh = """
+买家竞价副本
+"""
+name.ja = """
+買い手の入札副本
+"""
+name.en = """
+Buyer Bid Copy
+"""
+detail.zh = """
+黑市买家的报价副本里直接写着两件尚未公开的密档编号，底注注明“来源：K”。
+"""
+detail.ja = """
+闇市場の買い手の入札副本には未公開の密档番号が二つ直書きされ、脚注に「Source: K」と残っている。
+"""
+detail.en = """
+The buyer’s bid copy lists two unpublished archive numbers in plain text, with a note beneath them reading “Source: K.”
+"""
+
+[evidence:ev-rooftop-photo]
+startsInInventory = false
+aliases = 屋顶照片|rooftop
+name.zh = """
+屋顶接驳照片
+"""
+name.ja = """
+屋上受け渡し写真
+"""
+name.en = """
+Rooftop Relay Photo
+"""
+detail.zh = """
+屋顶长焦照片拍到卡伊在 00:31 抱着黑色数据匣站在信号灯旁，镜头边缘还能看到他胸牌的反光条。
+"""
+detail.ja = """
+屋上の望遠写真には、00:31 に黒いデータカセットを抱えて信号灯の横に立つカイが写っている。端には彼のバッジ反射帯も映る。
+"""
+detail.en = """
+A long-lens rooftop shot shows Kai at 00:31 holding a black data cassette beside the relay lamp. The reflective strip on his badge is visible at the edge.
+"""
+
+[turn:1]
+line.1.id = t1-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+我昨晚只是在巡检机房。[[t1-wp-a::我根本没碰过密档终端]]。
+"""
+line.1.ja = """
+昨夜は機械室を巡回していただけだ。[[t1-wp-a::私は機密端末に触れていない]]。
+"""
+line.1.en = """
+I was only patrolling the server room last night. [[t1-wp-a::I never touched the secure terminal]].
+"""
+line.2.id = t1-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+你们抓到的那通加密电话不值一提，[[t1-wp-b::那通电话只是问晚餐]]。
+"""
+line.2.ja = """
+拾われた暗号通話など大したことはない。[[t1-wp-b::あの電話は夕食の相談だ]]。
+"""
+line.2.en = """
+That encrypted phone call you found is meaningless; [[t1-wp-b::that call was only about dinner]].
+"""
+line.3.id = t1-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+要是目録编号对不上，那也是秘书手滑。[[t1-fake-c::拍卖清单上的编号差错只是秘书手滑]]。
+"""
+line.3.ja = """
+目録番号がずれていたなら秘書の入力ミスだ。[[t1-fake-c::目録番号のズレは秘書の入力ミスだ]]。
+"""
+line.3.en = """
+If the auction numbers do not line up, that is a secretary typo. [[t1-fake-c::The numbering mismatch on the auction list was just a secretary typo]].
+"""
+line.4.id = t1-line-4
+line.4.hidden = true
+line.4.unlockMode = none
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-carbon-fiber
+line.4.zh = """
+你追着编号往下查，监听记录随之浮出水面，连同一段被卡伊删过又恢复的屋外通话。
+"""
+line.4.ja = """
+番号を追うと傍受ログが浮かび上がり、カイが削除していた屋外通話も復元された。
+"""
+line.4.en = """
+Following the number trail surfaces the intercept logs, along with an outdoor call Kai deleted and later restored.
+"""
+weakPoint.1.id = t1-wp-a
+weakPoint.1.lineId = t1-line-1
+weakPoint.1.evidenceId = ev-terminal-log
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+我根本没碰过密档终端
+"""
+weakPoint.1.ja = """
+私は機密端末に触れていない
+"""
+weakPoint.1.en = """
+I never touched the secure terminal
+"""
+weakPoint.2.id = t1-wp-b
+weakPoint.2.lineId = t1-line-2
+weakPoint.2.evidenceId = ev-call-record
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+那通电话只是问晚餐
+"""
+weakPoint.2.ja = """
+あの電話は夕食の相談だ
+"""
+weakPoint.2.en = """
+That call was only about dinner
+"""
+weakPoint.3.id = t1-fake-c
+weakPoint.3.lineId = t1-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+拍卖清单上的编号差错只是秘书手滑
+"""
+weakPoint.3.ja = """
+目録番号のズレは秘書の入力ミスだ
+"""
+weakPoint.3.en = """
+The numbering mismatch on the auction list was just a secretary typo
+"""
+query.1.zh = """
+第一轮先锁定“接触终端”这件事。只要这层否认破了，电话就不再是闲聊。
+"""
+query.1.ja = """
+第一ラウンドは「端末接触」を固定する。そこが割れれば、電話は世間話では済まない。
+"""
+query.1.en = """
+Round one is about terminal contact. Once that denial breaks, the call is no longer casual chatter.
+"""
+query.2.zh = """
+他故意把编号问题说成秘书手滑，像是在引你去翻那份被动过的清单。
+"""
+query.2.ja = """
+彼は番号問題を秘書のミスに矮小化している。むしろ触られた目録を見ろという合図だ。
+"""
+query.2.en = """
+He keeps shrinking the numbering issue into a clerical slip. That usually means you should look harder at the tampered list.
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.zh = """
+一旦终端接触成立，后面的“只是路过”都会一起掉价。
+"""
+queryAvg.1.ja = """
+端末接触が確定した瞬間、その先の「ただ通りかかっただけ」は全部安くなる。
+"""
+queryAvg.1.en = """
+Once terminal access is proven, every later “I was only passing by” becomes cheap.
+"""
+inspectOverride.1.weakPointId = t1-fake-c
+inspectOverride.1.grantEvidence = ev-call-record
+inspectOverride.1.revealLines = t1-line-4
+inspectOverride.1.narrative.zh = """
+你没有急着论破，而是顺着编号差错继续摸排。结果不是秘书，而是卡伊自己留下的删除痕迹。
+"""
+inspectOverride.1.narrative.ja = """
+すぐに論破せず番号のズレを追うと、出てきたのは秘書ではなくカイ本人の削除痕跡だった。
+"""
+inspectOverride.1.narrative.en = """
+Instead of rebutting at once, you keep following the numbering mismatch. What surfaces is not a secretary mistake but Kai’s own deletion trail.
+"""
+inspectOverride.1.avg.1.speaker = system
+inspectOverride.1.avg.1.zh = """
+审讯附记：恢复屋外加密通话。
+"""
+inspectOverride.1.avg.1.ja = """
+尋問付記：屋外暗号通話を復元。
+"""
+inspectOverride.1.avg.1.en = """
+Interrogation note: restoring outdoor encrypted call.
+"""
+inspectOverride.1.avg.2.speaker = enemy
+inspectOverride.1.avg.2.zh = """
+……你们连那条都捞出来了？
+"""
+inspectOverride.1.avg.2.ja = """
+……あれまで掘り出したのか？
+"""
+inspectOverride.1.avg.2.en = """
+...You dragged even that one back out?
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+卡伊的第一层镇定被撬开了。
+"""
+successNarrative.ja = """
+カイの第一層の平静がこじ開けられた。
+"""
+successNarrative.en = """
+Kai’s first layer of composure is pried open.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+卡伊的第一层镇定被撬开了。
+"""
+turnClearNarrative.ja = """
+カイの第一層の平静がこじ開けられた。
+"""
+turnClearNarrative.en = """
+Kai’s first layer of composure is pried open.
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+就算我看过终端，也不代表我卖过任何东西。
+"""
+turnClearAvg.1.ja = """
+端末を見たからといって、何かを売った証明にはならない。
+"""
+turnClearAvg.1.en = """
+Even if I checked the terminal, that proves I sold nothing.
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+卡伊把错误的进攻轻轻拨开，像是在提醒你他真正害怕的不是气势，而是链条。
+"""
+failNarrative.wrongEvidence.ja = """
+カイは誤った攻めを軽く払う。彼が恐れるのは勢いではなく、鎖の完成だと示すように。
+"""
+failNarrative.wrongEvidence.en = """
+Kai brushes off the wrong attack lightly, as if reminding you that what he fears is not force but a completed chain.
+"""
+failNarrative.wrongStatement.zh = """
+卡伊把错误的进攻轻轻拨开，像是在提醒你他真正害怕的不是气势，而是链条。
+"""
+failNarrative.wrongStatement.ja = """
+カイは誤った攻めを軽く払う。彼が恐れるのは勢いではなく、鎖の完成だと示すように。
+"""
+failNarrative.wrongStatement.en = """
+Kai brushes off the wrong attack lightly, as if reminding you that what he fears is not force but a completed chain.
+"""
+failNarrative.bothWrong.zh = """
+卡伊把错误的进攻轻轻拨开，像是在提醒你他真正害怕的不是气势，而是链条。
+"""
+failNarrative.bothWrong.ja = """
+カイは誤った攻めを軽く払う。彼が恐れるのは勢いではなく、鎖の完成だと示すように。
+"""
+failNarrative.bothWrong.en = """
+Kai brushes off the wrong attack lightly, as if reminding you that what he fears is not force but a completed chain.
+"""
+logicExplanation.zh = """
+第一轮先证明卡伊亲手打开过密档终端，再用恢复出来的通话说明他把目录编号主动传了出去。
+"""
+logicExplanation.ja = """
+第一ラウンドでは、まずカイが機密端末を自分で開いたことを示し、その後復元通話で目録番号を外へ流したと示す。
+"""
+logicExplanation.en = """
+Round one proves Kai personally opened the secure terminal, then uses the restored call to show he actively sent the catalog numbers out.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+终端和电话都开过口了，你的“只是巡检”已经不值钱。
+"""
+successAvg.1.ja = """
+端末も電話も口を開いた。君の「巡回していただけ」はもう値を持たない。
+"""
+successAvg.1.en = """
+The terminal and the call have both spoken. Your “routine patrol” story has no value left.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+你要的不是答案，你要的是顺序。可你还没排好。
+"""
+failAvg.wrongEvidence.1.ja = """
+欲しいのは答えではなく順序だろう。だが君はまだ並べ替えられていない。
+"""
+failAvg.wrongEvidence.1.en = """
+What you need is not merely an answer. You need the right order, and you do not have it yet.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+你要的不是答案，你要的是顺序。可你还没排好。
+"""
+failAvg.wrongStatement.1.ja = """
+欲しいのは答えではなく順序だろう。だが君はまだ並べ替えられていない。
+"""
+failAvg.wrongStatement.1.en = """
+What you need is not merely an answer. You need the right order, and you do not have it yet.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+你要的不是答案，你要的是顺序。可你还没排好。
+"""
+failAvg.bothWrong.1.ja = """
+欲しいのは答えではなく順序だろう。だが君はまだ並べ替えられていない。
+"""
+failAvg.bothWrong.1.en = """
+What you need is not merely an answer. You need the right order, and you do not have it yet.
+"""
+
+[turn:2]
+line.1.id = t2-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+冷库那边昨晚封得死死的，[[t2-wp-d::我没有踏进冷库]]。
+"""
+line.1.ja = """
+冷蔵庫側は昨夜完全封鎖だった。[[t2-wp-d::私は冷蔵庫に入っていない]]。
+"""
+line.1.en = """
+The cold vault side was fully sealed last night. [[t2-wp-d::I never stepped into the cold vault]].
+"""
+line.2.id = t2-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+至于数据匣边缘那点碳纤维，[[t2-wp-e::那些碳纤维碎屑到处都是]]。
+"""
+line.2.ja = """
+データカセットの端の炭素繊維なんて、[[t2-wp-e::あの炭素繊維片はどこにでもある]]。
+"""
+line.2.en = """
+As for the carbon-fiber residue on the cassette edge, [[t2-wp-e::those carbon-fiber flakes are everywhere]].
+"""
+line.3.id = t2-line-3
+line.3.hidden = false
+line.3.unlockMode = none
+line.3.unlockWeakPoints = 
+line.3.grantEvidence = 
+line.3.zh = """
+你们若想扯屋顶中继灯，那也是白费力气。[[t2-fake-f::屋顶中继灯昨晚压根没亮]]。
+"""
+line.3.ja = """
+屋上中継灯の話をしたいなら、それこそ無駄だ。[[t2-fake-f::屋上中継灯は昨夜そもそも点いていない]]。
+"""
+line.3.en = """
+If you want to talk about the rooftop relay light, that is wasted effort. [[t2-fake-f::The rooftop relay light never even came on last night]].
+"""
+line.4.id = t2-line-4
+line.4.hidden = true
+line.4.unlockMode = allTrueWeakPoints
+line.4.unlockWeakPoints = 
+line.4.grantEvidence = ev-bid-copy
+line.4.zh = """
+当两条真破绽都被击碎后，搜查员从卡伊的私人抽屉里找到一份黑市买家的竞价副本。
+"""
+line.4.ja = """
+二つの真の弱点が砕けると、捜査員はカイの私物引き出しから闇市場の買い手の入札副本を見つける。
+"""
+line.4.en = """
+Once both true weak points break, investigators recover a buyer bid copy from Kai’s private drawer.
+"""
+weakPoint.1.id = t2-wp-d
+weakPoint.1.lineId = t2-line-1
+weakPoint.1.evidenceId = ev-admin-badge
+weakPoint.1.consumeEvidenceOnUse = false
+weakPoint.1.zh = """
+我没有踏进冷库
+"""
+weakPoint.1.ja = """
+私は冷蔵庫に入っていない
+"""
+weakPoint.1.en = """
+I never stepped into the cold vault
+"""
+weakPoint.2.id = t2-wp-e
+weakPoint.2.lineId = t2-line-2
+weakPoint.2.evidenceId = ev-carbon-fiber
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+那些碳纤维碎屑到处都是
+"""
+weakPoint.2.ja = """
+あの炭素繊維片はどこにでもある
+"""
+weakPoint.2.en = """
+Those carbon-fiber flakes are everywhere
+"""
+weakPoint.3.id = t2-fake-f
+weakPoint.3.lineId = t2-line-3
+weakPoint.3.evidenceId = 
+weakPoint.3.consumeEvidenceOnUse = true
+weakPoint.3.zh = """
+屋顶中继灯昨晚压根没亮
+"""
+weakPoint.3.ja = """
+屋上中継灯は昨夜そもそも点いていない
+"""
+weakPoint.3.en = """
+The rooftop relay light never even came on last night
+"""
+query.1.zh = """
+第二轮要把“拿过密档”和“把密档带离冷库”连起来。门禁固定路线，纤维固定接触。
+"""
+query.1.ja = """
+第二ラウンドは「密档を触った」から「冷蔵庫外へ持ち出した」まで繋ぐ。バッジが経路を、繊維が接触を固定する。
+"""
+query.1.en = """
+Round two connects touching the archive to carrying it out of the vault. The badge fixes the route, and the carbon fiber fixes the contact.
+"""
+query.2.zh = """
+如果他主动提起屋顶灯，大概率是因为真正能致命的不是灯，而是灯下的交付动作。
+"""
+query.2.ja = """
+彼が自分から屋上灯を口にするなら、恐れているのは灯そのものではなく、灯の下の受け渡し動作だ。
+"""
+query.2.en = """
+If he brings up the rooftop light on his own, what frightens him is not the lamp itself but the handoff under it.
+"""
+queryAvg.1.speaker = hero
+queryAvg.1.zh = """
+路线、接触、交付，三节链条一旦接起来，他就没有退路。
+"""
+queryAvg.1.ja = """
+経路、接触、受け渡し。この三節が繋がれば逃げ場はない。
+"""
+queryAvg.1.en = """
+Route, contact, handoff. Once those three links connect, he has nowhere left to retreat.
+"""
+inspectOverride.1.weakPointId = t2-fake-f
+inspectOverride.1.grantEvidence = ev-rooftop-photo
+inspectOverride.1.revealLines = 
+inspectOverride.1.narrative.zh = """
+你顺着中继灯去查，屋顶维护相册果然补上了那一分钟的空白。
+"""
+inspectOverride.1.narrative.ja = """
+中継灯を追うと、屋上保守アルバムがその一分の空白を埋めた。
+"""
+inspectOverride.1.narrative.en = """
+Following the relay light leads you to the rooftop maintenance album, which fills in the missing minute.
+"""
+inspectOverride.1.avg.1.speaker = system
+inspectOverride.1.avg.1.zh = """
+系统回收：屋顶长焦照片一张。
+"""
+inspectOverride.1.avg.1.ja = """
+システム回収：屋上望遠写真を一枚確保。
+"""
+inspectOverride.1.avg.1.en = """
+System recovery: one rooftop long-lens photo secured.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+卡伊开始从“只是看过目录”后退到“只是被流程推着走”。
+"""
+successNarrative.ja = """
+カイは「目録を見ただけ」から「手続きに流された」へ後退し始める。
+"""
+successNarrative.en = """
+Kai begins retreating from “I only saw the catalog” to “I was merely pushed by the procedure.”
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+卡伊开始从“只是看过目录”后退到“只是被流程推着走”。
+"""
+turnClearNarrative.ja = """
+カイは「目録を見ただけ」から「手続きに流された」へ後退し始める。
+"""
+turnClearNarrative.en = """
+Kai begins retreating from “I only saw the catalog” to “I was merely pushed by the procedure.”
+"""
+turnClearAvg.1.speaker = enemy
+turnClearAvg.1.zh = """
+你们还缺最后一步。谁说我真的把东西交出去了？
+"""
+turnClearAvg.1.ja = """
+まだ最後の一歩が欠けている。私が本当に渡したと誰が言える？
+"""
+turnClearAvg.1.en = """
+You're still missing the last step. Who says I actually handed anything over?
+"""
+useSeparateFailureReasons = true
+failNarrative.wrongEvidence.zh = """
+卡伊把错误证据轻轻拨开，继续强调“流程”二字。
+"""
+failNarrative.wrongEvidence.ja = """
+カイは誤った証拠を退け、「手続き」を繰り返し強調した。
+"""
+failNarrative.wrongEvidence.en = """
+Kai pushes away the wrong exhibit and goes right back to chanting “procedure.”
+"""
+failNarrative.wrongStatement.zh = """
+他抓住你点错的句子，重新把自己包回管理者的制服里。
+"""
+failNarrative.wrongStatement.ja = """
+選び違えた文を掴み、彼は再び管理者の制服へ身を包み直した。
+"""
+failNarrative.wrongStatement.en = """
+He seizes on the wrong sentence and wraps himself back into his manager uniform.
+"""
+failNarrative.bothWrong.zh = """
+这一击打空后，卡伊甚至替你解释起什么叫“标准保密流程”。
+"""
+failNarrative.bothWrong.ja = """
+この一撃が空振りすると、カイは標準秘匿手順まで講義し始めた。
+"""
+failNarrative.bothWrong.en = """
+After that miss, Kai starts lecturing you on what “standard confidentiality procedure” means.
+"""
+logicExplanation.zh = """
+要闭合第二轮，就必须证明卡伊既能打开冷库，也亲手碰过数据匣。门禁给出路径，纤维给出手部接触。
+"""
+logicExplanation.ja = """
+第二ラウンドを閉じるには、カイが冷蔵庫を開けられ、かつデータカセットへ自分で触れたことを示す必要がある。バッジが経路を、繊維が手の接触を示す。
+"""
+logicExplanation.en = """
+To close round two, we must prove Kai both accessed the cold vault and physically handled the cassette. The badge log gives the route. The carbon fiber gives the hand contact.
+"""
+successAvg.1.speaker = hero
+successAvg.1.zh = """
+你不是被流程推着走，你是在借流程遮住自己的手。
+"""
+successAvg.1.ja = """
+手続きに流されたのではない。手続きを盾にして自分の手を隠しただけだ。
+"""
+successAvg.1.en = """
+You were not pushed by procedure. You used procedure as a shield to hide your own hands.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+拿错钥匙就别抱怨门打不开。
+"""
+failAvg.wrongEvidence.1.ja = """
+鍵を取り違えておいて、扉が開かないと文句を言うな。
+"""
+failAvg.wrongEvidence.1.en = """
+Do not complain that the door will not open if you brought the wrong key.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+连主句都没抓住，就别奢望抓住我。
+"""
+failAvg.wrongStatement.1.ja = """
+主文すら掴めないなら、私を掴めるわけがない。
+"""
+failAvg.wrongStatement.1.en = """
+If you cannot catch the main sentence, you will not catch me.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+漂亮的气势抵不上一次正确的接入。
+"""
+failAvg.bothWrong.1.ja = """
+綺麗な勢いは、一度の正しい接続にも勝てない。
+"""
+failAvg.bothWrong.1.en = """
+A dramatic push is worth less than a single correct connection.
+"""
+
+[turn:3]
+line.1.id = t3-line-1
+line.1.hidden = false
+line.1.unlockMode = none
+line.1.unlockWeakPoints = 
+line.1.grantEvidence = 
+line.1.zh = """
+黑市买家的报价副本是别人伪造来栽我的，[[t3-wp-g::那份竞价副本不是我泄露出去的]]。
+"""
+line.1.ja = """
+闇市場の入札副本は誰かが私を嵌めるために作った偽物だ。[[t3-wp-g::あの入札副本を漏らしたのは私ではない]]。
+"""
+line.1.en = """
+That buyer bid copy was forged by someone trying to frame me; [[t3-wp-g::I was not the one who leaked that bid copy]].
+"""
+line.2.id = t3-line-2
+line.2.hidden = false
+line.2.unlockMode = none
+line.2.unlockWeakPoints = 
+line.2.grantEvidence = 
+line.2.zh = """
+就算屋顶灯真的亮过，[[t3-wp-h::屋顶照片里的人影不可能是我]]。
+"""
+line.2.ja = """
+仮に屋上灯が点いていたとしても、[[t3-wp-h::屋上写真の影は私ではあり得ない]]。
+"""
+line.2.en = """
+Even if the rooftop light really came on, [[t3-wp-h::the figure in the rooftop photo cannot be me]].
+"""
+weakPoint.1.id = t3-wp-g
+weakPoint.1.lineId = t3-line-1
+weakPoint.1.evidenceId = ev-bid-copy
+weakPoint.1.consumeEvidenceOnUse = true
+weakPoint.1.zh = """
+那份竞价副本不是我泄露出去的
+"""
+weakPoint.1.ja = """
+あの入札副本を漏らしたのは私ではない
+"""
+weakPoint.1.en = """
+I was not the one who leaked that bid copy
+"""
+weakPoint.2.id = t3-wp-h
+weakPoint.2.lineId = t3-line-2
+weakPoint.2.evidenceId = ev-rooftop-photo
+weakPoint.2.consumeEvidenceOnUse = true
+weakPoint.2.zh = """
+屋顶照片里的人影不可能是我
+"""
+weakPoint.2.ja = """
+屋上写真の影は私ではあり得ない
+"""
+weakPoint.2.en = """
+The figure in the rooftop photo cannot be me
+"""
+query.1.zh = """
+终局要把“传出去”和“亲手交出去”接成同一条线。
+"""
+query.1.ja = """
+終局では「漏らした」と「自分で渡した」を一本の線へ繋ぐ。
+"""
+query.1.en = """
+The endgame joins “leaked it” and “handed it over personally” into the same line.
+"""
+query.2.zh = """
+他想把泄密变成抽象概念，你要把它重新拉回到他的身体动作上。
+"""
+query.2.ja = """
+彼は漏洩を抽象概念にしたがる。こちらはそれを身体動作へ引き戻す。
+"""
+query.2.en = """
+He wants the leak to remain abstract. We need to drag it back into a concrete physical act.
+"""
+queryAvg.1.speaker = system
+queryAvg.1.zh = """
+终局校验：锁定交付动作。
+"""
+queryAvg.1.ja = """
+終局検証：受け渡し動作を固定。
+"""
+queryAvg.1.en = """
+Final verification: lock the handoff action.
+"""
+sceneBackgroundSlot = cross_exam
+enemyPortraitState = neutral_idle
+enemyPortraitMotion = none
+screenFilter = none
+screenImpulse = none
+transition = cut
+successNarrative.zh = """
+卡伊嘴上的“流程”终于裂成了交易。
+"""
+successNarrative.ja = """
+カイの口にあった「手続き」は、ついに取引へ裂けた。
+"""
+successNarrative.en = """
+Kai's talk of “procedure” finally tears open into a transaction.
+"""
+useSeparateTurnClear = false
+turnClearNarrative.zh = """
+卡伊嘴上的“流程”终于裂成了交易。
+"""
+turnClearNarrative.ja = """
+カイの口にあった「手続き」は、ついに取引へ裂けた。
+"""
+turnClearNarrative.en = """
+Kai's talk of “procedure” finally tears open into a transaction.
+"""
+turnClearAvg.1.speaker = hero
+turnClearAvg.1.zh = """
+目录是你看见的，价格是你念出去的，数据匣也是你抱上屋顶的。
+"""
+turnClearAvg.1.ja = """
+目録を見たのは君で、価格を読み上げたのも君で、カセットを屋上へ運んだのも君だ。
+"""
+turnClearAvg.1.en = """
+You saw the catalog, you read out the prices, and you carried the cassette to the roof.
+"""
+useSeparateFailureReasons = false
+failNarrative.wrongEvidence.zh = """
+终局近在眼前，卡伊却还试着把自己的动作洗成“流程的惯性”。
+"""
+failNarrative.wrongEvidence.ja = """
+終局は目の前だが、カイはまだ自分の動作を「手続きの慣性」に洗い替えようとしている。
+"""
+failNarrative.wrongEvidence.en = """
+The ending is within reach, yet Kai still tries to wash his acts into “procedural inertia.”
+"""
+failNarrative.wrongStatement.zh = """
+终局近在眼前，卡伊却还试着把自己的动作洗成“流程的惯性”。
+"""
+failNarrative.wrongStatement.ja = """
+終局は目の前だが、カイはまだ自分の動作を「手続きの慣性」に洗い替えようとしている。
+"""
+failNarrative.wrongStatement.en = """
+The ending is within reach, yet Kai still tries to wash his acts into “procedural inertia.”
+"""
+failNarrative.bothWrong.zh = """
+终局近在眼前，卡伊却还试着把自己的动作洗成“流程的惯性”。
+"""
+failNarrative.bothWrong.ja = """
+終局は目の前だが、カイはまだ自分の動作を「手続きの慣性」に洗い替えようとしている。
+"""
+failNarrative.bothWrong.en = """
+The ending is within reach, yet Kai still tries to wash his acts into “procedural inertia.”
+"""
+logicExplanation.zh = """
+竞价副本证明目录编号是他泄出去的，屋顶照片证明他亲自把数据匣带到了交付点。信息外流与实体交付在他身上闭合。
+"""
+logicExplanation.ja = """
+入札副本が番号漏洩を示し、屋上写真がカセット搬送を示す。情報流出と物理受け渡しがカイの上で閉じる。
+"""
+logicExplanation.en = """
+The bid copy proves he leaked the numbers, and the rooftop photo proves he personally carried the cassette to the handoff point. The information leak and physical delivery close on Kai.
+"""
+successAvg.1.speaker = enemy
+successAvg.1.zh = """
+……我只是比他们先承认，档案本来就会被卖掉。
+"""
+successAvg.1.ja = """
+……私はただ、あの档案がいずれ売られると誰より先に認めただけだ。
+"""
+successAvg.1.en = """
+...I merely admitted before anyone else that those archives were always going to be sold.
+"""
+successAvg.2.speaker = hero
+successAvg.2.zh = """
+不，你不是承认现实。你是在提前兑现它。
+"""
+successAvg.2.ja = """
+違う。現実を認めたのではない。先に換金しただけだ。
+"""
+successAvg.2.en = """
+No. You did not admit reality. You cashed it in early.
+"""
+failAvg.wrongEvidence.1.speaker = enemy
+failAvg.wrongEvidence.1.zh = """
+最后一步最怕的不是压力，是急躁。
+"""
+failAvg.wrongEvidence.1.ja = """
+最後の一歩で怖いのは圧力ではなく焦りだ。
+"""
+failAvg.wrongEvidence.1.en = """
+The final step fears impatience more than pressure.
+"""
+failAvg.wrongStatement.1.speaker = enemy
+failAvg.wrongStatement.1.zh = """
+最后一步最怕的不是压力，是急躁。
+"""
+failAvg.wrongStatement.1.ja = """
+最後の一歩で怖いのは圧力ではなく焦りだ。
+"""
+failAvg.wrongStatement.1.en = """
+The final step fears impatience more than pressure.
+"""
+failAvg.bothWrong.1.speaker = enemy
+failAvg.bothWrong.1.zh = """
+最后一步最怕的不是压力，是急躁。
+"""
+failAvg.bothWrong.1.ja = """
+最後の一歩で怖いのは圧力ではなく焦りだ。
+"""
+failAvg.bothWrong.1.en = """
+The final step fears impatience more than pressure.
+"""
+interference.1.zh = """
+信号噪声：屋顶端口重复握手。
+"""
+interference.1.ja = """
+信号ノイズ：屋上ポートが再ハンドシェイク。
+"""
+interference.1.en = """
+Signal noise: rooftop port repeating handshake.
+"""
+interference.2.zh = """
+系统抖动：竞价缓存重放。
+"""
+interference.2.ja = """
+システム揺れ：入札キャッシュ再生。
+"""
+interference.2.en = """
+System jitter: bid cache replay.
+"""
+interference.3.zh = """
+警告：非法中继设备尝试覆写画面。
+"""
+interference.3.ja = """
+警告：不正中継装置が画面の上書きを試行。
+"""
+interference.3.en = """
+Warning: illegal relay device attempting screen overwrite.
+"""
+
+[victory]
+narrative.zh = """
+终端日志、加密通话、门禁记录、屋顶照片，四段链条前后扣死。卡伊承认自己提前把密级目录卖给买家，再趁夜把数据匣带到屋顶，准备以“流程事故”做掩护。
+"""
+narrative.ja = """
+端末ログ、暗号通話、バッジ記録、屋上写真。四つの鎖が前後から噛み合った。カイは機密目録を事前に売り、夜のうちにデータカセットを屋上へ運び、「手続き事故」で隠すつもりだったと認める。
+"""
+narrative.en = """
+The terminal log, encrypted call, badge record, and rooftop photo lock together from both ends. Kai admits he sold the classified catalog in advance, then carried the cassette to the roof at night and planned to hide it under the cover of a “procedural accident.”
+"""
+confession.zh = """
+是，我卖了目录。那些档案迟早会被更有钱的人拿走，我只是抢在制度开口前先开价。等屋顶灯亮起，数据匣一交出去，谁都会把责任推给一场失误。我差一点就成功了。
+"""
+confession.ja = """
+ああ、目録は売った。あの档案は遅かれ早かれ、もっと金を持つ誰かに奪われる。私は制度が値札をつける前に先に値をつけただけだ。屋上灯が点けば、カセットを渡した瞬間に責任は事故へ押しつけられた。あと少しだった。
+"""
+confession.en = """
+Yes, I sold the catalog. Those archives would have been taken by someone richer sooner or later. I merely named the price before the institution could. Once the rooftop light came on and the cassette changed hands, everyone would have called it an accident. I was almost there.
+"""
+backgroundSlot = confession
+screenFilter = dim
+transition = fade
+avg.1.speaker = enemy
+avg.1.zh = """
+档案不是历史，它们只是还没被标价的商品。
+"""
+avg.1.ja = """
+档案は歴史ではない。まだ値札のついていない商品だ。
+"""
+avg.1.en = """
+Archives are not history. They are only goods that have not been priced yet.
+"""
+avg.2.speaker = hero
+avg.2.zh = """
+而你把保管变成了拍卖，把职责变成了通道。
+"""
+avg.2.ja = """
+君は保管を競売に変え、職責を通路に変えた。
+"""
+avg.2.en = """
+And you turned custody into auction, and duty into a corridor.
+"""
+avg.3.speaker = system
+avg.3.zh = """
+判定完成：有罪。案件归档至《午夜密拍》。
+"""
+avg.3.ja = """
+判定完了：有罪。案件は『ミッドナイト・オークション』として保管される。
+"""
+avg.3.en = """
+Judgment complete: Guilty. Case archived as Midnight Auction.
+"""

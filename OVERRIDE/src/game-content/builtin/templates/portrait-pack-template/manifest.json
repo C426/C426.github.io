@@ -1,0 +1,62 @@
+{
+  "version": "portrait_pack_v1",
+  "id": "your-portrait-pack-id",
+  "displayName": {
+    "zh": "你的角色包名称",
+    "ja": "あなたのキャラクターパック名",
+    "en": "Your Portrait Pack Name"
+  },
+  "roleHint": "generic",
+  "thumbnail": "thumbnail.png",
+  "referenceSheet": "reference_sheet.png",
+  "states": {
+    "neutral_idle": {
+      "closed": "neutral_idle_closed.png",
+      "open": "neutral_idle_open.png"
+    },
+    "polite_smile": {
+      "closed": "polite_smile_closed.png",
+      "open": "polite_smile_open.png"
+    },
+    "smug_tilt": {
+      "closed": "smug_tilt_closed.png",
+      "open": "smug_tilt_open.png"
+    },
+    "innocent_hand": {
+      "closed": "innocent_hand_closed.png",
+      "open": "innocent_hand_open.png"
+    },
+    "serious_focus": {
+      "closed": "serious_focus_closed.png",
+      "open": "serious_focus_open.png"
+    },
+    "thinking_hand_to_chin": {
+      "closed": "thinking_hand_to_chin_closed.png",
+      "open": "thinking_hand_to_chin_open.png"
+    },
+    "surprise_small": {
+      "closed": "surprise_small_closed.png",
+      "open": "surprise_small_open.png"
+    },
+    "shock_big": {
+      "closed": "shock_big_closed.png",
+      "open": "shock_big_open.png"
+    },
+    "defensive_frown": {
+      "closed": "defensive_frown_closed.png",
+      "open": "defensive_frown_open.png"
+    },
+    "angry_attack": {
+      "closed": "angry_attack_closed.png",
+      "open": "angry_attack_open.png"
+    },
+    "breakdown_unstable": {
+      "closed": "breakdown_unstable_closed.png",
+      "open": "breakdown_unstable_open.png"
+    },
+    "sad_confession": {
+      "closed": "sad_confession_closed.png",
+      "open": "sad_confession_open.png"
+    }
+  }
+}

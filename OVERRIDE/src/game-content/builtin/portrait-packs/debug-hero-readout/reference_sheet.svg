@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+  <rect width="100%" height="100%" fill="#07111b"/>
+  <rect x="2" y="2" width="1596" height="1096" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <rect x="40" y="40" width="1520" height="1020" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <text x="88" y="84" font-family="monospace" font-size="20" fill="#d4ff27" opacity="0.82">FILE // reference_sheet.svg // 1600 x 1100px</text>
+  <text x="88" y="118" font-family="monospace" font-size="44" fill="#d4ff27">玩家立绘 / 主人公立ち絵 / HERO PORTRAIT</text>
+  <text x="88" y="180" font-family="monospace" font-size="36" fill="#d4ff27" opacity="0.82">调试玩家立绘包 / デバッグ主人公立ち絵パック / Debug Hero Portrait Pack</text>
+  <text x="88" y="226" font-family="monospace" font-size="26" fill="#d4ff27" opacity="0.72">PACK // debug-hero-readout</text>
+  <text x="92" y="260" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[01] 平静待机 / 平常待機 / NEUTRAL IDLE</text>
+<text x="92" y="316" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[02] 礼貌微笑 / 穏やかな微笑み / POLITE SMILE</text>
+<text x="92" y="372" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[03] 得意挑衅 / 挑発的な笑み / SMUG TILT</text>
+<text x="92" y="428" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[04] 装作无辜 / 無実のふり / INNOCENT HAND</text>
+<text x="92" y="484" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[05] 认真凝视 / 真剣な集中 / SERIOUS FOCUS</text>
+<text x="92" y="540" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[06] 托腮思考 / 思案ポーズ / THINKING HAND TO CHIN</text>
+<text x="92" y="596" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[07] 轻微惊讶 / 小さな驚き / SMALL SURPRISE</text>
+<text x="92" y="652" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[08] 强烈震惊 / 大きな衝撃 / BIG SHOCK</text>
+<text x="92" y="708" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[09] 防御皱眉 / 防御的なしかめ面 / DEFENSIVE FROWN</text>
+<text x="92" y="764" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[10] 愤怒反击 / 怒りの反撃 / ANGRY ATTACK</text>
+<text x="92" y="820" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[11] 崩坏失控 / 崩壊寸前 / BREAKDOWN UNSTABLE</text>
+<text x="92" y="876" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.85">[12] 低落自白 / 沈んだ告白 / SAD CONFESSION</text>
+  <rect x="1048" y="124" width="432" height="792" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <text x="1264" y="288" text-anchor="middle" font-family="monospace" font-size="34" fill="#d4ff27">24 RUNTIME FILES</text>
+  <text x="1264" y="362" text-anchor="middle" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.84">12 STATES</text>
+  <text x="1264" y="414" text-anchor="middle" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.84">closed / open</text>
+  <text x="1264" y="540" text-anchor="middle" font-family="monospace" font-size="26" fill="#d4ff27" opacity="0.74">This is a debug reference sheet.</text>
+  <text x="1264" y="590" text-anchor="middle" font-family="monospace" font-size="26" fill="#d4ff27" opacity="0.74">ZH / JA / EN labels are embedded.</text>
+</svg>

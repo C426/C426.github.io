@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800">
+  <rect width="100%" height="100%" fill="transparent"/>
+  <rect x="2" y="2" width="1396" height="1796" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <rect x="84" y="96" width="1232" height="1608" rx="28" fill="#07111b" stroke="#d4ff27" stroke-width="8"/>
+  <rect x="124" y="136" width="1152" height="208" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <rect x="124" y="392" width="1152" height="944" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <rect x="124" y="1384" width="1152" height="280" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <text x="152" y="172" font-family="monospace" font-size="28" fill="#d4ff27" opacity="0.82">FILE // sad_confession_closed.svg</text>
+  <text x="152" y="214" font-family="monospace" font-size="64" fill="#d4ff27">玩家立绘 / 主人公立ち絵 / HERO PORTRAIT</text>
+  <text x="152" y="286" font-family="monospace" font-size="42" fill="#d4ff27" opacity="0.85">调试玩家立绘包 / デバッグ主人公立ち絵パック / Debug Hero Portrait Pack</text>
+  <text x="700" y="676" text-anchor="middle" font-family="monospace" font-size="78" fill="#d4ff27">低落自白</text>
+  <text x="700" y="768" text-anchor="middle" font-family="monospace" font-size="72" fill="#d4ff27">沈んだ告白</text>
+  <text x="700" y="860" text-anchor="middle" font-family="monospace" font-size="76" fill="#d4ff27">SAD CONFESSION</text>
+  <text x="700" y="1012" text-anchor="middle" font-family="monospace" font-size="46" fill="#d4ff27" opacity="0.82">闭嘴待机 / 口閉じ / CLOSED</text>
+  <text x="152" y="1466" font-family="monospace" font-size="42" fill="#d4ff27">PACK // debug-hero-readout</text>
+  <text x="152" y="1534" font-family="monospace" font-size="36" fill="#d4ff27" opacity="0.82">STATE // sad_confession</text>
+  <text x="152" y="1602" font-family="monospace" font-size="36" fill="#d4ff27" opacity="0.82">MOUTH // closed</text>
+  <text x="152" y="1670" font-family="monospace" font-size="36" fill="#d4ff27" opacity="0.82">SIZE // 1400 x 1800px</text>
+</svg>

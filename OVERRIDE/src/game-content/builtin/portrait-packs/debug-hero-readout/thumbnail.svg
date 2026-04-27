@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <rect width="100%" height="100%" fill="#07111b"/>
+  <rect x="2" y="2" width="636" height="356" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <rect x="24" y="24" width="592" height="312" fill="none" stroke="#d4ff27" stroke-width="4"/>
+  <text x="48" y="72" font-family="monospace" font-size="18" fill="#d4ff27" opacity="0.82">FILE // thumbnail.svg</text>
+  <text x="48" y="114" font-family="monospace" font-size="38" fill="#d4ff27">玩家立绘 / 主人公立ち絵 / HERO PORTRAIT</text>
+  <text x="48" y="176" font-family="monospace" font-size="30" fill="#d4ff27" opacity="0.82">PORTRAIT PACK</text>
+  <text x="48" y="244" font-family="monospace" font-size="24" fill="#d4ff27" opacity="0.72">debug-hero-readout</text>
+  <text x="48" y="294" font-family="monospace" font-size="20" fill="#d4ff27" opacity="0.72">SIZE // 640 x 360px</text>
+</svg>

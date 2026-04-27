@@ -1,0 +1,62 @@
+{
+  "version": "portrait_pack_v1",
+  "id": "debug-hero-readout",
+  "displayName": {
+    "zh": "调试玩家立绘包",
+    "ja": "デバッグ主人公立ち絵パック",
+    "en": "Debug Hero Portrait Pack"
+  },
+  "roleHint": "hero",
+  "thumbnail": "thumbnail.svg",
+  "referenceSheet": "reference_sheet.svg",
+  "states": {
+    "neutral_idle": {
+      "closed": "neutral_idle_closed.svg",
+      "open": "neutral_idle_open.svg"
+    },
+    "polite_smile": {
+      "closed": "polite_smile_closed.svg",
+      "open": "polite_smile_open.svg"
+    },
+    "smug_tilt": {
+      "closed": "smug_tilt_closed.svg",
+      "open": "smug_tilt_open.svg"
+    },
+    "innocent_hand": {
+      "closed": "innocent_hand_closed.svg",
+      "open": "innocent_hand_open.svg"
+    },
+    "serious_focus": {
+      "closed": "serious_focus_closed.svg",
+      "open": "serious_focus_open.svg"
+    },
+    "thinking_hand_to_chin": {
+      "closed": "thinking_hand_to_chin_closed.svg",
+      "open": "thinking_hand_to_chin_open.svg"
+    },
+    "surprise_small": {
+      "closed": "surprise_small_closed.svg",
+      "open": "surprise_small_open.svg"
+    },
+    "shock_big": {
+      "closed": "shock_big_closed.svg",
+      "open": "shock_big_open.svg"
+    },
+    "defensive_frown": {
+      "closed": "defensive_frown_closed.svg",
+      "open": "defensive_frown_open.svg"
+    },
+    "angry_attack": {
+      "closed": "angry_attack_closed.svg",
+      "open": "angry_attack_open.svg"
+    },
+    "breakdown_unstable": {
+      "closed": "breakdown_unstable_closed.svg",
+      "open": "breakdown_unstable_open.svg"
+    },
+    "sad_confession": {
+      "closed": "sad_confession_closed.svg",
+      "open": "sad_confession_open.svg"
+    }
+  }
+}
