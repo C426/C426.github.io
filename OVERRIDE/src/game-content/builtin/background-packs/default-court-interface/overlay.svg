@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
-  <rect width="100%" height="100%" fill="transparent"/>
-  <g stroke="#d4ff27" stroke-width="2" opacity="0.18">
-    <rect x="90" y="90" width="1740" height="900" fill="none"/>
-    <rect x="120" y="120" width="1680" height="840" fill="none"/>
-    <path d="M90 540 H1830M960 90 V990"/>
-  </g>
-</svg>
